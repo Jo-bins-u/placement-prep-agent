@@ -51,7 +51,7 @@ sample_resume.pdf/.docx         — test fixtures
 
 ## What each person should actually do with this
 
-- **Joyal (M1):** already done — this just imports your existing code unchanged. If you improve education parsing (per your module's README), it'll flow through automatically.
+- **Joyal (M1):**  this just imports your existing code unchanged. If you improve education parsing (per your module's README), it'll flow through automatically.
 - **Aiswarya (M2):** replace `generator.py`'s `pick_next_question()` with a real RAG/LLM pipeline. Keep the return shape the same and nothing else breaks.
 - **Nihal (M3):** replace `evaluator.py`'s `evaluate_answer()` with LLM-based grading, especially for the cases keyword-matching gets wrong (right concept, different wording). Keep the `(score, feedback)` return signature.
 - **Pulikanti (M4/M5):** the analytics logic and dashboard are real — from here it's about refining recommendation quality and polishing the frontend, not rebuilding the pipeline.
