@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block nav_upload %}active{% endblock %}
+{% block content %}
+<div class="topbar">
+  <h1 class="display">Get started</h1>
+  <p>Upload your resume — we'll build your profile and practice dashboard automatically</p>
+</div>
+
+<div class="upload-box">
+  <div class="icon">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 4v11m0-11l-4 4m4-4l4 4M5 17v2a2 2 0 002 2h10a2 2 0 002-2v-2" stroke="#3462F2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </div>
+  <h2 class="display">No dashboard yet</h2>
+  <p>Upload your resume as a PDF or DOCX. We'll extract your skills, education, and projects, then set up a personalized practice dashboard — in a few seconds.</p>
+  <form action="{{ url_for('upload') }}" method="post" enctype="multipart/form-data">
+    <input type="file" name="resume" accept=".pdf,.docx" required>
+    <button type="submit" class="btn">Upload and build my dashboard</button>
+  </form>
+</div>
+{% endblock %}

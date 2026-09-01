@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+{% block nav_dashboard %}active{% endblock %}
+{% block content %}
+<div class="topbar">
+  <h1 class="display">Your Dashboard</h1>
+  <p>Generated automatically from your uploaded resume</p>
+</div>
+
+<div class="grid">
+  <!-- Profile header -->
+  <div class="card profile-card" style="grid-column:1 / -1;">
+    <div class="avatar">{{ (profile.contact.name or "? ?")[:2].upper() }}</div>
+    <div>
+      <p class="profile-name">{{ profile.contact.name or "Name not detected — check resume" }}</p>
+      <p class="profile-meta">
+        {{ profile.contact.email or "email not detected" }}
+        {% if profile.needs_review %} · <span style="color:var(--warn);">{{ profile.needs_review|length }} field(s) need review</span>{% endif %}
+      </p>
+    </div>
+    <div class="stat-row">
+      <div class="stat"><div class="num">{{ attempts|length }}</div><div class="label">Questions attempted</div></div>
+      <div class="stat"><div class="num">{{ avg_score }}%</div><div class="label">Avg. score</div></div>
+      <div class="stat"><div class="num">{{ weak_topics|length }}</div><div class="label">Weak topics</div></div>
+    </div>
+  </div>
+
+  <!-- ── Skills from Resume ── -->
+  <div class="card" style="grid-column:1 / -1;">
+    <h3>Skills from Resume</h3>
+    {% if profile.skills %}
+      <div class="skill-chips">
+        {% for skill in profile.skills %}
+          <span class="skill-chip">{{ skill }}</span>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="empty-hint">No skills detected — the parser may have missed your skills section. Check that your resume has a "Skills" heading.</p>
+    {% endif %}
+  </div>
+
+  <!-- ── Projects from Resume ── -->
+  <div class="card" style="grid-column:1 / -1;">
+    <h3>Projects from Resume</h3>
+    {% if profile.projects %}
+      <div class="projects-grid">
+        {% for proj in profile.projects %}
+        <div class="proj-card">
+          <div class="proj-header">
+            <span class="proj-title">{{ proj.title or "Untitled Project" }}</span>
+            {% if proj.llm_extracted %}
+              <span class="ai-badge">✦ AI extracted</span>
+            {% endif %}
+          </div>
+          {% if proj.description %}
+            <p class="proj-desc">{{ proj.description }}</p>
+          {% endif %}
+          {% if proj.tech_stack %}
+            <div class="proj-tech">
+              {% for tech in proj.tech_stack %}
+                <span class="tech-tag">{{ tech }}</span>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="empty-hint">No projects detected — ensure your resume has a "Projects" section.</p>
+    {% endif %}
+  </div>
+
+  <!-- Skill Fingerprint (practice-based) -->
+  <div class="card" style="grid-column:1 / -1;">
+    <h3>Practice Skill Fingerprint</h3>
+    {% if topic_scores %}
+    <div class="fingerprint">
+      {% for topic, score in topic_scores.items() %}
+        <div class="hex" style="background:{{ '#22885F' if score >= 75 else ('#3462F2' if score >= 50 else '#C97C1E') }}; margin-top:{{ ((100 - score) / 6)|round(1) }}px;">
+          <div class="topic">{{ topic }}</div>
+          <div class="pct">{{ score }}%</div>
+        </div>
+      {% endfor %}
+    </div>
+    <div class="legend">
+      <span><span class="dot" style="background:#22885F"></span>Strong (75%+)</span>
+      <span><span class="dot" style="background:#3462F2"></span>Developing (50–74%)</span>
+      <span><span class="dot" style="background:#C97C1E"></span>Weak (below 50%)</span>
+    </div>
+    {% else %}
+    <p class="empty-hint">No practice attempts yet — head to Practice to get started, and topic proficiency will show up here.</p>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <h3>Weak areas to focus on</h3>
+    {% if weak_topics %}
+      {% for topic in weak_topics %}
+      <div class="weak-item"><span class="name">{{ topic }}</span><span class="score">{{ topic_scores[topic] }}%</span></div>
+      {% endfor %}
+    {% else %}
+      <p class="empty-hint">No weak areas flagged yet.</p>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <h3>Recommended next</h3>
+    {% for rec in recommendations %}
+    <div class="rec-item">
+      <div class="title">{{ rec.title }}</div>
+      <div class="reason">{{ rec.reason }}</div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="card" style="grid-column:1 / -1; text-align:center;">
+    <a href="{{ url_for('practice', candidate_id=candidate['id']) }}" class="btn">Practice a question</a>
+  </div>
+
+  <div class="card" style="grid-column:1 / -1;">
+    <h3>Recent activity</h3>
+    {% if attempts %}
+      {% for a in attempts %}
+      <div class="activity-item">
+        <span>{{ a['topic'] }} — {{ a['question_id'] }}</span>
+        <span class="result {{ 'pass' if a['score'] >= 75 else 'partial' }}">{{ a['score'] }}%</span>
+      </div>
+      {% endfor %}
+    {% else %}
+      <p class="empty-hint">No activity yet.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+

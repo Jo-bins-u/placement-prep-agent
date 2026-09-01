@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>{% block title %}Placement Prep Agent{% endblock %}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="app">
+  <div class="sidebar">
+    <div class="brand display">Placement<br><span>Prep Agent</span></div>
+    <div class="nav">
+      <a href="{{ url_for('home') }}" class="{% block nav_upload %}{% endblock %}">Upload Resume</a>
+      {% if candidate_id_for_nav %}
+      <a href="{{ url_for('dashboard', candidate_id=candidate_id_for_nav) }}" class="{% block nav_dashboard %}{% endblock %}">Dashboard</a>
+      <a href="{{ url_for('practice', candidate_id=candidate_id_for_nav) }}" class="{% block nav_practice %}{% endblock %}">Practice</a>
+      {% endif %}
+    </div>
+  </div>
+  <div class="main">
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for m in messages %}<div class="flash">{{ m }}</div>{% endfor %}
+      {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </div>
+</div>
+</body>
+</html>

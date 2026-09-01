@@ -1,0 +1,9 @@
+anthropic
+scikit-learn
+scipy
+numpy
+joblib
+torch
+transformers
+tokenizers
+sentence-transformers

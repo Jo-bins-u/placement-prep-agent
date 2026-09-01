@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block nav_practice %}active{% endblock %}
+{% block content %}
+<div class="topbar">
+  <h1 class="display">Practice</h1>
+  <p>Questions are prioritized toward your weak areas and resume skills</p>
+</div>
+
+<div class="card question-card">
+  <span class="question-topic">{{ question.topic }} · {{ question.difficulty }}</span>
+  <p class="question-prompt">{{ question.prompt }}</p>
+
+  <form action="{{ url_for('submit_answer', candidate_id=candidate_id) }}" method="post">
+    <input type="hidden" name="question_id" value="{{ question.id }}">
+    <input type="hidden" name="question_json" value="{{ question_json | e }}">
+
+    {% if question.type == "mcq" %}
+      <div class="mcq-options">
+        {% for opt in question.options %}
+        <label>
+          <input type="radio" name="answer_text" value="{{ opt }}" required>
+          {{ opt }}
+        </label>
+        {% endfor %}
+      </div>
+    {% else %}
+      <textarea name="answer_text" placeholder="Type your answer here..." required></textarea>
+    {% endif %}
+
+    <div style="margin-top:16px;">
+      <button type="submit" class="btn">Submit answer</button>
+    </div>
+  </form>
+</div>
+{% endblock %}
