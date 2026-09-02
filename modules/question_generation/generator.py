@@ -129,7 +129,7 @@ def generate_llm_question(profile_skills: list, weak_topics: list, answered_topi
 
     try:
         response = client.chat.completions.create(
-            model="llama3-70b-8192",
+            model="openai/gpt-oss-120b",
             messages=[
                 {"role": "system", "content": _SYSTEM_PROMPT},
                 {"role": "user", "content": _build_user_prompt(

@@ -1,0 +1,42 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*.class
+
+# C extensions
+*.so
+
+# Environment variables & secrets (CRITICAL)
+.env
+.env.local
+.env.*.local
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+
+# Live Database files
+data/*.db
+*.sqlite
+*.sqlite3
+
+# User Uploads
+uploads/*
+!uploads/.gitkeep
+
+# IDEs & Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS specific files
+.DS_Store
+Thumbs.db
+
+# Large model checkpoints & generated training data
+m3_upgrade/feedback_generator/feedback_model/
+*.pth
+*.bin\n

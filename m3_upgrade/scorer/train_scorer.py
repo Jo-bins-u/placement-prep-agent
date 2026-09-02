@@ -1,34 +1,46 @@
 """
 train_scorer.py — trains a model to predict a score from (question, answer).
-
-Two backends, chosen with --backend:
-
-  tfidf        Bag-of-words features + regression. No downloads, works
-               anywhere, trains in seconds. This is your BASELINE — the
-               number you report to show the embedding model is actually
-               earning its complexity, not just "the number we got."
-
-  embeddings   Sentence-transformer embeddings (all-MiniLM-L6-v2) +
-               regression. Needs internet to download the pretrained
-               model the first time (blocked in some sandboxed dev
-               environments — run this on your own machine). This is
-               your MAIN model — captures meaning, not just word overlap,
-               so it should score paraphrased-but-correct answers fairly
-               where TF-IDF can't.
-
-Both report Pearson correlation and Quadratic Weighted Kappa on a held-out
-test split — the standard metrics for this task (see shared/metrics.py).
-
-Usage:
-    python train_scorer.py --data ../data/seed_dataset.jsonl --backend tfidf
-    python train_scorer.py --data ../data/feedback_dataset.jsonl --backend embeddings
 """
+
+import os
+import sys
+import ssl
+import importlib.util
+from pathlib import Path
+
+# Disable SSL verification for huggingface downloads when running behind proxies
+ssl._create_default_https_context = ssl._create_unverified_context
+os.environ["CURL_CA_BUNDLE"] = ""
+os.environ["PYTHONHTTPSVERIFY"] = "0"
+
+try:
+    import urllib3
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+    import requests
+    requests.Session.merge_environment_settings = lambda self, url, proxies, stream, verify, cert: {
+        'verify': False, 'proxies': proxies, 'stream': stream, 'cert': cert
+    }
+except Exception:
+    pass
+
+# Fix Windows PyTorch DLL loading issue — must load torch BEFORE numpy/scipy
+if sys.platform == "win32":
+    spec = importlib.util.find_spec("torch")
+    if spec and spec.origin:
+        torch_lib = Path(spec.origin).parent / "lib"
+        if torch_lib.exists():
+            os.environ["PATH"] = str(torch_lib) + os.pathsep + os.environ.get("PATH", "")
+            try:
+                os.add_dll_directory(str(torch_lib))
+            except Exception:
+                pass
+    try:
+        import torch
+    except Exception:
+        pass
 
 import argparse
 import json
-import sys
-from pathlib import Path
-
 import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import Ridge

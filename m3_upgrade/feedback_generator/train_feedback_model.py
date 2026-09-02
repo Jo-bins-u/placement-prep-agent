@@ -1,34 +1,46 @@
 """
-train_feedback_model.py — trains a model to generate feedback text from
-(question, answer, score).
-
-Two backends, chosen with --backend:
-
-  pretrained   Fine-tunes T5-small (60M params, pretrained on real text).
-               RECOMMENDED — pretrained weights already know English, so
-               a few hundred examples is enough to get coherent output.
-               Needs internet to download t5-small the first time (~250MB).
-               Run this on your own machine, not inside a locked-down
-               sandbox — some dev environments block huggingface.co.
-
-  scratch      Trains a small Transformer from random initialization
-               (no pretrained weights at all — this is the approach from
-               your original train_seq2seq.py). No download needed, but
-               expect noticeably more repetitive/generic output at the
-               same dataset size — this is a known, expected trade-off,
-               not a bug. Useful as a comparison point in your report
-               ("pretrained vs. from-scratch at equal data") more than
-               as your actual deployed model.
-
-Usage:
-    python train_feedback_model.py --data ../data/seed_dataset.jsonl --backend pretrained
-    python train_feedback_model.py --data ../data/seed_dataset.jsonl --backend scratch
+train_feedback_model.py — trains a model to generate feedback text.
 """
+
+import os
+import sys
+import ssl
+import importlib.util
+from pathlib import Path
+
+# Disable SSL verification for huggingface downloads when running behind proxies
+ssl._create_default_https_context = ssl._create_unverified_context
+os.environ["CURL_CA_BUNDLE"] = ""
+os.environ["PYTHONHTTPSVERIFY"] = "0"
+
+try:
+    import urllib3
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+    import requests
+    requests.Session.merge_environment_settings = lambda self, url, proxies, stream, verify, cert: {
+        'verify': False, 'proxies': proxies, 'stream': stream, 'cert': cert
+    }
+except Exception:
+    pass
+
+# Fix Windows PyTorch DLL loading issue — must load torch BEFORE numpy/scipy
+if sys.platform == "win32":
+    spec = importlib.util.find_spec("torch")
+    if spec and spec.origin:
+        torch_lib = Path(spec.origin).parent / "lib"
+        if torch_lib.exists():
+            os.environ["PATH"] = str(torch_lib) + os.pathsep + os.environ.get("PATH", "")
+            try:
+                os.add_dll_directory(str(torch_lib))
+            except Exception:
+                pass
+    try:
+        import torch
+    except Exception:
+        pass
 
 import argparse
 import json
-import sys
-from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent / "shared"))
 from metrics import rouge_l
@@ -36,7 +48,7 @@ from metrics import rouge_l
 
 def load_dataset(path: str) -> list[dict]:
     rows = []
-    with open(path) as f:
+    with open(path, encoding="utf-8") as f:
         for line in f:
             line = line.strip()
             if line:
@@ -214,7 +226,7 @@ def _run_smoke_test(train_rows, val_rows, test_rows, out_dir, epochs):
 
     with tempfile.TemporaryDirectory() as tmpdir:
         corpus_path = Path(tmpdir) / "corpus.txt"
-        with open(corpus_path, "w") as f:
+        with open(corpus_path, "w", encoding="utf-8") as f:
             for row in train_rows + val_rows:
                 f.write(format_source(row) + "\n" + format_target(row) + "\n")
 
