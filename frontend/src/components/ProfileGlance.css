@@ -1,0 +1,146 @@
+.glance {
+  padding: 28px;
+  width: 100%;
+  max-width: 420px;
+}
+
+.glance-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent);
+  margin-bottom: 14px;
+}
+
+.glance-stage {
+  position: relative;
+  height: 290px;
+}
+
+/* ---- Resume page wireframe ---- */
+
+.glance-page {
+  position: absolute;
+  top: 24px;
+  left: 0;
+  width: 150px;
+  overflow: hidden;
+  background: var(--surface-sunken);
+  border-radius: var(--radius-md);
+  padding: 14px 12px;
+}
+
+.page-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.page-avatar {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--primary-soft);
+  flex-shrink: 0;
+}
+
+.page-head-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  flex: 1;
+}
+
+.page-line-sm {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--border-strong);
+}
+
+.page-line-sm.muted { background: var(--border); width: 45% !important; }
+.page-line-sm.w-70 { width: 70%; }
+
+.page-body {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.page-line {
+  height: 7px;
+  border-radius: 3px;
+  background: var(--border-strong);
+  transition: opacity 0.3s var(--ease), background-color 0.3s var(--ease);
+}
+
+.page-line.is-done {
+  background: var(--border);
+  opacity: 0.55;
+}
+
+.glance-scan {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 30px;
+  background: linear-gradient(180deg, transparent, var(--accent-wash) 50%, transparent);
+  animation: scan-sweep 0.9s cubic-bezier(0.4, 0, 0.2, 1) 1;
+  pointer-events: none;
+}
+
+@keyframes scan-sweep {
+  from { top: -30px; }
+  to { top: 100%; }
+}
+
+/* ---- Caption ---- */
+
+.stage-caption {
+  position: absolute;
+  top: 0;
+  left: 172px;
+  font-size: 11px;
+  color: var(--text-muted);
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.4s var(--ease), transform 0.4s var(--ease);
+}
+
+.stage-caption.is-in { opacity: 1; transform: translateY(0); }
+
+/* ---- Skill chips dealt out from the page ---- */
+
+.glance-chip {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  padding: 6px 12px;
+  border-radius: 999px;
+  opacity: 0;
+  box-shadow: var(--shadow-card);
+  transform: translate(var(--fx), var(--fy)) scale(0.5) rotate(var(--r, 0deg));
+}
+
+.glance-chip.is-in {
+  animation: chip-deal 0.55s var(--ease) forwards;
+}
+
+@keyframes chip-deal {
+  from {
+    opacity: 0;
+    transform: translate(var(--fx), var(--fy)) scale(0.5) rotate(var(--r, 0deg));
+  }
+  to {
+    opacity: 1;
+    transform: translate(0, 0) scale(1) rotate(var(--r, 0deg));
+  }
+}
+
+.glance-chip.chip-0 { background: var(--accent-soft); color: var(--accent); }
+.glance-chip.chip-1 { background: var(--growth-soft); color: var(--growth); }
+.glance-chip.chip-2 { background: var(--primary-soft); color: var(--primary); }
+.glance-chip.chip-3 { background: var(--warn-soft); color: var(--warn); }

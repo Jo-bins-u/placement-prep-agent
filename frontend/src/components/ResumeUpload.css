@@ -1,0 +1,88 @@
+.upload-wrap { max-width: 720px; }
+
+.upload-heading { max-width: 560px; }
+.upload-sub { margin-bottom: 44px; }
+
+.dropzone {
+  border: 1.5px dashed var(--border-strong);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  padding: 56px 32px;
+  text-align: center;
+  transition: border-color 0.2s var(--ease), background 0.2s var(--ease);
+}
+
+.dropzone.is-dragging {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.dropzone-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent);
+  margin-bottom: 16px;
+}
+
+.dropzone-title { font-size: 17px; font-weight: 500; margin-bottom: 6px; }
+.dropzone-sub { font-size: 13px; color: var(--text-muted); margin-bottom: 18px; }
+
+.dropzone-progress { text-align: left; max-width: 380px; margin: 0 auto; }
+
+.dropzone-filename {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.dropzone-track {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--surface-sunken);
+  overflow: hidden;
+}
+
+.dropzone-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 999px;
+  transition: width 0.15s linear;
+}
+
+.dropzone-status {
+  margin-top: 10px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.extracted {
+  margin-top: 24px;
+  padding: 22px 26px;
+  animation: extracted-in 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes extracted-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.extracted-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+
+.extracted-row:last-of-type { border-bottom: none; }
+
+.extracted-label { color: var(--text-secondary); }
+.extracted-value { font-weight: 600; }
+.extracted-value.is-review { color: var(--warn); font-weight: 600; }
+
+.extracted-reset { margin-top: 18px; }

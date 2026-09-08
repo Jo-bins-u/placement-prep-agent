@@ -1,0 +1,20 @@
+.footer { padding: 32px 0; }
+
+.footer-stripe {
+  display: flex;
+  height: 3px;
+}
+
+.footer-stripe span { flex: 1; }
+.footer-stripe span:nth-child(1) { background: var(--accent); }
+.footer-stripe span:nth-child(2) { background: var(--growth); }
+.footer-stripe span:nth-child(3) { background: var(--warn); }
+
+.footer-inner {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text-muted);
+}

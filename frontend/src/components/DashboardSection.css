@@ -1,0 +1,42 @@
+.dashboard-section { background: var(--surface-sunken); }
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 0.95fr 1.05fr;
+  gap: 64px;
+  align-items: center;
+}
+
+.dashboard-copy .section-heading { max-width: 480px; }
+
+.dashboard-points {
+  margin: 28px 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.dashboard-points li {
+  position: relative;
+  padding-left: 22px;
+  font-size: 15px;
+  color: var(--text-secondary);
+}
+
+.dashboard-points li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 8px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--growth);
+}
+
+@media (max-width: 900px) {
+  .dashboard-grid { grid-template-columns: 1fr; }
+  .dashboard-copy .section-heading { max-width: none; }
+}
