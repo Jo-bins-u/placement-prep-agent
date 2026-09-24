@@ -25,30 +25,40 @@
   </div>
 
   <div class="landing-hero__visual reveal">
-    <div class="story-graph" aria-label="Resume to skill graph">
-      <div class="story-node node-resume">Resume</div>
-      <div class="story-node node-ai">AI</div>
-      <div class="story-node node-profile">Profile</div>
-      <div class="story-node node-practice">Practice</div>
-      <div class="story-node node-gap">Skill Gap</div>
-      <div class="story-node node-improve">Improve</div>
+    <figure class="story-graph" aria-label="How Prepwise turns a resume into an improvement loop: Resume, AI, Profile, Practice, Skill gap, Improve, then back to Practice">
+      <svg class="story-graph__lines" viewBox="0 0 520 420" aria-hidden="true" focusable="false">
+        <defs>
+          <marker id="graph-arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+            <path d="M1 1 L9 5 L1 9 Z" class="graph-arrowhead"/>
+          </marker>
+        </defs>
+        <path class="graph-edge" d="M90 80 L175 80 L260 80" marker-mid="url(#graph-arrow)"/>
+        <path class="graph-edge" d="M260 80 L345 80 L430 80" marker-mid="url(#graph-arrow)"/>
+        <path class="graph-edge" d="M430 80 L430 165 L430 250" marker-mid="url(#graph-arrow)"/>
+        <path class="graph-edge" d="M430 250 L345 295 L260 340" marker-mid="url(#graph-arrow)"/>
+        <path class="graph-edge" d="M260 340 L175 295 L90 250" marker-mid="url(#graph-arrow)"/>
+        <path class="graph-edge graph-edge--loop" d="M90 250 L260 250 L430 250" marker-mid="url(#graph-arrow)"/>
+      </svg>
 
-      <div class="story-line line-one"></div>
-      <div class="story-line line-two"></div>
-      <div class="story-line line-three"></div>
-      <div class="story-line line-four"></div>
-      <div class="story-line line-five"></div>
+      <div class="story-node node-resume" style="--x: 90; --y: 80">Resume</div>
+      <div class="story-node node-ai" style="--x: 260; --y: 80">AI</div>
+      <div class="story-node node-profile" style="--x: 430; --y: 80">Profile</div>
+      <div class="story-node node-practice" style="--x: 430; --y: 250">Practice</div>
+      <div class="story-node node-gap" style="--x: 260; --y: 340">Skill Gap</div>
+      <div class="story-node node-improve" style="--x: 90; --y: 250">Improve</div>
 
-      <div class="flow-card flow-card--resume">
+      <div class="flow-card" style="--x: 90; --y: 165">
+        <span class="flow-card__label">Skills</span>
         <b>Python</b>
         <b>FastAPI</b>
         <b>PostgreSQL</b>
       </div>
-      <div class="flow-card flow-card--project">
+      <div class="flow-card" style="--x: 260; --y: 168">
+        <span class="flow-card__label">Projects</span>
         <b>Distributed Rate Limiter</b>
         <b>ML Internship</b>
       </div>
-    </div>
+    </figure>
   </div>
 </section>
 
@@ -110,7 +120,7 @@
   </div>
 
   <div class="resume-story">
-    <div class="resume-sheet" aria-label="Example resumedocument">
+    <div class="resume-sheet" aria-label="Example resume document">
       <div class="sheet-header">
         <span>Example Resume</span>
         <span>PDF</span>
@@ -173,6 +183,8 @@
       </div>
     </div>
 
+    <div class="personalization-arrow" aria-hidden="true">→</div>
+
     <div class="engine-box">
       <p class="mini-label">LLM personalization engine</p>
       <div class="engine-flow">
@@ -182,6 +194,8 @@
         <span>Target Role</span>
       </div>
     </div>
+
+    <div class="personalization-arrow" aria-hidden="true">→</div>
 
     <div class="generated-question-box">
       <p class="mini-label">Generated question</p>
@@ -193,7 +207,7 @@
   </div>
 </section>
 
-<section class="story-section interview-section reveal">
+<section id="interview" class="story-section interview-section reveal">
   <div class="section-heading-wrap">
     <span class="eyebrow">Interview preparation</span>
     <h2 class="section-title display">Question → answer → evaluation → improvement.</h2>
@@ -222,7 +236,7 @@
   </div>
 </section>
 
-<section class="story-section dsa-section reveal">
+<section id="dsa" class="story-section dsa-section reveal">
   <div class="section-heading-wrap">
     <span class="eyebrow">DSA practice</span>
     <h2 class="section-title display">Practice DSA like a real coding platform.</h2>
@@ -277,13 +291,13 @@
 
   <div class="execution-flow">
     <div class="flow-step">User code</div>
-    <div class="flow-arrow">→</div>
+    <div class="flow-arrow" aria-hidden="true">→</div>
     <div class="flow-step">Secure container</div>
-    <div class="flow-arrow">→</div>
+    <div class="flow-arrow" aria-hidden="true">→</div>
     <div class="flow-step">Test cases</div>
-    <div class="flow-arrow">→</div>
+    <div class="flow-arrow" aria-hidden="true">→</div>
     <div class="flow-step">Runtime + memory</div>
-    <div class="flow-arrow">→</div>
+    <div class="flow-arrow" aria-hidden="true">→</div>
     <div class="flow-step accent">Score</div>
   </div>
 
@@ -324,7 +338,7 @@
   </div>
 </section>
 
-<section class="story-section skill-section reveal">
+<section id="skill-gaps" class="story-section skill-section reveal">
   <div class="section-heading-wrap">
     <span class="eyebrow">Skill gap analysis</span>
     <h2 class="section-title display">Your performance becomes a skill map.</h2>
@@ -358,11 +372,11 @@
 
   <div class="recommendation-box">
     <div class="recommendation-header">
-      <span>Current performance</span>
-      <span>Arrays 82%</span>
-      <span>Trees 51%</span>
-      <span>Graphs 38%</span>
-      <span>DP 27%</span>
+      <span class="recommendation-header__label">Current performance</span>
+      <span class="perf-chip high">Arrays 82%</span>
+      <span class="perf-chip mid">Trees 51%</span>
+      <span class="perf-chip low">Graphs 38%</span>
+      <span class="perf-chip low">DP 27%</span>
     </div>
     <div class="recommendation-callout">
       <p>Recommended next:</p>
@@ -378,14 +392,29 @@
     <h2 class="section-title display">Your preparation loop keeps improving.</h2>
   </div>
 
-  <div class="loop-visual" aria-label="Preparation loop">
-    <div class="loop-node node-a">Profile</div>
-    <div class="loop-node node-b">Practice</div>
-    <div class="loop-node node-c">Evaluate</div>
-    <div class="loop-node node-d">Analyze</div>
-    <div class="loop-node node-e">Recommend</div>
+  <figure class="loop-visual" aria-label="Preparation loop: Profile, Practice, Evaluate, Analyze, Recommend, and back to Profile">
+    <svg class="loop-visual__track" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
+      <defs>
+        <marker id="loop-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+          <path d="M1 1 L9 5 L1 9 Z" class="graph-arrowhead"/>
+        </marker>
+      </defs>
+      <circle cx="50" cy="50" r="36" class="loop-ring"/>
+      <g class="loop-arcs">
+        <path d="M61.72 15.96 A36 36 0 0 1 78.75 28.33" marker-end="url(#loop-arrow)"/>
+        <path d="M85.99 50.63 A36 36 0 0 1 79.49 70.65" marker-end="url(#loop-arrow)"/>
+        <path d="M60.53 84.43 A36 36 0 0 1 39.47 84.43" marker-end="url(#loop-arrow)"/>
+        <path d="M20.51 70.65 A36 36 0 0 1 14.01 50.63" marker-end="url(#loop-arrow)"/>
+        <path d="M21.25 28.33 A36 36 0 0 1 38.28 15.96" marker-end="url(#loop-arrow)"/>
+      </g>
+    </svg>
+    <div class="loop-node" style="--x: 50; --y: 14">Profile</div>
+    <div class="loop-node" style="--x: 84.24; --y: 38.88">Practice</div>
+    <div class="loop-node" style="--x: 71.16; --y: 79.12">Evaluate</div>
+    <div class="loop-node" style="--x: 28.84; --y: 79.12">Analyze</div>
+    <div class="loop-node" style="--x: 15.76; --y: 38.88">Recommend</div>
     <div class="loop-center">Your preparation loop</div>
-  </div>
+  </figure>
 </section>
 
 <section class="story-section architecture-section reveal">
@@ -395,33 +424,45 @@
   </div>
 
   <div class="architecture-flow">
-    <div class="arch-node">Resume</div>
-    <div class="arch-arrow">↓</div>
-    <div class="arch-node">PDF / DOCX extraction</div>
-    <div class="arch-arrow">↓</div>
-    <div class="arch-node">Resume NER</div>
-    <div class="arch-arrow">↓</div>
-    <div class="arch-node">Entity normalization</div>
-    <div class="arch-arrow">↓</div>
-    <div class="arch-node">Candidate profile</div>
-    <div class="arch-arrow">↓</div>
-    <div class="arch-node">LLM personalization</div>
-    <div class="arch-arrow">↓</div>
-    <div class="arch-node">Interview / DSA</div>
-    <div class="arch-arrow">↓</div>
-    <div class="arch-node">Evaluation</div>
-    <div class="arch-arrow">↓</div>
-    <div class="arch-node">Performance database</div>
-    <div class="arch-arrow">↓</div>
-    <div class="arch-node">Skill gap analysis</div>
-    <div class="arch-arrow">↓</div>
-    <div class="arch-node">Recommendations</div>
-    <div class="arch-arrow">↓</div>
-    <div class="arch-node">Dashboard</div>
+    <div class="arch-stage">
+      <p class="mini-label"><span>1</span> Ingest</p>
+      <ol>
+        <li class="arch-node">Resume</li>
+        <li class="arch-node">PDF / DOCX extraction</li>
+        <li class="arch-node">Resume NER</li>
+        <li class="arch-node">Entity normalization</li>
+      </ol>
+    </div>
+    <div class="arch-arrow" aria-hidden="true">→</div>
+    <div class="arch-stage">
+      <p class="mini-label"><span>2</span> Personalize</p>
+      <ol>
+        <li class="arch-node">Candidate profile</li>
+        <li class="arch-node">LLM personalization</li>
+        <li class="arch-node">Interview / DSA</li>
+      </ol>
+    </div>
+    <div class="arch-arrow" aria-hidden="true">→</div>
+    <div class="arch-stage">
+      <p class="mini-label"><span>3</span> Evaluate</p>
+      <ol>
+        <li class="arch-node">Evaluation</li>
+        <li class="arch-node">Performance database</li>
+        <li class="arch-node">Skill gap analysis</li>
+      </ol>
+    </div>
+    <div class="arch-arrow" aria-hidden="true">→</div>
+    <div class="arch-stage">
+      <p class="mini-label"><span>4</span> Guide</p>
+      <ol>
+        <li class="arch-node">Recommendations</li>
+        <li class="arch-node">Dashboard</li>
+      </ol>
+    </div>
   </div>
 </section>
 
-<section class="story-section capabilities-section reveal">
+<section id="capabilities" class="story-section capabilities-section reveal">
   <div class="section-heading-wrap">
     <span class="eyebrow">Product capabilities</span>
     <h2 class="section-title display">Not just a question generator. A preparation system.</h2>
@@ -472,57 +513,70 @@
   <h2 class="section-title display">Your preparation should know you.</h2>
   <p>Upload your resume and let Prepwise build your personalized preparation path.</p>
 
-  <div class="cta-row cta-row--full">
-    <a href="#resume-upload" class="btn btn-primary">Upload your resume</a>
-    <a href="#how-it-works" class="btn btn-secondary">Explore the platform</a>
-  </div>
-
-  <form action="{{ url_for('upload') }}" method="post" enctype="multipart/form-data" class="landing-upload-form">
-    <label for="resume">Choose a resume</label>
-    <input id="resume" type="file" name="resume" accept=".pdf,.docx" required>
+  <form action="{{ url_for('upload') }}" method="post" enctype="multipart/form-data" class="landing-upload-form" data-busy-label="Analyzing resume…">
+    <label for="resume" class="file-drop">
+      <span class="file-drop__title">Choose a resume</span>
+      <span class="file-drop__hint" id="resume-file-name">PDF or DOCX · click to browse</span>
+      <input id="resume" type="file" name="resume" accept=".pdf,.docx" required aria-describedby="resume-file-name">
+    </label>
     <button type="submit" class="btn btn-primary">Get started</button>
   </form>
 </section>
 
 <footer class="site-footer reveal">
   <div>
-    <div class="brand-block display"><span class="brand-mark" aria-hidden="true"></span><span>Prepwise</span></div>
+    <a href="{{ url_for('home') }}" class="brand-block display"><span class="brand-mark" aria-hidden="true"></span><span>Prepwise</span></a>
     <p>AI-powered personalized placement preparation.</p>
   </div>
 
   <nav aria-label="Footer navigation">
-    <a href="#">Dashboard</a>
-    <a href="#">Practice</a>
-    <a href="#">Interview</a>
-    <a href="#">DSA</a>
-    <a href="#">Progress</a>
-    <a href="#">Profile</a>
+    <a href="#how-it-works">How it works</a>
+    <a href="#interview">Interview</a>
+    <a href="#dsa">DSA</a>
+    <a href="#skill-gaps">Skill gaps</a>
+    <a href="#capabilities">Capabilities</a>
+    <a href="#resume-upload">Get started</a>
   </nav>
 
   <p class="footer-copy">Intelligent AI-Based System for Personalized Placement Preparation and Skill Gap Analysis</p>
 </footer>
 
+{% endblock %}
+
+{% block scripts %}
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      document.querySelectorAll('.reveal').forEach(function (el) {
-        el.classList.add('visible');
-      });
-      return;
+  (function () {
+    var reveals = document.querySelectorAll('.reveal');
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce || !('IntersectionObserver' in window)) {
+      reveals.forEach(function (el) { el.classList.add('visible'); });
+    } else {
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.12 });
+      reveals.forEach(function (el) { observer.observe(el); });
     }
 
-    const observer = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry) {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
-          observer.unobserve(entry.target);
-        }
+    // Reveal the target section immediately when jumping via an in-page link.
+    document.querySelectorAll('a[href^="#"]').forEach(function (link) {
+      link.addEventListener('click', function () {
+        var target = document.querySelector(link.getAttribute('href'));
+        if (target) target.classList.add('visible');
       });
-    }, { threshold: 0.12 });
-
-    document.querySelectorAll('.reveal').forEach(function (el) {
-      observer.observe(el);
     });
-  });
+
+    var input = document.getElementById('resume');
+    var hint = document.getElementById('resume-file-name');
+    input.addEventListener('change', function () {
+      var file = input.files && input.files[0];
+      hint.textContent = file ? file.name : 'PDF or DOCX · click to browse';
+      input.closest('.file-drop').classList.toggle('has-file', !!file);
+    });
+  })();
 </script>
 {% endblock %}

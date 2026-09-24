@@ -247,8 +247,8 @@ def create_user(email: str, password_hash: str) -> int:
         "INSERT INTO app_users (email, password_hash, created_at) VALUES (%s, %s, %s) RETURNING id",
         (email, password_hash, datetime.utcnow().isoformat())
     )
+    user_id = cur.fetchone()["id"]  # fetch before commit (SQLite can't commit mid-statement)
     conn.commit()
-    user_id = cur.fetchone()["id"]
     conn.close()
     return user_id
 
@@ -308,8 +308,8 @@ def save_candidate(user_id: int, profile) -> int:
         (user_id, profile.contact.name, profile.contact.email, profile.contact.phone,
          profile.to_json(), datetime.utcnow().isoformat())
     )
+    candidate_id = cur.fetchone()["id"]  # fetch before commit (SQLite can't commit mid-statement)
     conn.commit()
-    candidate_id = cur.fetchone()["id"]
     conn.close()
     return candidate_id
 

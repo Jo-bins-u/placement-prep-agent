@@ -1,23 +1,42 @@
 {% extends "base.html" %}
+{% block title %}Result - Prepwise{% endblock %}
+{% block nav_practice %}active{% endblock %}
 {% block content %}
-<div class="topbar">
-  <h1 class="display">Result</h1>
-  <p>{{ question.topic }} · {{ question.difficulty }}</p>
-</div>
+{% set tone = 'success' if score >= 75 else ('warning' if score >= 40 else 'danger') %}
+<div class="submission-shell">
+  <section class="card result-hero">
+    <div class="result-score">
+      <p class="eyebrow">Answer evaluated</p>
+      <h1 class="display">{{ score|round|int }} / 100</h1>
+    </div>
+    <div class="result-status">
+      <span class="status-pill {{ tone }}">{{ 'Strong answer' if tone == 'success' else ('Partially correct' if tone == 'warning' else 'Needs work') }}</span>
+      <p>{{ question.topic|topic }} · {{ question.difficulty|title }}</p>
+    </div>
+  </section>
 
-<div class="card result-card">
-  <div class="score-badge {{ 'good' if score >= 75 else ('mid' if score >= 40 else 'low') }}">{{ score }}%</div>
-  <p class="feedback-text">{{ feedback }}</p>
+  <section class="card panel-block">
+    <div class="score-track" aria-hidden="true"><span class="{{ tone }}" style="width: {{ [[score, 0]|max, 100]|min }}%"></span></div>
 
-  <p style="font-size:13px; color:var(--muted); margin-bottom:6px;">Question:</p>
-  <p style="font-size:14px; margin-bottom:20px;">{{ question.prompt }}</p>
+    <div class="result-detail">
+      <p class="eyebrow">Feedback</p>
+      <p class="feedback-copy">{{ feedback }}</p>
+    </div>
 
-  <p style="font-size:13px; color:var(--muted); margin-bottom:6px;">Your answer:</p>
-  <p style="font-size:14px; margin-bottom:24px; white-space:pre-wrap;">{{ answer_text }}</p>
+    <div class="result-detail">
+      <p class="eyebrow">Question</p>
+      <p class="result-text">{{ question.prompt }}</p>
+    </div>
 
-  <div style="display:flex; gap:12px;">
-    <a href="{{ url_for('practice', candidate_id=candidate_id) }}" class="btn">Next question</a>
-    <a href="{{ url_for('dashboard', candidate_id=candidate_id) }}" class="btn secondary">Back to dashboard</a>
+    <div class="result-detail">
+      <p class="eyebrow">Your answer</p>
+      <p class="result-text answer-text">{{ answer_text or '—' }}</p>
+    </div>
+  </section>
+
+  <div class="action-row">
+    <a href="{{ url_for('practice', candidate_id=candidate_id) }}" class="btn btn-primary">Next question</a>
+    <a href="{{ url_for('dashboard', candidate_id=candidate_id) }}" class="btn btn-ghost">Back to dashboard</a>
   </div>
 </div>
 {% endblock %}

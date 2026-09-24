@@ -1,11 +1,21 @@
 {% extends "base.html" %}
+{% block title %}Dashboard - Prepwise{% endblock %}
 {% block nav_dashboard %}active{% endblock %}
 {% block content %}
+{% set contact = profile.contact or {} %}
+{% set skills = profile.skills or [] %}
+{% set projects = profile.projects or [] %}
+{% set education = profile.education or [] %}
+{% set certifications = profile.certifications or [] %}
+{% set profile_sections = [contact.name, contact.email, contact.phone, education, skills, projects] %}
+{% set filled_sections = profile_sections|select|list|length %}
+{% set completeness = (filled_sections * 100 / profile_sections|length)|round|int %}
+{% set interview_avg = ((attempts|sum(attribute='score')) / (attempts|length))|round(1) if attempts else 0 %}
 <div class="dashboard-shell">
   <section class="welcome-panel card">
     <div>
       <p class="eyebrow">Placement dashboard</p>
-      <h1 class="display">Good morning, {{ profile.contact.name or "Candidate" }}</h1>
+      <h1 class="display">Welcome back, {{ contact.name or "Candidate" }}</h1>
       <p class="subtitle">Here’s your placement preparation progress.</p>
     </div>
     <div class="cta-row">
@@ -17,23 +27,23 @@
   <section class="metrics-grid">
     <article class="metric-card card">
       <span class="metric-label">Profile completeness</span>
-      <strong class="metric-value">{{ (profile.skills|length + profile.projects|length) * 5 if profile.skills or profile.projects else 70 }}%</strong>
-      <span class="metric-foot">{{ profile.skills|length + profile.projects|length }} profile signals</span>
+      <strong class="metric-value">{{ completeness }}%</strong>
+      <span class="metric-foot">{{ filled_sections }} of {{ profile_sections|length }} profile sections filled</span>
     </article>
     <article class="metric-card card">
       <span class="metric-label">Overall practice</span>
       <strong class="metric-value">{{ avg_score }}%</strong>
-      <span class="metric-foot">Across recent attempts</span>
+      <span class="metric-foot">Across all practice topics</span>
     </article>
     <article class="metric-card card">
       <span class="metric-label">DSA score</span>
       <strong class="metric-value">{{ dsa_performance.average_score }}%</strong>
-      <span class="metric-foot">{{ dsa_performance.attempted }} problems attempted</span>
+      <span class="metric-foot">{{ dsa_performance.attempted }} problem{{ '' if dsa_performance.attempted == 1 else 's' }} attempted</span>
     </article>
     <article class="metric-card card">
       <span class="metric-label">Interview score</span>
-      <strong class="metric-value">{{ (attempts|sum(attribute='score') / attempts|length) if attempts else 0 }}%</strong>
-      <span class="metric-foot">Based on your latest answers</span>
+      <strong class="metric-value">{{ interview_avg }}%</strong>
+      <span class="metric-foot">{{ attempts|length }} answer{{ '' if attempts|length == 1 else 's' }} evaluated</span>
     </article>
   </section>
 
@@ -45,18 +55,18 @@
             <p class="eyebrow">Skill performance</p>
             <h2>Coverage by skill</h2>
           </div>
-          <a href="{{ url_for('practice', candidate_id=candidate['id']) }}" class="link-button">View all</a>
+          <a href="{{ url_for('practice', candidate_id=candidate['id']) }}" class="link-button">Practice</a>
         </div>
 
         {% if topic_scores %}
         <div class="skill-list">
           {% for topic, score in topic_scores.items() %}
-          <div class="skill-row">
+          <div class="skill-progress">
             <div class="skill-meta">
-              <span>{{ topic }}</span>
+              <span>{{ topic|topic }}</span>
               <strong>{{ score }}%</strong>
             </div>
-            <div class="progress-bar"><span style="width: {{ score }}%"></span></div>
+            <div class="progress-bar" role="progressbar" aria-label="{{ topic|topic }}" aria-valuenow="{{ score }}" aria-valuemin="0" aria-valuemax="100"><span class="{{ 'low' if score < 50 else ('mid' if score < 75 else 'high') }}" style="width: {{ [[score, 0]|max, 100]|min }}%"></span></div>
           </div>
           {% endfor %}
         </div>
@@ -102,7 +112,7 @@
           {% for topic in weak_topics %}
           <div class="focus-item">
             <div>
-              <h3>{{ topic }}</h3>
+              <h3>{{ topic|topic }}</h3>
               <p>{{ topic_scores[topic] }}% current proficiency</p>
             </div>
             <a href="{{ url_for('practice', candidate_id=candidate['id']) }}" class="btn btn-ghost small">Practice</a>
@@ -110,7 +120,7 @@
           {% endfor %}
         </div>
         {% else %}
-        <p class="empty-hint">You are in a strong rhythm. Keep practicing to maintain momentum.</p>
+        <p class="empty-hint">{% if topic_scores %}No weak areas right now — you're in a strong rhythm. Keep practicing to maintain momentum.{% else %}Weak areas will show up here once you've answered a few questions.{% endif %}</p>
         {% endif %}
       </article>
 
@@ -130,7 +140,7 @@
         {% if dsa_performance.topic_scores %}
         <div class="mini-chips">
           {% for topic, score in dsa_performance.topic_scores.items() %}
-          <span class="mini-chip">{{ topic }} {{ score }}%</span>
+          <span class="mini-chip">{{ topic|topic }} · {{ score }}%</span>
           {% endfor %}
         </div>
         {% else %}
@@ -151,11 +161,11 @@
       {% if resume_feedback %}
       <div class="score-ring">
         <strong>{{ resume_feedback.overall_score }}</strong>
-        <span>overall score</span>
+        <span>out of 100</span>
       </div>
       <div class="mini-chips">
         {% for category, score in resume_feedback.category_scores.items() %}
-        <span class="mini-chip">{{ category }} {{ score }}</span>
+        <span class="mini-chip {{ 'low' if score < 50 else '' }}">{{ category|topic }} · {{ score }}</span>
         {% endfor %}
       </div>
       <p class="resume-summary">{{ resume_feedback.summary }}</p>
@@ -204,14 +214,14 @@
         </div>
       </div>
       <div class="profile-summary">
-        <div><span>Projects</span><strong>{{ profile.projects|length }}</strong></div>
-        <div><span>Skills</span><strong>{{ profile.skills|length }}</strong></div>
-        <div><span>Education</span><strong>{{ profile.education|length if profile.education else 0 }}</strong></div>
-        <div><span>Certifications</span><strong>{{ profile.certifications|length if profile.certifications else 0 }}</strong></div>
+        <div><span>Projects</span><strong>{{ projects|length }}</strong></div>
+        <div><span>Skills</span><strong>{{ skills|length }}</strong></div>
+        <div><span>Education</span><strong>{{ education|length }}</strong></div>
+        <div><span>Certifications</span><strong>{{ certifications|length }}</strong></div>
       </div>
-      {% if profile.projects %}
+      {% if projects %}
       <div class="project-list">
-        {% for proj in profile.projects[:2] %}
+        {% for proj in projects[:2] %}
         <div class="project-card">
           <h3>{{ proj.title or 'Untitled project' }}</h3>
           {% if proj.description %}<p>{{ proj.description }}</p>{% endif %}
@@ -224,6 +234,9 @@
           {% endif %}
         </div>
         {% endfor %}
+        {% if projects|length > 2 %}
+        <a href="{{ url_for('verify_profile', candidate_id=candidate['id']) }}" class="link-button">+ {{ projects|length - 2 }} more project{{ '' if projects|length == 3 else 's' }} · Edit profile</a>
+        {% endif %}
       </div>
       {% else %}
       <p class="empty-hint">No project data detected yet. Upload a resume with a projects section to personalize your dashboard.</p>

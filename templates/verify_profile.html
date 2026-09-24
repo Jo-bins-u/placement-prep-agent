@@ -1,34 +1,22 @@
 {% extends "base.html" %}
 {% block title %}Verify Profile - Prepwise{% endblock %}
-{% block nav_upload %}active{% endblock %}
 
 {% block content %}
-
-<!-- Step indicator banner -->
-<div class="verify-step-banner">
-  <div class="step-pill">Step 2 of 2</div>
-  <span class="step-label">Review and confirm the details we extracted from your resume before we build your dashboard.</span>
-</div>
-
 <section class="verify-section">
+  <!-- Step indicator banner (inside the section so it lines up with the cards) -->
+  <div class="verify-step-banner">
+    <div class="step-pill">Step 2 of 2</div>
+    <span class="step-label">Review and confirm the details we extracted from your resume before we build your dashboard.</span>
+  </div>
+
   <div class="verify-header">
     <h1 class="display">Verify your profile</h1>
     <p class="subtitle">Edit anything that looks off — this shapes every question and recommendation you'll get.</p>
   </div>
 
-  <!-- Flash messages with category styling -->
-  {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-      <div class="flash-messages" style="margin-bottom: 24px;">
-        {% for category, message in messages %}
-          <div class="flash-message flash-{{ category }}">{{ message }}</div>
-        {% endfor %}
-      </div>
-    {% endif %}
-  {% endwith %}
 
   <form method="post" action="{{ url_for('verify_profile', candidate_id=candidate.id) }}"
-        class="verify-form" id="verify-form" onsubmit="handleVerifySubmit(event)">
+        class="verify-form" id="verify-form" data-busy-label="Saving…">
     
     <!-- Contact Info -->
     <article class="card verify-card">
@@ -75,7 +63,7 @@
                 <input type="text" name="edu_field_{{ loop.index0 }}" value="{{ edu.field_of_study or '' }}">
               </div>
             </div>
-            <button type="button" class="btn-icon text-red" title="Remove"
+            <button type="button" class="btn-icon text-red" title="Remove" aria-label="Remove education entry"
                     onclick="this.closest('.education-item').remove(); checkEmptyState('education-container', 'edu-empty')">🗑</button>
           </div>
           {% endfor %}
@@ -94,8 +82,8 @@
         <h2>Skills</h2>
       </div>
       <div class="form-group">
-        <label>Comma-separated list</label>
-        <textarea name="skills" rows="3" placeholder="Python, Machine Learning, React, PostgreSQL…">{{ profile.skills | join(', ') }}</textarea>
+        <label for="skills">Comma-separated list</label>
+        <textarea id="skills" name="skills" rows="3" placeholder="Python, Machine Learning, React, PostgreSQL…">{{ (profile.skills or []) | join(', ') }}</textarea>
       </div>
     </article>
 
@@ -119,7 +107,7 @@
             </div>
             <div class="form-group">
               <label>Tech Stack (comma-separated)</label>
-              <input type="text" name="proj_tech_{{ loop.index0 }}" value="{{ proj.tech_stack | join(', ') }}">
+              <input type="text" name="proj_tech_{{ loop.index0 }}" value="{{ (proj.tech_stack or []) | join(', ') }}">
             </div>
             <div class="item-actions">
               <button type="button" class="btn btn-ghost small text-red"
@@ -145,13 +133,13 @@
 </section>
 
 <script>
-  let eduCount = {{ profile.education | length }};
-  let projCount = {{ profile.projects | length }};
+  let eduCount = {{ (profile.education or []) | length }};
+  let projCount = {{ (profile.projects or []) | length }};
 
   function checkEmptyState(containerId, emptyId) {
     const container = document.getElementById(containerId);
     const existingEmpty = document.getElementById(emptyId);
-    const hasItems = container.querySelectorAll('[class$="-item"]').length > 0;
+    const hasItems = container.querySelector('.education-item, .project-item') !== null;
 
     if (!hasItems && !existingEmpty) {
       const label = containerId === 'education-container' ? 'education entries' : 'projects';
@@ -160,7 +148,7 @@
       div.className = 'empty-state';
       div.id = emptyId;
       div.innerHTML = `<span>No ${label} yet.</span>
-        <button type="button" class="btn btn-ghost small" onclick="${addFn}">+ Add entry</button>`;
+        <button type="button" class="btn btn-ghost small" onclick="${addFn}">+ Add ${containerId === 'education-container' ? 'entry' : 'project'}</button>`;
       container.appendChild(div);
     }
   }
@@ -181,10 +169,11 @@
           <div class="form-group"><label>Degree</label><input type="text" name="edu_degree_${eduCount}"></div>
           <div class="form-group"><label>Field of Study</label><input type="text" name="edu_field_${eduCount}"></div>
         </div>
-        <button type="button" class="btn-icon text-red" title="Remove"
+        <button type="button" class="btn-icon text-red" title="Remove" aria-label="Remove education entry"
                 onclick="this.closest('.education-item').remove(); checkEmptyState('education-container', 'edu-empty')">🗑</button>
       </div>`;
     container.insertAdjacentHTML('beforeend', html);
+    container.lastElementChild.querySelector('input').focus();
     eduCount++;
   }
 
@@ -202,14 +191,8 @@
         </div>
       </div>`;
     container.insertAdjacentHTML('beforeend', html);
+    container.lastElementChild.querySelector('input').focus();
     projCount++;
-  }
-
-  function handleVerifySubmit(e) {
-    const btn = document.getElementById('verify-submit-btn');
-    btn.disabled = true;
-    btn.textContent = 'Saving…';
-    // Allow the form to submit normally
   }
 </script>
 {% endblock %}

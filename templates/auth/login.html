@@ -1,6 +1,5 @@
 {% extends "base.html" %}
 {% block title %}Log in - Prepwise{% endblock %}
-{% block nav_upload %}active{% endblock %}
 
 {% block content %}
 <section class="auth-section">
@@ -10,17 +9,8 @@
       <p class="subtitle">Log in to continue your preparation.</p>
     </div>
 
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        <div class="flash-messages">
-          {% for category, message in messages %}
-            <div class="flash-message flash-{{ category }}">{{ message }}</div>
-          {% endfor %}
-        </div>
-      {% endif %}
-    {% endwith %}
 
-    <form method="post" action="{{ url_for('login') }}" class="auth-form">
+    <form method="post" action="{{ url_for('login') }}" class="auth-form" data-busy-label="Logging in…">
       <input type="hidden" name="next" value="{{ next }}">
 
       <div class="form-group">
@@ -30,15 +20,9 @@
       <div class="form-group">
         <label for="password">Password</label>
         <input type="password" id="password" name="password" required placeholder="••••••••" autocomplete="current-password">
-        <div class="auth-field-footer">
-          <a href="#" class="link-button small" tabindex="-1">Forgot password?</a>
-        </div>
       </div>
       
-      <button type="submit" class="btn btn-primary full-width" id="login-submit-btn"
-              onclick="this.disabled=true; this.textContent='Logging in…'; this.closest('form').submit();">
-        Log in
-      </button>
+      <button type="submit" class="btn btn-primary full-width" id="login-submit-btn">Log in</button>
     </form>
 
     <div class="auth-footer">

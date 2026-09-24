@@ -46,6 +46,33 @@ login_manager.login_view = "login"
 def load_user(user_id):
     return auth.User.get(int(user_id))
 
+@app.template_filter("topic")
+def format_topic(value):
+    """Display helper: 'dynamic_programming' -> 'Dynamic Programming', but keep 'SQL' / 'System Design' as-is."""
+    text = str(value or "").replace("_", " ").strip()
+    return text.title() if text.islower() else text
+
+
+@app.template_filter("as_json")
+def as_json(value):
+    """Readable JSON for display (autoescaped by Jinja, unlike |tojson which emits \\u0027 etc.)."""
+    try:
+        return json.dumps(value, ensure_ascii=False)
+    except (TypeError, ValueError):
+        return str(value)
+
+
+@app.context_processor
+def static_version():
+    """Cache-bust static assets: the URL changes whenever style.css changes."""
+    def asset_version(filename):
+        try:
+            return int((Path(app.static_folder) / filename).stat().st_mtime)
+        except OSError:
+            return 0
+    return {"asset_version": asset_version}
+
+
 UPLOAD_DIR = Path(__file__).parent / "uploads"
 UPLOAD_DIR.mkdir(exist_ok=True)
 (Path(__file__).parent / "data").mkdir(exist_ok=True)
@@ -489,6 +516,7 @@ def dsa_practice(candidate_id):
         "dsa_practice.html",
         candidate_id=candidate_id,
         problem=None,
+        dsa_performance=db.get_dsa_performance(candidate_id),
         candidate_id_for_nav=candidate_id,
     )
 
@@ -514,6 +542,7 @@ def generate_dsa(candidate_id):
         "dsa_practice.html",
         candidate_id=candidate_id,
         problem=problem_for_view,
+        dsa_performance=db.get_dsa_performance(candidate_id),
         candidate_id_for_nav=candidate_id,
     )
 

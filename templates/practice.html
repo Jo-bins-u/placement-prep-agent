@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% block title %}Practice - Prepwise{% endblock %}
 {% block nav_practice %}active{% endblock %}
 {% block content %}
 <div class="practice-shell">
@@ -12,17 +13,17 @@
 
   <section class="mode-grid">
     <article class="mode-card card">
-      <div class="mode-icon blue">💬</div>
+      <div class="mode-icon blue" aria-hidden="true">💬</div>
       <h2>Interview</h2>
       <p>Practice questions based on your resume, projects, and skill profile.</p>
       <div class="mode-footer">
         <span>Resume-based</span>
-        <a href="{{ url_for('practice', candidate_id=candidate_id) }}" class="btn btn-primary small">Start Interview</a>
+        <a href="#current-question" class="btn btn-primary small">Start interview</a>
       </div>
     </article>
 
     <article class="mode-card card">
-      <div class="mode-icon green">💻</div>
+      <div class="mode-icon green" aria-hidden="true">💻</div>
       <h2>DSA</h2>
       <p>Solve coding problems with a professional editor, sample tests, and clear feedback.</p>
       <div class="mode-footer">
@@ -32,42 +33,44 @@
     </article>
 
     <article class="mode-card card">
-      <div class="mode-icon amber">🧠</div>
+      <div class="mode-icon amber" aria-hidden="true">🧠</div>
       <h2>Technical</h2>
       <p>Strengthen core concepts tied to the topics you are currently underperforming in.</p>
       <div class="mode-footer">
         <span>Skill gap</span>
-        <a href="{{ url_for('practice', candidate_id=candidate_id) }}" class="btn btn-primary small">Start Practice</a>
+        <a href="#current-question" class="btn btn-primary small">Start practice</a>
       </div>
     </article>
   </section>
 
-  <section class="card question-card">
+  <section class="card question-card" id="current-question">
     <div class="question-header">
       <div>
         <p class="eyebrow">Current recommendation</p>
-        <h2>{{ question.topic }} · {{ question.difficulty }}</h2>
+        <h2>{{ question.topic|topic }} · {{ question.difficulty|title }}</h2>
       </div>
-      <span class="badge-soft">{{ question.type }}</span>
+      <span class="badge-soft">{{ 'Multiple choice' if question.type == 'mcq' else question.type|replace('_', ' ') }}</span>
     </div>
 
     <p class="question-prompt">{{ question.prompt }}</p>
 
-    <form action="{{ url_for('submit_answer', candidate_id=candidate_id) }}" method="post" class="answer-form">
+    <form action="{{ url_for('submit_answer', candidate_id=candidate_id) }}" method="post" class="answer-form" data-busy-label="Evaluating…">
       <input type="hidden" name="question_id" value="{{ question.id }}">
       <input type="hidden" name="question_json" value="{{ question_json | e }}">
 
       {% if question.type == "mcq" %}
-        <div class="mcq-options">
+        <fieldset class="mcq-options">
+          <legend class="visually-hidden">Choose one answer</legend>
           {% for opt in question.options %}
           <label>
             <input type="radio" name="answer_text" value="{{ opt }}" required>
             <span>{{ opt }}</span>
           </label>
           {% endfor %}
-        </div>
+        </fieldset>
       {% else %}
-        <textarea name="answer_text" placeholder="Type your answer here..." required></textarea>
+        <label for="answer_text" class="visually-hidden">Your answer</label>
+        <textarea id="answer_text" name="answer_text" rows="7" placeholder="Type your answer here…" required></textarea>
       {% endif %}
 
       <div class="submit-row">
