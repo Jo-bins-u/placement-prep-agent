@@ -1,0 +1,215 @@
+{% extends "base.html" %}
+{% block title %}Verify Profile - Prepwise{% endblock %}
+{% block nav_upload %}active{% endblock %}
+
+{% block content %}
+
+<!-- Step indicator banner -->
+<div class="verify-step-banner">
+  <div class="step-pill">Step 2 of 2</div>
+  <span class="step-label">Review and confirm the details we extracted from your resume before we build your dashboard.</span>
+</div>
+
+<section class="verify-section">
+  <div class="verify-header">
+    <h1 class="display">Verify your profile</h1>
+    <p class="subtitle">Edit anything that looks off — this shapes every question and recommendation you'll get.</p>
+  </div>
+
+  <!-- Flash messages with category styling -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="flash-messages" style="margin-bottom: 24px;">
+        {% for category, message in messages %}
+          <div class="flash-message flash-{{ category }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <form method="post" action="{{ url_for('verify_profile', candidate_id=candidate.id) }}"
+        class="verify-form" id="verify-form" onsubmit="handleVerifySubmit(event)">
+    
+    <!-- Contact Info -->
+    <article class="card verify-card">
+      <div class="card-header">
+        <h2>Contact Information</h2>
+      </div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="contact_name">Full Name</label>
+          <input type="text" id="contact_name" name="contact_name" value="{{ profile.contact.name or '' }}" required>
+        </div>
+        <div class="form-group">
+          <label for="contact_email">Email</label>
+          <input type="email" id="contact_email" name="contact_email" value="{{ profile.contact.email or '' }}" required>
+        </div>
+        <div class="form-group">
+          <label for="contact_phone">Phone</label>
+          <input type="text" id="contact_phone" name="contact_phone" value="{{ profile.contact.phone or '' }}">
+        </div>
+      </div>
+    </article>
+
+    <!-- Education -->
+    <article class="card verify-card">
+      <div class="card-header">
+        <h2>Education</h2>
+        <button type="button" class="btn btn-ghost small" onclick="addEducation()">+ Add</button>
+      </div>
+      <div id="education-container" class="list-container">
+        {% if profile.education %}
+          {% for edu in profile.education %}
+          <div class="education-item item-row">
+            <div class="form-grid compact">
+              <div class="form-group">
+                <label>Institution</label>
+                <input type="text" name="edu_institution_{{ loop.index0 }}" value="{{ edu.institution or '' }}">
+              </div>
+              <div class="form-group">
+                <label>Degree</label>
+                <input type="text" name="edu_degree_{{ loop.index0 }}" value="{{ edu.degree or '' }}">
+              </div>
+              <div class="form-group">
+                <label>Field of Study</label>
+                <input type="text" name="edu_field_{{ loop.index0 }}" value="{{ edu.field_of_study or '' }}">
+              </div>
+            </div>
+            <button type="button" class="btn-icon text-red" title="Remove"
+                    onclick="this.closest('.education-item').remove(); checkEmptyState('education-container', 'edu-empty')">🗑</button>
+          </div>
+          {% endfor %}
+        {% else %}
+          <div class="empty-state" id="edu-empty">
+            <span>No education entries yet.</span>
+            <button type="button" class="btn btn-ghost small" onclick="addEducation()">+ Add entry</button>
+          </div>
+        {% endif %}
+      </div>
+    </article>
+
+    <!-- Skills -->
+    <article class="card verify-card">
+      <div class="card-header">
+        <h2>Skills</h2>
+      </div>
+      <div class="form-group">
+        <label>Comma-separated list</label>
+        <textarea name="skills" rows="3" placeholder="Python, Machine Learning, React, PostgreSQL…">{{ profile.skills | join(', ') }}</textarea>
+      </div>
+    </article>
+
+    <!-- Projects -->
+    <article class="card verify-card">
+      <div class="card-header">
+        <h2>Projects</h2>
+        <button type="button" class="btn btn-ghost small" onclick="addProject()">+ Add</button>
+      </div>
+      <div id="projects-container" class="list-container">
+        {% if profile.projects %}
+          {% for proj in profile.projects %}
+          <div class="project-item item-card">
+            <div class="form-group">
+              <label>Title</label>
+              <input type="text" name="proj_title_{{ loop.index0 }}" value="{{ proj.title or '' }}">
+            </div>
+            <div class="form-group">
+              <label>Description</label>
+              <textarea name="proj_desc_{{ loop.index0 }}" rows="2">{{ proj.description or '' }}</textarea>
+            </div>
+            <div class="form-group">
+              <label>Tech Stack (comma-separated)</label>
+              <input type="text" name="proj_tech_{{ loop.index0 }}" value="{{ proj.tech_stack | join(', ') }}">
+            </div>
+            <div class="item-actions">
+              <button type="button" class="btn btn-ghost small text-red"
+                      onclick="this.closest('.project-item').remove(); checkEmptyState('projects-container', 'proj-empty')">Remove</button>
+            </div>
+          </div>
+          {% endfor %}
+        {% else %}
+          <div class="empty-state" id="proj-empty">
+            <span>No projects yet.</span>
+            <button type="button" class="btn btn-ghost small" onclick="addProject()">+ Add project</button>
+          </div>
+        {% endif %}
+      </div>
+    </article>
+
+    <div class="submit-bar">
+      <button type="submit" class="btn btn-primary large" id="verify-submit-btn">
+        Save &amp; Continue to Dashboard →
+      </button>
+    </div>
+  </form>
+</section>
+
+<script>
+  let eduCount = {{ profile.education | length }};
+  let projCount = {{ profile.projects | length }};
+
+  function checkEmptyState(containerId, emptyId) {
+    const container = document.getElementById(containerId);
+    const existingEmpty = document.getElementById(emptyId);
+    const hasItems = container.querySelectorAll('[class$="-item"]').length > 0;
+
+    if (!hasItems && !existingEmpty) {
+      const label = containerId === 'education-container' ? 'education entries' : 'projects';
+      const addFn = containerId === 'education-container' ? 'addEducation()' : 'addProject()';
+      const div = document.createElement('div');
+      div.className = 'empty-state';
+      div.id = emptyId;
+      div.innerHTML = `<span>No ${label} yet.</span>
+        <button type="button" class="btn btn-ghost small" onclick="${addFn}">+ Add entry</button>`;
+      container.appendChild(div);
+    }
+  }
+
+  function removeEmptyState(containerId) {
+    const container = document.getElementById(containerId);
+    const emptyEl = container.querySelector('.empty-state');
+    if (emptyEl) emptyEl.remove();
+  }
+
+  function addEducation() {
+    removeEmptyState('education-container');
+    const container = document.getElementById('education-container');
+    const html = `
+      <div class="education-item item-row">
+        <div class="form-grid compact">
+          <div class="form-group"><label>Institution</label><input type="text" name="edu_institution_${eduCount}"></div>
+          <div class="form-group"><label>Degree</label><input type="text" name="edu_degree_${eduCount}"></div>
+          <div class="form-group"><label>Field of Study</label><input type="text" name="edu_field_${eduCount}"></div>
+        </div>
+        <button type="button" class="btn-icon text-red" title="Remove"
+                onclick="this.closest('.education-item').remove(); checkEmptyState('education-container', 'edu-empty')">🗑</button>
+      </div>`;
+    container.insertAdjacentHTML('beforeend', html);
+    eduCount++;
+  }
+
+  function addProject() {
+    removeEmptyState('projects-container');
+    const container = document.getElementById('projects-container');
+    const html = `
+      <div class="project-item item-card">
+        <div class="form-group"><label>Title</label><input type="text" name="proj_title_${projCount}"></div>
+        <div class="form-group"><label>Description</label><textarea name="proj_desc_${projCount}" rows="2"></textarea></div>
+        <div class="form-group"><label>Tech Stack (comma-separated)</label><input type="text" name="proj_tech_${projCount}"></div>
+        <div class="item-actions">
+          <button type="button" class="btn btn-ghost small text-red"
+                  onclick="this.closest('.project-item').remove(); checkEmptyState('projects-container', 'proj-empty')">Remove</button>
+        </div>
+      </div>`;
+    container.insertAdjacentHTML('beforeend', html);
+    projCount++;
+  }
+
+  function handleVerifySubmit(e) {
+    const btn = document.getElementById('verify-submit-btn');
+    btn.disabled = true;
+    btn.textContent = 'Saving…';
+    // Allow the form to submit normally
+  }
+</script>
+{% endblock %}

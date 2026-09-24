@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}Prepwise | Placement Prep Agent{% endblock %}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="site-body">
+  <div class="site-shell">
+    <header class="site-header">
+      <div class="brand-block display" aria-label="Prepwise home">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span>Prepwise</span>
+      </div>
+
+      <nav class="site-nav" aria-label="Primary navigation">
+        <a href="{{ url_for('home') }}" class="{% block nav_upload %}{% endblock %}">Upload Resume</a>
+        {% if candidate_id_for_nav %}
+        <a href="{{ url_for('dashboard', candidate_id=candidate_id_for_nav) }}" class="{% block nav_dashboard %}{% endblock %}">Dashboard</a>
+        <a href="{{ url_for('practice', candidate_id=candidate_id_for_nav) }}" class="{% block nav_practice %}{% endblock %}">Practice</a>
+        <a href="{{ url_for('dsa_practice', candidate_id=candidate_id_for_nav) }}" class="{% block nav_dsa %}{% endblock %}">DSA</a>
+        {% endif %}
+      </nav>
+
+      <div class="header-actions">
+        <button class="icon-button" type="button" aria-label="Search">⌕</button>
+        {% if current_user.is_authenticated %}
+        <span class="user-email">{{ current_user.email }}</span>
+        <a href="{{ url_for('logout') }}" class="btn btn-ghost small">Logout</a>
+        {% if candidate_id_for_nav %}
+        <a href="{{ url_for('practice', candidate_id=candidate_id_for_nav) }}" class="btn btn-primary">Practice now</a>
+        {% endif %}
+        {% else %}
+        <a href="{{ url_for('login') }}" class="btn btn-ghost small">Log in</a>
+        <a href="{{ url_for('register') }}" class="btn btn-primary">Sign up</a>
+        {% endif %}
+      </div>
+    </header>
+
+    <main class="page-main">
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          {% for m in messages %}<div class="flash">{{ m }}</div>{% endfor %}
+        {% endif %}
+      {% endwith %}
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+</body>
+</html>

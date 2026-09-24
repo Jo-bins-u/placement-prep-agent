@@ -1,0 +1,81 @@
+[
+  {"id": "q001", "topic": "Data Structures", "type": "short_answer", "difficulty": "easy",
+   "prompt": "What is the difference between an array and a linked list?",
+   "keywords": ["contiguous", "memory", "pointer", "insertion", "deletion", "random access", "size"]},
+
+  {"id": "q002", "topic": "Data Structures", "type": "short_answer", "difficulty": "medium",
+   "prompt": "Explain how a hash table handles collisions.",
+   "keywords": ["chaining", "open addressing", "linked list", "probing", "load factor", "hash function"]},
+
+  {"id": "q003", "topic": "Dynamic Programming", "type": "short_answer", "difficulty": "medium",
+   "prompt": "Explain the difference between memoization and tabulation.",
+   "keywords": ["top-down", "bottom-up", "recursion", "overlapping subproblems", "table", "cache"]},
+
+  {"id": "q004", "topic": "Dynamic Programming", "type": "short_answer", "difficulty": "hard",
+   "prompt": "How would you approach the 0/1 knapsack problem? Describe your strategy.",
+   "keywords": ["weight", "value", "subset", "table", "capacity", "optimal", "dp array"]},
+
+  {"id": "q005", "topic": "DBMS", "type": "mcq", "difficulty": "easy",
+   "prompt": "Which normal form removes transitive dependency on the primary key?",
+   "options": ["1NF", "2NF", "3NF", "BCNF"], "answer": "3NF"},
+
+  {"id": "q006", "topic": "DBMS", "type": "short_answer", "difficulty": "medium",
+   "prompt": "What is the difference between a clustered and a non-clustered index?",
+   "keywords": ["physical order", "leaf node", "one per table", "pointer", "separate structure"]},
+
+  {"id": "q007", "topic": "OOP", "type": "short_answer", "difficulty": "easy",
+   "prompt": "Explain polymorphism with an example.",
+   "keywords": ["overloading", "overriding", "same interface", "different implementation", "runtime", "compile time"]},
+
+  {"id": "q008", "topic": "OOP", "type": "mcq", "difficulty": "easy",
+   "prompt": "Which OOP principle restricts direct access to an object's internal state?",
+   "options": ["Inheritance", "Encapsulation", "Polymorphism", "Abstraction"], "answer": "Encapsulation"},
+
+  {"id": "q009", "topic": "Operating Systems", "type": "short_answer", "difficulty": "medium",
+   "prompt": "What is a deadlock, and what are the four necessary conditions for it to occur?",
+   "keywords": ["mutual exclusion", "hold and wait", "no preemption", "circular wait", "resource", "process"]},
+
+  {"id": "q010", "topic": "Operating Systems", "type": "short_answer", "difficulty": "medium",
+   "prompt": "Explain the difference between a process and a thread.",
+   "keywords": ["independent memory", "shared memory", "lightweight", "context switch", "address space"]},
+
+  {"id": "q011", "topic": "System Design", "type": "short_answer", "difficulty": "hard",
+   "prompt": "How would you design a URL shortener at a high level?",
+   "keywords": ["hash", "encoding", "database", "collision", "redirect", "cache", "scale", "unique id"]},
+
+  {"id": "q012", "topic": "System Design", "type": "short_answer", "difficulty": "medium",
+   "prompt": "What is the difference between horizontal and vertical scaling?",
+   "keywords": ["more machines", "bigger machine", "distributed", "single server", "load balancer"]},
+
+  {"id": "q013", "topic": "Computer Networks", "type": "short_answer", "difficulty": "medium",
+   "prompt": "Explain the difference between TCP and UDP.",
+   "keywords": ["connection-oriented", "connectionless", "reliable", "unreliable", "handshake", "ordering"]},
+
+  {"id": "q014", "topic": "Computer Networks", "type": "mcq", "difficulty": "easy",
+   "prompt": "Which layer of the OSI model is responsible for routing?",
+   "options": ["Data Link", "Network", "Transport", "Session"], "answer": "Network"},
+
+  {"id": "q015", "topic": "Python", "type": "short_answer", "difficulty": "easy",
+   "prompt": "What is the difference between a list and a tuple in Python?",
+   "keywords": ["mutable", "immutable", "brackets", "parentheses", "performance"]},
+
+  {"id": "q016", "topic": "Python", "type": "short_answer", "difficulty": "medium",
+   "prompt": "Explain how Python's garbage collection works, at a high level.",
+   "keywords": ["reference count", "cyclic", "garbage collector", "memory", "generational"]},
+
+  {"id": "q017", "topic": "Machine Learning", "type": "short_answer", "difficulty": "medium",
+   "prompt": "What is overfitting, and name two ways to reduce it.",
+   "keywords": ["training data", "generalize", "regularization", "cross-validation", "more data", "dropout", "test set"]},
+
+  {"id": "q018", "topic": "Data Structures", "type": "short_answer", "difficulty": "hard",
+   "prompt": "How does a self-balancing binary search tree (e.g. AVL or Red-Black) maintain O(log n) operations?",
+   "keywords": ["rotation", "balance factor", "height", "rebalance", "insertion", "deletion"]},
+
+  {"id": "q019", "topic": "DBMS", "type": "short_answer", "difficulty": "hard",
+   "prompt": "What is a database transaction, and what do the ACID properties guarantee?",
+   "keywords": ["atomicity", "consistency", "isolation", "durability", "commit", "rollback"]},
+
+  {"id": "q020", "topic": "System Design", "type": "short_answer", "difficulty": "medium",
+   "prompt": "What problem does a load balancer solve, and name one algorithm it might use.",
+   "keywords": ["distribute traffic", "round robin", "least connections", "availability", "single point of failure"]}
+]

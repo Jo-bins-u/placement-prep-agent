@@ -1,0 +1,12 @@
+flask
+pdfplumber
+python-docx
+groq
+python-dotenv
+scikit-learn
+joblib
+pyarrow
+psycopg[binary]
+flask-login
+flask-mail
+itsdangerous

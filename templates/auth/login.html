@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Log in - Prepwise{% endblock %}
+{% block nav_upload %}active{% endblock %}
+
+{% block content %}
+<section class="auth-section">
+  <div class="auth-card card">
+    <div class="auth-header">
+      <h1 class="display">Welcome back</h1>
+      <p class="subtitle">Log in to continue your preparation.</p>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flash-messages">
+          {% for category, message in messages %}
+            <div class="flash-message flash-{{ category }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <form method="post" action="{{ url_for('login') }}" class="auth-form">
+      <input type="hidden" name="next" value="{{ next }}">
+
+      <div class="form-group">
+        <label for="email">Email address</label>
+        <input type="email" id="email" name="email" required placeholder="you@example.com" autocomplete="email">
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required placeholder="••••••••" autocomplete="current-password">
+        <div class="auth-field-footer">
+          <a href="#" class="link-button small" tabindex="-1">Forgot password?</a>
+        </div>
+      </div>
+      
+      <button type="submit" class="btn btn-primary full-width" id="login-submit-btn"
+              onclick="this.disabled=true; this.textContent='Logging in…'; this.closest('form').submit();">
+        Log in
+      </button>
+    </form>
+
+    <div class="auth-footer">
+      <p>Don't have an account? <a href="{{ url_for('register') }}" class="link-button">Sign up</a></p>
+    </div>
+  </div>
+</section>
+{% endblock %}

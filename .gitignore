@@ -1,0 +1,47 @@
+# === Secrets — NEVER commit these ===
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+*.spec
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Database / data files
+*.db
+*.sqlite3
+*.parquet
+*.jsonl
+uploads/
+
+# IDE / OS
+.vscode/
+.idea/
+*.DS_Store
+Thumbs.db
+
+# Pytest
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Node (frontend)
+node_modules/
+dist/
+.next/
+
+# Logs
+*.log

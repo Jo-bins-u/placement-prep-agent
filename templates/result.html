@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="topbar">
+  <h1 class="display">Result</h1>
+  <p>{{ question.topic }} · {{ question.difficulty }}</p>
+</div>
+
+<div class="card result-card">
+  <div class="score-badge {{ 'good' if score >= 75 else ('mid' if score >= 40 else 'low') }}">{{ score }}%</div>
+  <p class="feedback-text">{{ feedback }}</p>
+
+  <p style="font-size:13px; color:var(--muted); margin-bottom:6px;">Question:</p>
+  <p style="font-size:14px; margin-bottom:20px;">{{ question.prompt }}</p>
+
+  <p style="font-size:13px; color:var(--muted); margin-bottom:6px;">Your answer:</p>
+  <p style="font-size:14px; margin-bottom:24px; white-space:pre-wrap;">{{ answer_text }}</p>
+
+  <div style="display:flex; gap:12px;">
+    <a href="{{ url_for('practice', candidate_id=candidate_id) }}" class="btn">Next question</a>
+    <a href="{{ url_for('dashboard', candidate_id=candidate_id) }}" class="btn secondary">Back to dashboard</a>
+  </div>
+</div>
+{% endblock %}

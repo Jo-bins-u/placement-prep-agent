@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+{% block nav_dsa %}active{% endblock %}
+{% block content %}
+<div class="dsa-shell">
+  <section class="dsa-header card">
+    <div class="dsa-header-copy">
+      <p class="eyebrow">DSA Practice</p>
+      <h1 class="display">Practice coding problems personalized to your profile and performance.</h1>
+    </div>
+    <div class="stats-row compact dsa-stats">
+      <div><span>Solved</span><strong>13</strong></div>
+      <div><span>Streak</span><strong>4</strong></div>
+      <div><span>Avg</span><strong>78%</strong></div>
+      <div><span>Level</span><strong>Medium</strong></div>
+    </div>
+  </section>
+
+  <section class="card filters-card">
+    <form method="post" action="{{ url_for('generate_dsa', candidate_id=candidate_id) }}" class="filters-form">
+      <label>
+        <span>Difficulty</span>
+        <select name="difficulty">
+          <option value="easy">Easy</option>
+          <option value="medium" selected>Medium</option>
+          <option value="hard">Hard</option>
+        </select>
+      </label>
+      <label>
+        <span>Topic</span>
+        <select name="topic">
+          <option value="arrays">Arrays</option>
+          <option value="strings">Strings</option>
+          <option value="hashing">Hashing</option>
+          <option value="stack">Stack</option>
+          <option value="queue">Queue</option>
+          <option value="graphs">Graphs</option>
+          <option value="trees">Trees</option>
+          <option value="dynamic_programming">Dynamic Programming</option>
+          <option value="sorting">Sorting</option>
+          <option value="searching">Searching</option>
+          <option value="two_pointers">Two Pointers</option>
+          <option value="sliding_window">Sliding Window</option>
+          <option value="greedy">Greedy</option>
+          <option value="linked_lists">Linked Lists</option>
+        </select>
+      </label>
+      <label>
+        <span>Language</span>
+        <select name="language">
+          <option value="Python" selected>Python</option>
+          <option value="Java">Java</option>
+          <option value="C++">C++</option>
+          <option value="JavaScript">JavaScript</option>
+        </select>
+      </label>
+      <button type="submit" class="btn btn-primary">Generate Problem</button>
+    </form>
+  </section>
+
+  {% if problem %}
+  <section class="dsa-workspace">
+    <aside class="card problem-panel">
+      <div class="panel-header problem-header">
+        <div>
+          <p class="eyebrow">Problem</p>
+          <h2>{{ problem.title }}</h2>
+        </div>
+        <div class="tag-row">
+          <span class="badge-soft">{{ problem.difficulty }}</span>
+          <span class="badge-soft secondary">{{ problem.topic }}</span>
+        </div>
+      </div>
+
+      <div class="problem-meta">
+        <span>Read</span>
+        <span>Examples</span>
+        <span>Constraints</span>
+      </div>
+
+      <div class="problem-copy">
+        <p>{{ problem.description }}</p>
+
+        {% if problem.function_signature %}
+        <div class="example-block">
+          <h3>Function contract</h3>
+          <p><strong>{{ problem.function_signature.name }}</strong>({% for parameter in problem.function_signature.parameters %}{{ parameter.name }}{% if not loop.last %}, {% endif %}{% endfor %}) -> {{ problem.function_signature.return_type }}</p>
+        </div>
+        {% endif %}
+
+        {% if problem.examples %}
+        <div class="example-block">
+          <h3>Examples</h3>
+          {% for example in problem.examples %}
+          <div class="example-item">
+            <p><strong>Input:</strong> <code>{{ example.args }}</code></p>
+            <p><strong>Expected output:</strong> <code>{{ example.expected }}</code></p>
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if problem.constraints %}
+        <div class="example-block">
+          <h3>Constraints</h3>
+          <ul>
+            {% for constraint in problem.constraints %}
+            <li>{{ constraint }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% endif %}
+      </div>
+    </aside>
+
+    <div class="card editor-panel">
+      <div class="editor-toolbar">
+        <div class="editor-title">
+          <span class="editor-dot"></span>
+          <span>{{ problem.language or 'Python' }}</span>
+        </div>
+        <div class="editor-actions">
+          <button type="button" class="btn btn-ghost small" onclick="runDsaCode()">Run</button>
+          <button type="submit" form="dsa-submit-form" class="btn btn-primary small">Submit</button>
+        </div>
+      </div>
+
+      <form method="post" action="{{ url_for('submit_dsa', candidate_id=candidate_id) }}" id="dsa-submit-form">
+        <input type="hidden" name="problem_id" value="{{ problem.id }}">
+        <textarea name="code" class="code-editor" spellcheck="false">{{ problem.starter_code }}</textarea>
+      </form>
+
+      <div id="run-result" class="run-result hidden"></div>
+    </div>
+  </section>
+  {% else %}
+  <p class="empty-hint">Generate a problem to start your coding session.</p>
+  {% endif %}
+</div>
+
+<script>
+async function runDsaCode() {
+  const problemId = document.querySelector('input[name="problem_id"]').value;
+  const code = document.querySelector('textarea[name="code"]').value;
+  const resultNode = document.getElementById('run-result');
+  resultNode.classList.remove('hidden');
+  resultNode.innerHTML = '<div class="result-shell"><h3>Running your code...</h3><p>Executing visible tests and checking the output.</p></div>';
+
+  const response = await fetch(`/dsa/{{ candidate_id }}/run`, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'},
+    body: new URLSearchParams({ problem_id: problemId, code })
+  });
+
+  const payload = await response.json();
+  const output = payload.output || 'No output generated.';
+  const statusText = payload.status === 'passed' ? 'Passed' : (payload.status === 'failed' ? 'Failed' : 'Runtime error');
+  const tests = (payload.tests || []).map((test, index) => `
+    <div class="example-item">
+      <p><strong>Test ${index + 1}</strong> <span class="status-pill ${test.status === 'passed' ? 'success' : 'danger'}">${test.status}</span></p>
+      <p><strong>Input:</strong> <code>${JSON.stringify(test.input)}</code></p>
+      <p><strong>Expected:</strong> <code>${JSON.stringify(test.expected)}</code></p>
+      <p><strong>Your output:</strong> <code>${test.actual === null || test.actual === undefined ? (test.message || 'No output') : JSON.stringify(test.actual)}</code></p>
+    </div>`).join('');
+
+  resultNode.innerHTML = `
+    <div class="result-shell">
+      <div class="result-topline">
+        <h3>Run Result</h3>
+        <span class="status-pill ${payload.status === 'success' ? 'success' : 'warning'}">${statusText}</span>
+      </div>
+      <p class="result-metric">${payload.passed_tests || 0} / ${payload.total_tests || 0} visible tests passed</p>
+      <div class="result-output">${tests || `<p>${payload.message || output}</p>`}</div>
+    </div>
+  `;
+}
+</script>
+{% endblock %}

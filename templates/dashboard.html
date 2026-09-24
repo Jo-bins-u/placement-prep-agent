@@ -1,0 +1,235 @@
+{% extends "base.html" %}
+{% block nav_dashboard %}active{% endblock %}
+{% block content %}
+<div class="dashboard-shell">
+  <section class="welcome-panel card">
+    <div>
+      <p class="eyebrow">Placement dashboard</p>
+      <h1 class="display">Good morning, {{ profile.contact.name or "Candidate" }}</h1>
+      <p class="subtitle">Here’s your placement preparation progress.</p>
+    </div>
+    <div class="cta-row">
+      <a href="{{ url_for('practice', candidate_id=candidate['id']) }}" class="btn btn-primary">Continue Practice</a>
+      <a href="{{ url_for('dsa_practice', candidate_id=candidate['id']) }}" class="btn btn-secondary">Open DSA</a>
+    </div>
+  </section>
+
+  <section class="metrics-grid">
+    <article class="metric-card card">
+      <span class="metric-label">Profile completeness</span>
+      <strong class="metric-value">{{ (profile.skills|length + profile.projects|length) * 5 if profile.skills or profile.projects else 70 }}%</strong>
+      <span class="metric-foot">{{ profile.skills|length + profile.projects|length }} profile signals</span>
+    </article>
+    <article class="metric-card card">
+      <span class="metric-label">Overall practice</span>
+      <strong class="metric-value">{{ avg_score }}%</strong>
+      <span class="metric-foot">Across recent attempts</span>
+    </article>
+    <article class="metric-card card">
+      <span class="metric-label">DSA score</span>
+      <strong class="metric-value">{{ dsa_performance.average_score }}%</strong>
+      <span class="metric-foot">{{ dsa_performance.attempted }} problems attempted</span>
+    </article>
+    <article class="metric-card card">
+      <span class="metric-label">Interview score</span>
+      <strong class="metric-value">{{ (attempts|sum(attribute='score') / attempts|length) if attempts else 0 }}%</strong>
+      <span class="metric-foot">Based on your latest answers</span>
+    </article>
+  </section>
+
+  <section class="dashboard-grid">
+    <div class="panel-stack">
+      <article class="card panel-block">
+        <div class="panel-header">
+          <div>
+            <p class="eyebrow">Skill performance</p>
+            <h2>Coverage by skill</h2>
+          </div>
+          <a href="{{ url_for('practice', candidate_id=candidate['id']) }}" class="link-button">View all</a>
+        </div>
+
+        {% if topic_scores %}
+        <div class="skill-list">
+          {% for topic, score in topic_scores.items() %}
+          <div class="skill-row">
+            <div class="skill-meta">
+              <span>{{ topic }}</span>
+              <strong>{{ score }}%</strong>
+            </div>
+            <div class="progress-bar"><span style="width: {{ score }}%"></span></div>
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <p class="empty-hint">No practice data yet. Complete your first practice session to start seeing performance.</p>
+        {% endif %}
+      </article>
+
+      <article class="card panel-block">
+        <div class="panel-header">
+          <div>
+            <p class="eyebrow">Recommended next</p>
+            <h2>Practice suggestions</h2>
+          </div>
+        </div>
+        <div class="recommendation-list">
+          {% for rec in recommendations %}
+          <div class="recommendation-card">
+            <div>
+              <p class="mini-tag">{{ rec.title }}</p>
+              <p class="recommendation-text">{{ rec.reason }}</p>
+            </div>
+            <a href="{{ url_for('practice', candidate_id=candidate['id']) }}" class="btn btn-ghost small">Practice</a>
+          </div>
+          {% endfor %}
+          {% if not recommendations %}
+          <p class="empty-hint">No recommendations yet. Start with a practice question to unlock smarter guidance.</p>
+          {% endif %}
+        </div>
+      </article>
+    </div>
+
+    <div class="panel-stack right-stack">
+      <article class="card panel-block">
+        <div class="panel-header">
+          <div>
+            <p class="eyebrow">Focus areas</p>
+            <h2>Needs practice</h2>
+          </div>
+        </div>
+        {% if weak_topics %}
+        <div class="focus-list">
+          {% for topic in weak_topics %}
+          <div class="focus-item">
+            <div>
+              <h3>{{ topic }}</h3>
+              <p>{{ topic_scores[topic] }}% current proficiency</p>
+            </div>
+            <a href="{{ url_for('practice', candidate_id=candidate['id']) }}" class="btn btn-ghost small">Practice</a>
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <p class="empty-hint">You are in a strong rhythm. Keep practicing to maintain momentum.</p>
+        {% endif %}
+      </article>
+
+      <article class="card panel-block">
+        <div class="panel-header">
+          <div>
+            <p class="eyebrow">DSA performance</p>
+            <h2>Progress overview</h2>
+          </div>
+        </div>
+        <div class="stats-row compact">
+          <div><span>Avg</span><strong>{{ dsa_performance.average_score }}%</strong></div>
+          <div><span>Attempted</span><strong>{{ dsa_performance.attempted }}</strong></div>
+          <div><span>Solved</span><strong>{{ dsa_performance.solved }}</strong></div>
+          <div><span>Rate</span><strong>{{ dsa_performance.success_rate }}%</strong></div>
+        </div>
+        {% if dsa_performance.topic_scores %}
+        <div class="mini-chips">
+          {% for topic, score in dsa_performance.topic_scores.items() %}
+          <span class="mini-chip">{{ topic }} {{ score }}%</span>
+          {% endfor %}
+        </div>
+        {% else %}
+        <p class="empty-hint">Complete a few problems to see your DSA progress here.</p>
+        {% endif %}
+      </article>
+    </div>
+  </section>
+
+  <section class="bottom-grid">
+    <article class="card panel-block">
+      <div class="panel-header">
+        <div>
+          <p class="eyebrow">Resume intelligence</p>
+          <h2>Resume feedback</h2>
+        </div>
+      </div>
+      {% if resume_feedback %}
+      <div class="score-ring">
+        <strong>{{ resume_feedback.overall_score }}</strong>
+        <span>overall score</span>
+      </div>
+      <div class="mini-chips">
+        {% for category, score in resume_feedback.category_scores.items() %}
+        <span class="mini-chip">{{ category }} {{ score }}</span>
+        {% endfor %}
+      </div>
+      <p class="resume-summary">{{ resume_feedback.summary }}</p>
+      <div class="feedback-list">
+        {% if resume_feedback.strengths %}
+        <div>
+          <h3>Strengths</h3>
+          <ul>
+            {% for item in resume_feedback.strengths %}
+            <li>{{ item }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% endif %}
+        {% if resume_feedback.weaknesses %}
+        <div>
+          <h3>Focus areas</h3>
+          <ul>
+            {% for item in resume_feedback.weaknesses %}
+            <li>{{ item }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% endif %}
+        {% if resume_feedback.suggestions %}
+        <div>
+          <h3>Suggestions</h3>
+          <ul>
+            {% for item in resume_feedback.suggestions %}
+            <li>{{ item }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% endif %}
+      </div>
+      {% else %}
+      <p class="empty-hint">Resume feedback will appear here once the analysis runs.</p>
+      {% endif %}
+    </article>
+
+    <article class="card panel-block profile-panel">
+      <div class="panel-header">
+        <div>
+          <p class="eyebrow">Resume profile</p>
+          <h2>Your work</h2>
+        </div>
+      </div>
+      <div class="profile-summary">
+        <div><span>Projects</span><strong>{{ profile.projects|length }}</strong></div>
+        <div><span>Skills</span><strong>{{ profile.skills|length }}</strong></div>
+        <div><span>Education</span><strong>{{ profile.education|length if profile.education else 0 }}</strong></div>
+        <div><span>Certifications</span><strong>{{ profile.certifications|length if profile.certifications else 0 }}</strong></div>
+      </div>
+      {% if profile.projects %}
+      <div class="project-list">
+        {% for proj in profile.projects[:2] %}
+        <div class="project-card">
+          <h3>{{ proj.title or 'Untitled project' }}</h3>
+          {% if proj.description %}<p>{{ proj.description }}</p>{% endif %}
+          {% if proj.tech_stack %}
+          <div class="mini-chips">
+            {% for tech in proj.tech_stack %}
+            <span class="mini-chip">{{ tech }}</span>
+            {% endfor %}
+          </div>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <p class="empty-hint">No project data detected yet. Upload a resume with a projects section to personalize your dashboard.</p>
+      {% endif %}
+    </article>
+  </section>
+</div>
+{% endblock %}
+

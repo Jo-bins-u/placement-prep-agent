@@ -1,0 +1,10 @@
+{
+  "model_type": "tfidf_logistic_regression",
+  "labels": [
+    "internship",
+    "work",
+    "research",
+    "other"
+  ],
+  "notes": "Offline fallback model for resume experience classification; transformer path is preferred when a local checkpoint is available."
+}

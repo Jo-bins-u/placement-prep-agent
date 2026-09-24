@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block nav_practice %}active{% endblock %}
+{% block content %}
+<div class="practice-shell">
+  <section class="practice-hero card">
+    <div>
+      <p class="eyebrow">Practice</p>
+      <h1 class="display">Choose how you want to prepare.</h1>
+    </div>
+    <p class="subtitle">Interview prep, technical concepts, and coding practice are organized around your resume and current strengths.</p>
+  </section>
+
+  <section class="mode-grid">
+    <article class="mode-card card">
+      <div class="mode-icon blue">💬</div>
+      <h2>Interview</h2>
+      <p>Practice questions based on your resume, projects, and skill profile.</p>
+      <div class="mode-footer">
+        <span>Resume-based</span>
+        <a href="{{ url_for('practice', candidate_id=candidate_id) }}" class="btn btn-primary small">Start Interview</a>
+      </div>
+    </article>
+
+    <article class="mode-card card">
+      <div class="mode-icon green">💻</div>
+      <h2>DSA</h2>
+      <p>Solve coding problems with a professional editor, sample tests, and clear feedback.</p>
+      <div class="mode-footer">
+        <span>Live coding</span>
+        <a href="{{ url_for('dsa_practice', candidate_id=candidate_id) }}" class="btn btn-primary small">Practice DSA</a>
+      </div>
+    </article>
+
+    <article class="mode-card card">
+      <div class="mode-icon amber">🧠</div>
+      <h2>Technical</h2>
+      <p>Strengthen core concepts tied to the topics you are currently underperforming in.</p>
+      <div class="mode-footer">
+        <span>Skill gap</span>
+        <a href="{{ url_for('practice', candidate_id=candidate_id) }}" class="btn btn-primary small">Start Practice</a>
+      </div>
+    </article>
+  </section>
+
+  <section class="card question-card">
+    <div class="question-header">
+      <div>
+        <p class="eyebrow">Current recommendation</p>
+        <h2>{{ question.topic }} · {{ question.difficulty }}</h2>
+      </div>
+      <span class="badge-soft">{{ question.type }}</span>
+    </div>
+
+    <p class="question-prompt">{{ question.prompt }}</p>
+
+    <form action="{{ url_for('submit_answer', candidate_id=candidate_id) }}" method="post" class="answer-form">
+      <input type="hidden" name="question_id" value="{{ question.id }}">
+      <input type="hidden" name="question_json" value="{{ question_json | e }}">
+
+      {% if question.type == "mcq" %}
+        <div class="mcq-options">
+          {% for opt in question.options %}
+          <label>
+            <input type="radio" name="answer_text" value="{{ opt }}" required>
+            <span>{{ opt }}</span>
+          </label>
+          {% endfor %}
+        </div>
+      {% else %}
+        <textarea name="answer_text" placeholder="Type your answer here..." required></textarea>
+      {% endif %}
+
+      <div class="submit-row">
+        <button type="submit" class="btn btn-primary">Submit answer</button>
+      </div>
+    </form>
+  </section>
+</div>
+{% endblock %}

@@ -1,0 +1,528 @@
+{% extends "base.html" %}
+{% block nav_upload %}active{% endblock %}
+{% block content %}
+<section class="landing-hero">
+  <div class="landing-hero__copy reveal">
+    <span class="eyebrow">AI-powered placement preparation</span>
+    <h1 class="landing-hero__title display">Your resume becomes your preparation strategy.</h1>
+    <p class="landing-hero__subtitle">
+      Prepwise analyzes your resume, understands your skills and projects, builds a personalized candidate profile,
+      generates interview questions around your real experience, evaluates your answers, runs DSA coding challenges,
+      and continuously identifies the next improvement you should make.
+    </p>
+
+    <div class="cta-row">
+      <a href="#resume-upload" class="btn btn-primary">Upload your resume</a>
+      <a href="#how-it-works" class="btn btn-secondary">Explore how it works</a>
+    </div>
+
+    <div class="proof-row" aria-label="Core system capabilities">
+      <span>Resume intelligence</span>
+      <span>Interview prep</span>
+      <span>DSA execution</span>
+      <span>Skill gaps</span>
+    </div>
+  </div>
+
+  <div class="landing-hero__visual reveal">
+    <div class="story-graph" aria-label="Resume to skill graph">
+      <div class="story-node node-resume">Resume</div>
+      <div class="story-node node-ai">AI</div>
+      <div class="story-node node-profile">Profile</div>
+      <div class="story-node node-practice">Practice</div>
+      <div class="story-node node-gap">Skill Gap</div>
+      <div class="story-node node-improve">Improve</div>
+
+      <div class="story-line line-one"></div>
+      <div class="story-line line-two"></div>
+      <div class="story-line line-three"></div>
+      <div class="story-line line-four"></div>
+      <div class="story-line line-five"></div>
+
+      <div class="flow-card flow-card--resume">
+        <b>Python</b>
+        <b>FastAPI</b>
+        <b>PostgreSQL</b>
+      </div>
+      <div class="flow-card flow-card--project">
+        <b>Distributed Rate Limiter</b>
+        <b>ML Internship</b>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="how-it-works" class="story-section reveal">
+  <div class="section-heading-wrap">
+    <span class="eyebrow">How it works</span>
+    <h2 class="section-title display">One resume. One evolving preparation path.</h2>
+  </div>
+
+  <div class="journey">
+    <div class="journey-step active"><span>01</span><strong>Upload Resume</strong></div>
+    <div class="journey-step"><span>02</span><strong>Build Profile</strong></div>
+    <div class="journey-step"><span>03</span><strong>Practice Questions</strong></div>
+    <div class="journey-step"><span>04</span><strong>Solve DSA</strong></div>
+    <div class="journey-step"><span>05</span><strong>Get Evaluated</strong></div>
+    <div class="journey-step"><span>06</span><strong>Skill Gaps</strong></div>
+    <div class="journey-step"><span>07</span><strong>Improve</strong></div>
+    <div class="journey-step"><span>08</span><strong>Repeat</strong></div>
+  </div>
+</section>
+
+<section class="story-section problem-section reveal">
+  <div class="section-heading-wrap">
+    <span class="eyebrow">The problem</span>
+    <h2 class="section-title display">Most placement preparation starts with the same question bank.</h2>
+  </div>
+
+  <div class="comparison-grid">
+    <div class="comparison-card comparison-card--generic">
+      <p class="comparison-kicker">Generic preparation</p>
+      <ul>
+        <li>10,000 questions</li>
+        <li>Same questions for everyone</li>
+        <li>Random practice</li>
+        <li>No understanding of weak areas</li>
+        <li>No connection to resume</li>
+      </ul>
+    </div>
+
+    <div class="comparison-arrow" aria-hidden="true">→</div>
+
+    <div class="comparison-card comparison-card--prepwise">
+      <p class="comparison-kicker">Prepwise</p>
+      <ul>
+        <li>Your Resume</li>
+        <li>Your Skills</li>
+        <li>Your Projects</li>
+        <li>Your Performance</li>
+        <li>Your Next Question</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="story-section profile-section reveal">
+  <div class="section-heading-wrap">
+    <span class="eyebrow">Resume → intelligent profile</span>
+    <h2 class="section-title display">Your resume is more than a PDF.</h2>
+  </div>
+
+  <div class="resume-story">
+    <div class="resume-sheet" aria-label="Example resumedocument">
+      <div class="sheet-header">
+        <span>Example Resume</span>
+        <span>PDF</span>
+      </div>
+      <div class="sheet-body">
+        <div class="sheet-block">
+          <strong>Skills</strong>
+          <div class="tag-wrap">
+            <span>Python</span>
+            <span>FastAPI</span>
+            <span>PostgreSQL</span>
+            <span>Machine Learning</span>
+          </div>
+        </div>
+        <div class="sheet-block">
+          <strong>Projects</strong>
+          <div class="project-pill">Distributed rate limiter</div>
+          <div class="project-pill">Computer vision pipeline</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="profile-rail" aria-label="Structured candidate profile">
+      <div class="profile-card-mini">
+        <p class="mini-label">Candidate profile</p>
+        <h3>Example candidate</h3>
+      </div>
+      <div class="profile-data-block">
+        <div>
+          <span>Skills</span>
+          <strong>Python</strong>
+          <strong>FastAPI</strong>
+          <strong>PostgreSQL</strong>
+          <strong>ML</strong>
+        </div>
+        <div>
+          <span>Projects</span>
+          <strong>Distributed Rate Limiter</strong>
+          <strong>Recommendation Engine</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="story-section personalization-section reveal">
+  <div class="section-heading-wrap narrow">
+    <span class="eyebrow">Personalization engine</span>
+    <h2 class="section-title display">Then the profile starts working for you.</h2>
+  </div>
+
+  <div class="personalization-grid">
+    <div class="profile-box">
+      <p class="mini-label">Candidate profile</p>
+      <div class="stack-tags">
+        <span>Python</span>
+        <span>FastAPI</span>
+        <span>Redis</span>
+        <span>Docker</span>
+      </div>
+    </div>
+
+    <div class="engine-box">
+      <p class="mini-label">LLM personalization engine</p>
+      <div class="engine-flow">
+        <span>Skills</span>
+        <span>Projects</span>
+        <span>Experience</span>
+        <span>Target Role</span>
+      </div>
+    </div>
+
+    <div class="generated-question-box">
+      <p class="mini-label">Generated question</p>
+      <blockquote>
+        “You mentioned building a distributed rate limiter with Redis and FastAPI. How did you prevent race conditions?”
+      </blockquote>
+      <small>Generated from your project context.</small>
+    </div>
+  </div>
+</section>
+
+<section class="story-section interview-section reveal">
+  <div class="section-heading-wrap">
+    <span class="eyebrow">Interview preparation</span>
+    <h2 class="section-title display">Question → answer → evaluation → improvement.</h2>
+  </div>
+
+  <div class="interview-panel">
+    <div class="interview-card">
+      <p class="mini-label">Resume interview</p>
+      <h3>“You mentioned building a distributed rate limiter using Redis and FastAPI. How did you prevent race conditions?”</h3>
+      <div class="answer-preview">
+        <span>Example answer</span>
+        <p>I used a distributed lock around the key update path, validated Redis atomic operations, and kept the limiter logic careful about repeated requests.</p>
+      </div>
+    </div>
+
+    <div class="evaluation-card">
+      <p class="mini-label">AI evaluation</p>
+      <div class="score-pill">84 / 100</div>
+      <ul>
+        <li>✓ Clear architecture explanation</li>
+        <li>✓ Solid technical reasoning</li>
+        <li>→ Explain concurrency control in more depth</li>
+      </ul>
+      <div class="recommendation-inline">Recommended: Redis concurrency, distributed systems</div>
+    </div>
+  </div>
+</section>
+
+<section class="story-section dsa-section reveal">
+  <div class="section-heading-wrap">
+    <span class="eyebrow">DSA practice</span>
+    <h2 class="section-title display">Practice DSA like a real coding platform.</h2>
+  </div>
+
+  <div class="dsa-demo">
+    <div class="problem-panel">
+      <div class="problem-topline">
+        <span class="problem-badge">Arrays</span>
+        <span class="problem-badge problem-badge--alt">Medium</span>
+      </div>
+      <h3>Two Sum</h3>
+      <p>Given an array of integers and a target value, return indices of the two numbers that add up to the target.</p>
+      <div class="example-box">
+        <p>Example: nums = [2, 7, 11, 15], target = 9 → [0, 1]</p>
+      </div>
+    </div>
+
+    <div class="editor-panel">
+      <div class="editor-toolbar">
+        <span>Python</span>
+        <div class="editor-actions">
+          <button class="btn btn-secondary small" type="button">Run code</button>
+          <button class="btn btn-primary small" type="button">Submit</button>
+        </div>
+      </div>
+      <pre class="editor-code">def two_sum(nums, target):
+    seen = {}
+    for i, num in enumerate(nums):
+        diff = target - num
+        if diff in seen:
+            return [seen[diff], i]
+        seen[num] = i
+    return []
+</pre>
+      <div class="test-results">
+        <span>✓ Test 1</span>
+        <span>✓ Test 2</span>
+        <span>✓ Test 3</span>
+        <span>✗ Test 4</span>
+      </div>
+      <div class="score-strip"><strong>3 / 4 passed</strong><span>Score: 76 / 100</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="story-section execution-section reveal">
+  <div class="section-heading-wrap">
+    <span class="eyebrow">Real code execution</span>
+    <h2 class="section-title display">Your code is actually executed.</h2>
+  </div>
+
+  <div class="execution-flow">
+    <div class="flow-step">User code</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step">Secure container</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step">Test cases</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step">Runtime + memory</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step accent">Score</div>
+  </div>
+
+  <p class="execution-copy">
+    Submissions run in isolated execution environments rather than being judged by a single LLM response. That means correctness,
+    runtime, and edge-case behavior can be checked with real test input and clear results.
+  </p>
+</section>
+
+<section class="story-section evaluation-section reveal">
+  <div class="section-heading-wrap">
+    <span class="eyebrow">AI evaluation</span>
+    <h2 class="section-title display">Correctness tells you what happened. Feedback tells you why.</h2>
+  </div>
+
+  <div class="evaluation-grid">
+    <div class="eval-column">
+      <h3>Code</h3>
+      <ul>
+        <li>Correctness</li>
+        <li>Runtime</li>
+        <li>Memory</li>
+        <li>Complexity</li>
+        <li>Edge cases</li>
+      </ul>
+    </div>
+
+    <div class="eval-column">
+      <h3>Interview</h3>
+      <ul>
+        <li>Correctness</li>
+        <li>Depth</li>
+        <li>Relevance</li>
+        <li>Reasoning</li>
+        <li>Communication</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="story-section skill-section reveal">
+  <div class="section-heading-wrap">
+    <span class="eyebrow">Skill gap analysis</span>
+    <h2 class="section-title display">Your performance becomes a skill map.</h2>
+  </div>
+
+  <div class="skill-visual">
+    <div class="skill-bars">
+      <div class="skill-row"><span>Python</span><div class="skill-meter"><i style="width:84%"></i></div><strong>84%</strong></div>
+      <div class="skill-row"><span>Machine Learning</span><div class="skill-meter"><i style="width:67%"></i></div><strong>67%</strong></div>
+      <div class="skill-row"><span>DSA</span><div class="skill-meter"><i style="width:48%"></i></div><strong>48%</strong></div>
+      <div class="skill-row"><span>SQL</span><div class="skill-meter"><i style="width:56%"></i></div><strong>56%</strong></div>
+      <div class="skill-row"><span>Graphs</span><div class="skill-meter"><i style="width:38%"></i></div><strong>38%</strong></div>
+      <div class="skill-row"><span>Dynamic Programming</span><div class="skill-meter"><i style="width:27%"></i></div><strong>27%</strong></div>
+    </div>
+
+    <div class="focus-box">
+      <p class="mini-label">Focus areas</p>
+      <ul>
+        <li>Dynamic Programming <strong>27%</strong></li>
+        <li>Graphs <strong>38%</strong></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="story-section recommendation-section reveal">
+  <div class="section-heading-wrap">
+    <span class="eyebrow">Personalized recommendations</span>
+    <h2 class="section-title display">Your next step is calculated from your performance.</h2>
+  </div>
+
+  <div class="recommendation-box">
+    <div class="recommendation-header">
+      <span>Current performance</span>
+      <span>Arrays 82%</span>
+      <span>Trees 51%</span>
+      <span>Graphs 38%</span>
+      <span>DP 27%</span>
+    </div>
+    <div class="recommendation-callout">
+      <p>Recommended next:</p>
+      <strong>Medium Dynamic Programming + Easy Graph Traversal</strong>
+      <a href="#resume-upload" class="btn btn-primary small">Practice now</a>
+    </div>
+  </div>
+</section>
+
+<section class="story-section loop-section reveal">
+  <div class="section-heading-wrap">
+    <span class="eyebrow">Continuous learning loop</span>
+    <h2 class="section-title display">Your preparation loop keeps improving.</h2>
+  </div>
+
+  <div class="loop-visual" aria-label="Preparation loop">
+    <div class="loop-node node-a">Profile</div>
+    <div class="loop-node node-b">Practice</div>
+    <div class="loop-node node-c">Evaluate</div>
+    <div class="loop-node node-d">Analyze</div>
+    <div class="loop-node node-e">Recommend</div>
+    <div class="loop-center">Your preparation loop</div>
+  </div>
+</section>
+
+<section class="story-section architecture-section reveal">
+  <div class="section-heading-wrap">
+    <span class="eyebrow">Under the hood</span>
+    <h2 class="section-title display">A system designed to adapt continuously.</h2>
+  </div>
+
+  <div class="architecture-flow">
+    <div class="arch-node">Resume</div>
+    <div class="arch-arrow">↓</div>
+    <div class="arch-node">PDF / DOCX extraction</div>
+    <div class="arch-arrow">↓</div>
+    <div class="arch-node">Resume NER</div>
+    <div class="arch-arrow">↓</div>
+    <div class="arch-node">Entity normalization</div>
+    <div class="arch-arrow">↓</div>
+    <div class="arch-node">Candidate profile</div>
+    <div class="arch-arrow">↓</div>
+    <div class="arch-node">LLM personalization</div>
+    <div class="arch-arrow">↓</div>
+    <div class="arch-node">Interview / DSA</div>
+    <div class="arch-arrow">↓</div>
+    <div class="arch-node">Evaluation</div>
+    <div class="arch-arrow">↓</div>
+    <div class="arch-node">Performance database</div>
+    <div class="arch-arrow">↓</div>
+    <div class="arch-node">Skill gap analysis</div>
+    <div class="arch-arrow">↓</div>
+    <div class="arch-node">Recommendations</div>
+    <div class="arch-arrow">↓</div>
+    <div class="arch-node">Dashboard</div>
+  </div>
+</section>
+
+<section class="story-section capabilities-section reveal">
+  <div class="section-heading-wrap">
+    <span class="eyebrow">Product capabilities</span>
+    <h2 class="section-title display">Not just a question generator. A preparation system.</h2>
+  </div>
+
+  <div class="capability-grid">
+    <div class="capability-card">
+      <h3>Resume intelligence</h3>
+      <ul>
+        <li>Resume parsing</li>
+        <li>Skill extraction</li>
+        <li>Project extraction</li>
+        <li>Profile construction</li>
+      </ul>
+    </div>
+    <div class="capability-card">
+      <h3>Personalized practice</h3>
+      <ul>
+        <li>Resume-based interviews</li>
+        <li>Technical questions</li>
+        <li>HR questions</li>
+        <li>Personalized DSA</li>
+      </ul>
+    </div>
+    <div class="capability-card">
+      <h3>Evaluation</h3>
+      <ul>
+        <li>Interview evaluation</li>
+        <li>Code execution</li>
+        <li>Test cases</li>
+        <li>Scoring and feedback</li>
+      </ul>
+    </div>
+    <div class="capability-card">
+      <h3>Intelligence</h3>
+      <ul>
+        <li>Skill proficiency</li>
+        <li>Weak-area detection</li>
+        <li>Recommendations</li>
+        <li>Progress tracking</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="resume-upload" class="landing-cta reveal">
+  <p class="eyebrow">Start now</p>
+  <h2 class="section-title display">Your preparation should know you.</h2>
+  <p>Upload your resume and let Prepwise build your personalized preparation path.</p>
+
+  <div class="cta-row cta-row--full">
+    <a href="#resume-upload" class="btn btn-primary">Upload your resume</a>
+    <a href="#how-it-works" class="btn btn-secondary">Explore the platform</a>
+  </div>
+
+  <form action="{{ url_for('upload') }}" method="post" enctype="multipart/form-data" class="landing-upload-form">
+    <label for="resume">Choose a resume</label>
+    <input id="resume" type="file" name="resume" accept=".pdf,.docx" required>
+    <button type="submit" class="btn btn-primary">Get started</button>
+  </form>
+</section>
+
+<footer class="site-footer reveal">
+  <div>
+    <div class="brand-block display"><span class="brand-mark" aria-hidden="true"></span><span>Prepwise</span></div>
+    <p>AI-powered personalized placement preparation.</p>
+  </div>
+
+  <nav aria-label="Footer navigation">
+    <a href="#">Dashboard</a>
+    <a href="#">Practice</a>
+    <a href="#">Interview</a>
+    <a href="#">DSA</a>
+    <a href="#">Progress</a>
+    <a href="#">Profile</a>
+  </nav>
+
+  <p class="footer-copy">Intelligent AI-Based System for Personalized Placement Preparation and Skill Gap Analysis</p>
+</footer>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      document.querySelectorAll('.reveal').forEach(function (el) {
+        el.classList.add('visible');
+      });
+      return;
+    }
+
+    const observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12 });
+
+    document.querySelectorAll('.reveal').forEach(function (el) {
+      observer.observe(el);
+    });
+  });
+</script>
+{% endblock %}

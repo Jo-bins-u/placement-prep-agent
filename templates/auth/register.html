@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Register - Prepwise{% endblock %}
+{% block nav_upload %}active{% endblock %}
+
+{% block content %}
+<section class="auth-section">
+  <div class="auth-card card">
+    <div class="auth-header">
+      <h1 class="display">Create your account</h1>
+      <p class="subtitle">Join Prepwise to build your personalized preparation path.</p>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flash-messages">
+          {% for category, message in messages %}
+            <div class="flash-message flash-{{ category }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <form method="post" action="{{ url_for('register') }}" class="auth-form">
+      <div class="form-group">
+        <label for="email">Email address</label>
+        <input type="email" id="email" name="email" required placeholder="you@example.com" autocomplete="email">
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required placeholder="••••••••" autocomplete="new-password">
+      </div>
+      <div class="form-group">
+        <label for="confirm_password">Confirm Password</label>
+        <input type="password" id="confirm_password" name="confirm_password" required placeholder="••••••••" autocomplete="new-password">
+      </div>
+      
+      <button type="submit" class="btn btn-primary full-width"
+              onclick="this.disabled=true; this.textContent='Creating account…'; this.closest('form').submit();">
+        Sign up
+      </button>
+    </form>
+
+    <div class="auth-footer">
+      <p>Already have an account? <a href="{{ url_for('login') }}" class="link-button">Log in</a></p>
+    </div>
+  </div>
+</section>
+{% endblock %}
