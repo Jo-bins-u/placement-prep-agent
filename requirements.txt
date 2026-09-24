@@ -11,3 +11,4 @@ flask-login
 flask-mail
 itsdangerous
 gunicorn
+bcrypt
