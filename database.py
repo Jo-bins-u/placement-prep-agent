@@ -1,21 +1,21 @@
 """PostgreSQL / SQLite storage layer for the placement-prep application."""
-
+ 
 import json
 import os
 import sqlite3
 from pathlib import Path
 from datetime import datetime
-
+ 
 from dotenv import load_dotenv
-
+ 
 load_dotenv(Path(__file__).parent / ".env")
-
+ 
 DB_DIR = Path(__file__).parent / "data"
 DB_DIR.mkdir(exist_ok=True)
 SQLITE_DB_PATH = DB_DIR / "app.db"
-
+ 
 _USE_SQLITE = False
-
+ 
 DB_CONFIG = {
     "host": os.getenv("PGHOST", "localhost"),
     "port": int(os.getenv("PGPORT", "5433")),
@@ -26,34 +26,34 @@ if os.getenv("PGPASSWORD"):
     DB_CONFIG["password"] = os.environ["PGPASSWORD"]
 if os.getenv("DATABASE_URL"):
     DB_CONFIG = {"conninfo": os.environ["DATABASE_URL"]}
-
-
+ 
+ 
 class SQLiteCursorWrapper:
     def __init__(self, cursor):
         self._cursor = cursor
-
+ 
     @property
     def rowcount(self):
         return self._cursor.rowcount
-
+ 
     def fetchone(self):
         row = self._cursor.fetchone()
         return dict(row) if row is not None else None
-
+ 
     def fetchall(self):
         rows = self._cursor.fetchall()
         return [dict(r) for r in rows]
-
+ 
     def __iter__(self):
         for row in self._cursor.fetchall():
             yield dict(row)
-
-
+ 
+ 
 class SQLiteConnectionWrapper:
     def __init__(self, db_path):
         self._conn = sqlite3.connect(db_path)
         self._conn.row_factory = sqlite3.Row
-
+ 
     def execute(self, query: str, params=None):
         sql_query = query.replace("%s", "?")
         cur = self._conn.cursor()
@@ -65,14 +65,14 @@ class SQLiteConnectionWrapper:
         else:
             cur.execute(sql_query, params)
         return SQLiteCursorWrapper(cur)
-
+ 
     def commit(self):
         self._conn.commit()
-
+ 
     def close(self):
         self._conn.close()
-
-
+ 
+ 
 def get_conn():
     global _USE_SQLITE
     if not _USE_SQLITE:
@@ -83,10 +83,10 @@ def get_conn():
         except Exception as e:
             print(f"[DATABASE] Connection to PostgreSQL failed ({e}). Falling back to SQLite at {SQLITE_DB_PATH}")
             _USE_SQLITE = True
-
+ 
     return SQLiteConnectionWrapper(SQLITE_DB_PATH)
-
-
+ 
+ 
 def init_db():
     conn = get_conn()
     if _USE_SQLITE:
@@ -100,7 +100,7 @@ def init_db():
                 otp_expires_at TEXT,
                 created_at TEXT NOT NULL
             );
-
+ 
             CREATE TABLE IF NOT EXISTS candidates (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 user_id INTEGER REFERENCES app_users(id),
@@ -111,7 +111,7 @@ def init_db():
                 resume_feedback_json TEXT,
                 created_at TEXT NOT NULL
             );
-
+ 
             CREATE TABLE IF NOT EXISTS attempts (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 candidate_id INTEGER NOT NULL,
@@ -123,7 +123,7 @@ def init_db():
                 created_at TEXT NOT NULL,
                 FOREIGN KEY (candidate_id) REFERENCES candidates(id)
             );
-
+ 
             CREATE TABLE IF NOT EXISTS coding_problems (
                 id TEXT PRIMARY KEY,
                 candidate_id INTEGER,
@@ -135,7 +135,7 @@ def init_db():
                 created_at TEXT NOT NULL,
                 FOREIGN KEY (candidate_id) REFERENCES candidates(id)
             );
-
+ 
             CREATE TABLE IF NOT EXISTS coding_submissions (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 candidate_id INTEGER NOT NULL,
@@ -154,14 +154,14 @@ def init_db():
         """)
         conn.commit()
         conn.close()
-
+ 
         conn = get_conn()
         try:
             conn.execute("ALTER TABLE candidates ADD COLUMN resume_feedback_json TEXT")
             conn.commit()
         except Exception:
             pass
-
+ 
         try:
             conn.execute("ALTER TABLE candidates ADD COLUMN user_id INTEGER REFERENCES app_users(id)")
             conn.commit()
@@ -179,7 +179,7 @@ def init_db():
                 otp_expires_at TEXT,
                 created_at TEXT NOT NULL
             );
-
+ 
             CREATE TABLE IF NOT EXISTS candidates (
                 id BIGSERIAL PRIMARY KEY,
                 user_id INTEGER REFERENCES app_users(id),
@@ -190,7 +190,7 @@ def init_db():
                 resume_feedback_json TEXT,
                 created_at TEXT NOT NULL
             );
-
+ 
             CREATE TABLE IF NOT EXISTS attempts (
                 id BIGSERIAL PRIMARY KEY,
                 candidate_id INTEGER NOT NULL,
@@ -202,7 +202,7 @@ def init_db():
                 created_at TEXT NOT NULL,
                 FOREIGN KEY (candidate_id) REFERENCES candidates(id)
             );
-
+ 
             CREATE TABLE IF NOT EXISTS coding_problems (
                 id TEXT PRIMARY KEY,
                 candidate_id INTEGER,
@@ -214,7 +214,7 @@ def init_db():
                 created_at TEXT NOT NULL,
                 FOREIGN KEY (candidate_id) REFERENCES candidates(id)
             );
-
+ 
             CREATE TABLE IF NOT EXISTS coding_submissions (
                 id BIGSERIAL PRIMARY KEY,
                 candidate_id INTEGER NOT NULL,
@@ -233,14 +233,49 @@ def init_db():
         """)
         conn.commit()
         conn.close()
-
+ 
         conn = get_conn()
         conn.execute("ALTER TABLE candidates ADD COLUMN IF NOT EXISTS resume_feedback_json TEXT")
         conn.execute("ALTER TABLE candidates ADD COLUMN IF NOT EXISTS user_id INTEGER REFERENCES app_users(id)")
+        # Older databases created candidates.user_id pointing at a legacy "users" table.
+        # CREATE TABLE IF NOT EXISTS never updates that, so repoint the foreign key to app_users.
+        # NOT VALID keeps any legacy rows (whose ids refer to the old table) instead of failing.
+        conn.execute("""
+            DO $$
+            DECLARE r record;
+            BEGIN
+                FOR r IN
+                    SELECT con.conname
+                    FROM pg_constraint con
+                    JOIN pg_attribute att
+                      ON att.attrelid = con.conrelid AND att.attnum = ANY (con.conkey)
+                    WHERE con.contype = 'f'
+                      AND con.conrelid = 'candidates'::regclass
+                      AND att.attname = 'user_id'
+                      AND con.confrelid <> 'app_users'::regclass
+                LOOP
+                    EXECUTE format('ALTER TABLE candidates DROP CONSTRAINT %I', r.conname);
+                END LOOP;
+ 
+                IF NOT EXISTS (
+                    SELECT 1 FROM pg_constraint con
+                    JOIN pg_attribute att
+                      ON att.attrelid = con.conrelid AND att.attnum = ANY (con.conkey)
+                    WHERE con.contype = 'f'
+                      AND con.conrelid = 'candidates'::regclass
+                      AND att.attname = 'user_id'
+                      AND con.confrelid = 'app_users'::regclass
+                ) THEN
+                    ALTER TABLE candidates
+                        ADD CONSTRAINT candidates_user_id_app_users_fkey
+                        FOREIGN KEY (user_id) REFERENCES app_users(id) NOT VALID;
+                END IF;
+            END $$;
+        """)
         conn.commit()
         conn.close()
-
-
+ 
+ 
 def create_user(email: str, password_hash: str) -> int:
     conn = get_conn()
     cur = conn.execute(
@@ -251,22 +286,22 @@ def create_user(email: str, password_hash: str) -> int:
     conn.commit()
     conn.close()
     return user_id
-
-
+ 
+ 
 def get_user_by_email(email: str):
     conn = get_conn()
     row = conn.execute("SELECT * FROM app_users WHERE email = %s", (email,)).fetchone()
     conn.close()
     return row
-
-
+ 
+ 
 def get_user_by_id(user_id: int):
     conn = get_conn()
     row = conn.execute("SELECT * FROM app_users WHERE id = %s", (user_id,)).fetchone()
     conn.close()
     return row
-
-
+ 
+ 
 def set_user_otp(user_id: int, otp_code: str, expires_at: str):
     conn = get_conn()
     conn.execute(
@@ -275,8 +310,8 @@ def set_user_otp(user_id: int, otp_code: str, expires_at: str):
     )
     conn.commit()
     conn.close()
-
-
+ 
+ 
 def verify_user_otp(user_id: int, otp_code: str) -> bool:
     conn = get_conn()
     row = conn.execute(
@@ -292,15 +327,15 @@ def verify_user_otp(user_id: int, otp_code: str) -> bool:
             return True
     conn.close()
     return False
-
-
+ 
+ 
 def get_candidates_by_user(user_id: int):
     conn = get_conn()
     rows = conn.execute("SELECT * FROM candidates WHERE user_id = %s ORDER BY created_at DESC", (user_id,)).fetchall()
     conn.close()
     return rows
-
-
+ 
+ 
 def save_candidate(user_id: int, profile) -> int:
     conn = get_conn()
     cur = conn.execute(
@@ -312,15 +347,15 @@ def save_candidate(user_id: int, profile) -> int:
     conn.commit()
     conn.close()
     return candidate_id
-
-
+ 
+ 
 def get_candidate(candidate_id: int):
     conn = get_conn()
     row = conn.execute("SELECT * FROM candidates WHERE id = %s", (candidate_id,)).fetchone()
     conn.close()
     return row
-
-
+ 
+ 
 def update_candidate_profile(candidate_id: int, profile: dict) -> bool:
     contact = profile.get("contact") or {}
     conn = get_conn()
@@ -338,8 +373,8 @@ def update_candidate_profile(candidate_id: int, profile: dict) -> bool:
     updated = cur.rowcount == 1
     conn.close()
     return updated
-
-
+ 
+ 
 def save_resume_feedback(candidate_id: int, feedback: dict) -> bool:
     conn = get_conn()
     cur = conn.execute(
@@ -350,8 +385,8 @@ def save_resume_feedback(candidate_id: int, feedback: dict) -> bool:
     updated = cur.rowcount == 1
     conn.close()
     return updated
-
-
+ 
+ 
 def get_resume_feedback(candidate_id: int):
     conn = get_conn()
     row = conn.execute(
@@ -362,8 +397,8 @@ def get_resume_feedback(candidate_id: int):
     if not row or not row["resume_feedback_json"]:
         return None
     return json.loads(row["resume_feedback_json"])
-
-
+ 
+ 
 def save_attempt(candidate_id: int, question_id: str, topic: str, answer_text: str,
                   score: float, feedback: str) -> None:
     conn = get_conn()
@@ -374,8 +409,8 @@ def save_attempt(candidate_id: int, question_id: str, topic: str, answer_text: s
     )
     conn.commit()
     conn.close()
-
-
+ 
+ 
 def get_attempts(candidate_id: int):
     conn = get_conn()
     rows = conn.execute(
@@ -383,8 +418,8 @@ def get_attempts(candidate_id: int):
     ).fetchall()
     conn.close()
     return rows
-
-
+ 
+ 
 def save_coding_problem(problem_id: str, candidate_id: int, problem: dict) -> None:
     conn = get_conn()
     conn.execute(
@@ -393,8 +428,8 @@ def save_coding_problem(problem_id: str, candidate_id: int, problem: dict) -> No
     )
     conn.commit()
     conn.close()
-
-
+ 
+ 
 def get_coding_problem(problem_id: str):
     conn = get_conn()
     row = conn.execute("SELECT * FROM coding_problems WHERE id = %s", (problem_id,)).fetchone()
@@ -404,8 +439,8 @@ def get_coding_problem(problem_id: str):
     result = dict(row)
     result["problem"] = json.loads(result.pop("problem_json"))
     return result
-
-
+ 
+ 
 def get_recent_coding_hashes(candidate_id: int, topic: str, difficulty: str, limit: int = 30) -> list[str]:
     conn = get_conn()
     rows = conn.execute(
@@ -422,8 +457,8 @@ def get_recent_coding_hashes(candidate_id: int, topic: str, difficulty: str, lim
         if problem.get("canonical_hash"):
             hashes.append(problem["canonical_hash"])
     return hashes
-
-
+ 
+ 
 def save_coding_submission(candidate_id: int, problem_id: str, code: str, passed_tests: int, total_tests: int, score: float, execution_time_ms: float, memory_usage_mb: float, status: str, feedback: str) -> None:
     conn = get_conn()
     conn.execute(
@@ -432,8 +467,8 @@ def save_coding_submission(candidate_id: int, problem_id: str, code: str, passed
     )
     conn.commit()
     conn.close()
-
-
+ 
+ 
 def get_coding_submissions(candidate_id: int):
     conn = get_conn()
     rows = conn.execute(
@@ -441,8 +476,8 @@ def get_coding_submissions(candidate_id: int):
     ).fetchall()
     conn.close()
     return rows
-
-
+ 
+ 
 def get_dsa_performance(candidate_id: int) -> dict:
     conn = get_conn()
     rows = conn.execute(
@@ -453,7 +488,7 @@ def get_dsa_performance(candidate_id: int) -> dict:
         (candidate_id,),
     ).fetchall()
     conn.close()
-
+ 
     submissions = [dict(row) for row in rows]
     attempted = len(submissions)
     solved = sum(1 for row in submissions if row["status"] == "correct" or float(row["score"] or 0) >= 100)
@@ -465,7 +500,7 @@ def get_dsa_performance(candidate_id: int) -> dict:
         topic = row["topic"] or "unknown"
         by_difficulty.setdefault(difficulty, []).append(float(row["score"] or 0))
         topic_scores.setdefault(topic, []).append(float(row["score"] or 0))
-
+ 
     average_by_difficulty = {
         key: round(sum(values) / len(values), 1)
         for key, values in by_difficulty.items()
@@ -487,8 +522,8 @@ def get_dsa_performance(candidate_id: int) -> dict:
             for index, row in enumerate(submissions, start=1)
         ],
     }
-
-
+ 
+ 
 def get_answered_question_ids(candidate_id: int) -> set:
     conn = get_conn()
     rows = conn.execute(
@@ -496,4 +531,5 @@ def get_answered_question_ids(candidate_id: int) -> set:
     ).fetchall()
     conn.close()
     return {r["question_id"] for r in rows}
-
+ 
+ 
