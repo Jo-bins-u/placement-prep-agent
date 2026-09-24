@@ -40,7 +40,7 @@ def send_otp_email(email: str, otp: str):
 
     try:
         msg = MIMEMultipart()
-        msg['From'] = mail_username
+        msg['From'] = os.getenv("EMAIL_FROM", mail_username)
         msg['To'] = email
         msg['Subject'] = "Your Prepwise Verification Code"
         
@@ -48,7 +48,9 @@ def send_otp_email(email: str, otp: str):
         msg.attach(MIMEText(body, 'plain'))
         
         # Connect to Gmail SMTP server (can be parameterized if using other providers)
-        server = smtplib.SMTP('smtp.gmail.com', 587)
+        mail_server = os.getenv("MAIL_SERVER", "smtp.gmail.com")
+        mail_port = int(os.getenv("MAIL_PORT", 587))
+        server = smtplib.SMTP(mail_server, mail_port)
         server.starttls()
         server.login(mail_username, mail_password)
         server.send_message(msg)
