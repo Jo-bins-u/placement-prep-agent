@@ -10,3 +10,4 @@ psycopg[binary]
 flask-login
 flask-mail
 itsdangerous
+gunicorn
