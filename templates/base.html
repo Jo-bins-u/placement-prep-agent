@@ -5,11 +5,47 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="csrf-token" content="{{ csrf_token() }}">
 <title>{% block title %}Prepwise | Placement Prep Agent{% endblock %}</title>
-<script nonce="{{ csp_nonce() }}">document.documentElement.classList.add('js');</script>
+<script nonce="{{ csp_nonce() }}">
+  (function () {
+    var root = document.documentElement;
+    root.classList.add('js');
+    // Brand intro: on the first page of a visit and whenever the page is reloaded,
+    // not on every click between pages.
+    try {
+      var nav = performance.getEntriesByType && performance.getEntriesByType('navigation')[0];
+      var reloaded = nav ? nav.type === 'reload' : (performance.navigation && performance.navigation.type === 1);
+      if (reloaded || !sessionStorage.getItem('pw-intro')) {
+        root.classList.add('splash');
+        window.__pwSplashStart = Date.now();
+        sessionStorage.setItem('pw-intro', '1');
+      }
+    } catch (e) { /* storage blocked: skip the intro */ }
+  })();
+</script>
 <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='logo.svg', v=asset_version('logo.svg')) }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css', v=asset_version('style.css')) }}">
 </head>
 <body class="site-body">
+  <div class="splash-screen" aria-hidden="true">
+    <div class="splash-inner">
+      <div class="splash-glow"></div>
+      <svg class="splash-bolt" viewBox="0 0 32 32" focusable="false">
+        <defs>
+          <linearGradient id="pw-bolt-splash" x1="25" y1="2" x2="7" y2="30" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#c24df8"/><stop offset="0.55" stop-color="#8b3cf0"/><stop offset="1" stop-color="#4f46e5"/>
+          </linearGradient>
+        </defs>
+        <path class="splash-bolt-fill" d="M20.2 1.5 5.5 18.2h9.1L11.3 30.5l15.2-18h-9.2l2.9-11Z" fill="url(#pw-bolt-splash)"/>
+        <path class="splash-bolt-line" d="M20.2 1.5 5.5 18.2h9.1L11.3 30.5l15.2-18h-9.2l2.9-11Z" pathLength="100"
+              fill="none" stroke="url(#pw-bolt-splash)" stroke-width="1.2" stroke-linejoin="round"/>
+      </svg>
+      <div class="splash-word display">
+        {% for letter in "Prepwise" %}<span style="--i: {{ loop.index0 }}">{{ letter }}</span>{% endfor %}
+      </div>
+      <p class="splash-tag">Get placement-ready</p>
+      <div class="splash-bar"><span></span></div>
+    </div>
+  </div>
   <div class="site-shell">
     <header class="site-header">
       <a href="{{ url_for('home') }}" class="brand-block display" aria-label="Prepwise home">
@@ -89,5 +125,23 @@
     });
   </script>
   {% block scripts %}{% endblock %}
+  <script nonce="{{ csp_nonce() }}">
+    (function () {
+      var root = document.documentElement;
+      if (!root.classList.contains('splash')) return;
+      var finished = false;
+      function finish() {
+        if (finished) return;
+        finished = true;
+        var shown = Date.now() - (window.__pwSplashStart || Date.now());
+        setTimeout(function () {
+          root.classList.add('splash-out');
+          setTimeout(function () { root.classList.remove('splash', 'splash-out'); }, 480);
+        }, Math.max(0, 1900 - shown));  // let the animation play once and hold briefly, then reveal the page
+      }
+      if (document.readyState === 'complete') finish(); else window.addEventListener('load', finish);
+      setTimeout(finish, 3000);  // never keep the page hidden if something is slow to load
+    })();
+  </script>
 </body>
 </html>

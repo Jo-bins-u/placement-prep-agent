@@ -1,0 +1,565 @@
+{
+  "generated": "20260925_140204",
+  "runtime_s": 1263.3506838999747,
+  "summary": [
+    {
+      "metric": "Resume parser macro-F1 (text)",
+      "value": 0.9772727272727273,
+      "target": 0.85,
+      "passed": true
+    },
+    {
+      "metric": "Resume parser macro-F1 (DOCX)",
+      "value": 0.9772727272727273,
+      "target": 0.85,
+      "passed": true
+    },
+    {
+      "metric": "Internship extraction F1",
+      "value": 1.0,
+      "target": 0.85,
+      "passed": true
+    },
+    {
+      "metric": "Project extraction F1",
+      "value": 1.0,
+      "target": 0.85,
+      "passed": true
+    },
+    {
+      "metric": "Skill extraction F1",
+      "value": 0.9090909090909092,
+      "target": 0.8,
+      "passed": true
+    },
+    {
+      "metric": "Email extraction accuracy",
+      "value": 1.0,
+      "target": 0.95,
+      "passed": true
+    },
+    {
+      "metric": "Answer scoring band accuracy",
+      "value": 1.0,
+      "target": 0.8,
+      "passed": true
+    },
+    {
+      "metric": "Answer scoring Spearman rho",
+      "value": 0.9786213798340123,
+      "target": 0.8,
+      "passed": true
+    },
+    {
+      "metric": "MCQ scoring accuracy",
+      "value": 1.0,
+      "target": 1.0,
+      "passed": true
+    },
+    {
+      "metric": "Code judge accuracy",
+      "value": 1.0,
+      "target": 1.0,
+      "passed": true
+    },
+    {
+      "metric": "Proficiency error reduction vs average @1 attempt",
+      "value": 0.3292149309211583,
+      "target": 0.2,
+      "passed": true
+    },
+    {
+      "metric": "Proficiency error reduction vs average @5 attempts (on par \u2265 -2%)",
+      "value": 0.05495672656951189,
+      "target": -0.02,
+      "passed": true
+    },
+    {
+      "metric": "Proficiency error reduction vs average @12 attempts (on par \u2265 -2%)",
+      "value": 0.0005402179948953423,
+      "target": -0.02,
+      "passed": true
+    },
+    {
+      "metric": "Weak-flag false alarms @1 attempt \u2014 old method",
+      "value": 0.20302760463045413,
+      "target": null,
+      "passed": null
+    },
+    {
+      "metric": "Weak-flag false alarms @1 attempt \u2014 new metric",
+      "value": 0.0,
+      "target": null,
+      "passed": null
+    },
+    {
+      "metric": "Weak-flag precision @5 attempts \u2014 old method",
+      "value": 0.7890995260663507,
+      "target": null,
+      "passed": null
+    },
+    {
+      "metric": "Weak-flag precision @5 attempts \u2014 new metric",
+      "value": 0.784452296819788,
+      "target": null,
+      "passed": null
+    },
+    {
+      "metric": "OTP digit uniformity p-value",
+      "value": 0.07347593775454102,
+      "target": 0.05,
+      "passed": true
+    },
+    {
+      "metric": "OTP lifecycle checks passed",
+      "value": 1.0,
+      "target": 1.0,
+      "passed": true
+    },
+    {
+      "metric": "Resume feedback determinism",
+      "value": 1.0,
+      "target": 1.0,
+      "passed": true
+    },
+    {
+      "metric": "Question bank validity",
+      "value": 1.0,
+      "target": 1.0,
+      "passed": true
+    },
+    {
+      "metric": "AI-output guards behaving correctly",
+      "value": 1.0,
+      "target": 1.0,
+      "passed": true
+    }
+  ],
+  "results": {
+    "parser": {
+      "text": {
+        "documents": 10,
+        "fields": {
+          "skills": {
+            "tp": 65,
+            "fp": 4,
+            "fn": 9,
+            "precision": 0.9420289855072463,
+            "recall": 0.8783783783783784,
+            "f1": 0.9090909090909092
+          },
+          "projects": {
+            "tp": 19,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "education": {
+            "tp": 11,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "internships": {
+            "tp": 12,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          }
+        },
+        "exact_match_accuracy": {
+          "contact.name": 1.0,
+          "contact.email": 1.0,
+          "internship_count": 1.0,
+          "project_count": 1.0,
+          "internship.role": 1.0,
+          "internship.company": 0.9166666666666666,
+          "internship.duration": 1.0
+        },
+        "macro_f1": 0.9772727272727273,
+        "latency_ms": {
+          "mean": 14.40574000007473,
+          "p95": 45.17194999061751
+        },
+        "docs_with_section_errors": []
+      },
+      "docx": {
+        "documents": 10,
+        "fields": {
+          "skills": {
+            "tp": 65,
+            "fp": 4,
+            "fn": 9,
+            "precision": 0.9420289855072463,
+            "recall": 0.8783783783783784,
+            "f1": 0.9090909090909092
+          },
+          "projects": {
+            "tp": 19,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "education": {
+            "tp": 11,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "internships": {
+            "tp": 12,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          }
+        },
+        "exact_match_accuracy": {
+          "contact.name": 1.0,
+          "contact.email": 1.0,
+          "internship_count": 1.0,
+          "project_count": 1.0,
+          "internship.role": 1.0,
+          "internship.company": 0.9166666666666666,
+          "internship.duration": 1.0
+        },
+        "macro_f1": 0.9772727272727273,
+        "latency_ms": {
+          "mean": 174.3583200033754,
+          "p95": 473.8041300064645
+        },
+        "docs_with_section_errors": []
+      }
+    },
+    "evaluator": {
+      "short_answer_cases": 85,
+      "mcq_cases": 6,
+      "band_accuracy": 1.0,
+      "spearman_rho": 0.9786213798340123,
+      "pearson_r": 0.9971669785210978,
+      "mae_vs_target": 0.9564705882352943,
+      "monotonic_rate": 1.0,
+      "mcq_accuracy": 1.0,
+      "confusion": {
+        "high": {
+          "high": 17,
+          "low": 0,
+          "mid": 0
+        },
+        "low": {
+          "high": 0,
+          "low": 34,
+          "mid": 0
+        },
+        "mid": {
+          "high": 0,
+          "low": 0,
+          "mid": 34
+        }
+      },
+      "latency_ms": {
+        "mean": 4.238162353388308,
+        "p95": 14.287719986168666
+      },
+      "note": "Synthetic answers per question: explains all key concepts / explains half / bare keyword list (should be capped at 50) / off-topic / empty. Measures rubric scoring consistency without the AI grader; paraphrases without the key terms need the AI grader (see the ai_guards suite)."
+    },
+    "dsa": {
+      "problems": 57,
+      "submissions": 229,
+      "judge_accuracy": 1.0,
+      "accept_precision": 1.0,
+      "accept_recall": 1.0,
+      "false_accepts": 0,
+      "false_rejects": 0,
+      "status_by_variant": {
+        "infinite_loop -> timeout": 1,
+        "reference -> correct": 57,
+        "runtime_error -> runtime_error": 57,
+        "syntax_error -> runtime_error": 57,
+        "wrong_answer -> failed": 57
+      },
+      "latency_ms": {
+        "mean": 4119.236586026631,
+        "p95": 5523.578160000034
+      }
+    },
+    "proficiency": {
+      "simulated_learners": 2000,
+      "parameters": {
+        "prior_score": 50.0,
+        "prior_strength": 1.0,
+        "recency_decay": 0.9,
+        "min_attempts": 3
+      },
+      "model": "start ability ~ U(15,95); 'improving' learners gain U(0,25) points over 12 attempts; 70% open answers ~ N(ability + difficulty shift, 18), 30% MCQ all-or-nothing",
+      "by_attempts": {
+        "1": {
+          "naive_mae": 22.37094206333561,
+          "metric_mae": 15.006093917313345,
+          "mae_reduction": 0.3292149309211583,
+          "naive_weak_precision": 0.7423728813559322,
+          "naive_false_alarm_rate": 0.20302760463045413,
+          "metric_weak_precision": 1.0,
+          "metric_weak_recall": 0.0,
+          "metric_false_alarm_rate": 0.0
+        },
+        "2": {
+          "naive_mae": 16.080264317433762,
+          "metric_mae": 12.684358804227106,
+          "mae_reduction": 0.21118468242620325,
+          "naive_weak_precision": 0.7601431980906921,
+          "naive_false_alarm_rate": 0.17523975588491716,
+          "metric_weak_precision": 1.0,
+          "metric_weak_recall": 0.0,
+          "metric_false_alarm_rate": 0.0
+        },
+        "3": {
+          "naive_mae": 13.114587549926803,
+          "metric_mae": 11.328248823872554,
+          "mae_reduction": 0.1362100576364842,
+          "naive_weak_precision": 0.7744533947065593,
+          "naive_false_alarm_rate": 0.1675213675213675,
+          "metric_weak_precision": 0.7780346820809249,
+          "metric_weak_recall": 0.810843373493976,
+          "metric_false_alarm_rate": 0.1641025641025641
+        },
+        "5": {
+          "naive_mae": 10.49508485041414,
+          "metric_mae": 9.918309341966102,
+          "mae_reduction": 0.05495672656951189,
+          "naive_weak_precision": 0.7890995260663507,
+          "naive_false_alarm_rate": 0.1454248366013072,
+          "metric_weak_precision": 0.784452296819788,
+          "metric_weak_recall": 0.8582474226804123,
+          "metric_false_alarm_rate": 0.14950980392156862
+        },
+        "8": {
+          "naive_mae": 9.086791400531943,
+          "metric_mae": 9.14322487632042,
+          "mae_reduction": -0.0062104953553983044,
+          "naive_weak_precision": 0.7503090234857849,
+          "naive_false_alarm_rate": 0.15326251896813353,
+          "metric_weak_precision": 0.760705289672544,
+          "metric_weak_recall": 0.8856304985337243,
+          "metric_false_alarm_rate": 0.1441578148710167
+        },
+        "12": {
+          "naive_mae": 9.406034902196726,
+          "metric_mae": 9.400953592881946,
+          "mae_reduction": 0.0005402179948953423,
+          "naive_weak_precision": 0.6966145833333334,
+          "naive_false_alarm_rate": 0.16293706293706295,
+          "metric_weak_precision": 0.7215363511659808,
+          "metric_weak_recall": 0.9228070175438596,
+          "metric_false_alarm_rate": 0.14195804195804196
+        }
+      },
+      "stationary": {
+        "1": {
+          "naive_mae": 22.37094206333561,
+          "metric_mae": 15.006093917313345,
+          "mae_reduction": 0.3292149309211583,
+          "naive_weak_precision": 0.7423728813559322,
+          "naive_false_alarm_rate": 0.20302760463045413,
+          "metric_weak_precision": 1.0,
+          "metric_weak_recall": 0.0,
+          "metric_false_alarm_rate": 0.0
+        },
+        "2": {
+          "naive_mae": 16.035602241386425,
+          "metric_mae": 12.508369829643826,
+          "mae_reduction": 0.21996257818363285,
+          "naive_weak_precision": 0.7734741784037559,
+          "naive_false_alarm_rate": 0.17186108637577915,
+          "metric_weak_precision": 1.0,
+          "metric_weak_recall": 0.0,
+          "metric_false_alarm_rate": 0.0
+        },
+        "3": {
+          "naive_mae": 12.999819628412952,
+          "metric_mae": 10.983144261614852,
+          "mae_reduction": 0.15513102677135382,
+          "naive_weak_precision": 0.799554565701559,
+          "naive_false_alarm_rate": 0.16028495102404275,
+          "metric_weak_precision": 0.8040313549832027,
+          "metric_weak_recall": 0.8187001140250855,
+          "metric_false_alarm_rate": 0.1558325912733749
+        },
+        "5": {
+          "naive_mae": 10.315862815892,
+          "metric_mae": 9.385024125173983,
+          "mae_reduction": 0.09023372134069318,
+          "naive_weak_precision": 0.8324022346368715,
+          "naive_false_alarm_rate": 0.13357079252003562,
+          "metric_weak_precision": 0.8209121245828699,
+          "metric_weak_recall": 0.8415051311288484,
+          "metric_false_alarm_rate": 0.1433659839715049
+        },
+        "8": {
+          "naive_mae": 8.020110752224475,
+          "metric_mae": 7.74961744446265,
+          "mae_reduction": 0.03372687935597407,
+          "naive_weak_precision": 0.8554216867469879,
+          "naive_false_alarm_rate": 0.11754229741763135,
+          "metric_weak_precision": 0.8484187568157033,
+          "metric_weak_recall": 0.887115165336374,
+          "metric_false_alarm_rate": 0.12377560106856635
+        },
+        "12": {
+          "naive_mae": 6.674266077894314,
+          "metric_mae": 6.918738757285207,
+          "mae_reduction": -0.036629147914945426,
+          "naive_weak_precision": 0.8774834437086093,
+          "naive_false_alarm_rate": 0.09884238646482636,
+          "metric_weak_precision": 0.8719646799116998,
+          "metric_weak_recall": 0.9007981755986317,
+          "metric_false_alarm_rate": 0.10329474621549421
+        }
+      }
+    },
+    "otp": {
+      "codes_sampled": 100000,
+      "length_ok_rate": 1.0,
+      "digit_chi2": 15.697399999999998,
+      "digit_p_value": 0.07347593775454102,
+      "per_position": [
+        {
+          "position": 1,
+          "chi2": 12.5068,
+          "p_value": 0.18622182362814932
+        },
+        {
+          "position": 2,
+          "chi2": 11.708000000000002,
+          "p_value": 0.23027586080585544
+        },
+        {
+          "position": 3,
+          "chi2": 14.4224,
+          "p_value": 0.10807304945936157
+        },
+        {
+          "position": 4,
+          "chi2": 8.2392,
+          "p_value": 0.5102320983497668
+        },
+        {
+          "position": 5,
+          "chi2": 5.3154,
+          "p_value": 0.805993100063341
+        },
+        {
+          "position": 6,
+          "chi2": 9.8438,
+          "p_value": 0.36327797727186784
+        }
+      ],
+      "entropy_bits_per_digit": 3.3219092296699806,
+      "entropy_bits_per_code": 19.931455378019884,
+      "duplicates": 4880,
+      "expected_duplicates_if_uniform": 4837.372791457703,
+      "brute_force_success_probability": 5e-06,
+      "lifecycle_checks": {
+        "correct code accepted": true,
+        "code cannot be reused": true,
+        "stored value is a hash, not the code": true,
+        "wrong code rejected": true,
+        "locked after 5 wrong attempts": true,
+        "expired code rejected": true,
+        "sign-up code can't reset a password": true,
+        "resend blocked during cool-down": true,
+        "resend allowed after cool-down": true,
+        "newest code works after resend": true
+      },
+      "lifecycle_pass_rate": 1.0,
+      "issue_ms_mean": 3.8550200013560243,
+      "verify_ms_mean": 7.973100000526756
+    },
+    "feedback": {
+      "resumes": 10,
+      "checks_pass_rate": {
+        "deterministic": 1.0,
+        "in_range": 1.0,
+        "categories_complete": 1.0
+      },
+      "sensitivity_pass_rate": {
+        "internship_added": 1.0,
+        "project_added": 1.0,
+        "skills_added": 1.0
+      },
+      "overall_score": {
+        "mean": 73.3,
+        "min": 65,
+        "max": 83
+      }
+    },
+    "bank": {
+      "questions": 74,
+      "valid_rate": 1.0,
+      "duplicate_ids": 0,
+      "by_topic": {
+        "Data Structures": 8,
+        "Dynamic Programming": 5,
+        "DBMS": 9,
+        "OOP": 7,
+        "Operating Systems": 7,
+        "System Design": 8,
+        "Computer Networks": 7,
+        "Python": 7,
+        "Machine Learning": 6,
+        "Algorithms": 5,
+        "Web Development": 5
+      },
+      "by_difficulty": {
+        "easy": 18,
+        "medium": 41,
+        "hard": 15
+      },
+      "by_type": {
+        "short_answer": 69,
+        "mcq": 5
+      },
+      "problems": []
+    },
+    "ai_guards": {
+      "checks": 136,
+      "passed": 136,
+      "pass_rate": 1.0,
+      "by_guard": {
+        "dsa": {
+          "passed": 125,
+          "total": 125
+        },
+        "question": {
+          "passed": 7,
+          "total": 7
+        },
+        "grader": {
+          "passed": 4,
+          "total": 4
+        }
+      },
+      "failures": [],
+      "grading_examples": {
+        "injection_short_answer_score": 0.0,
+        "keyword_list_score": 50.0,
+        "paraphrase_ai_score": 63.0,
+        "paraphrase_rubric_only": 0.0
+      }
+    },
+    "security": {
+      "error": "'NoneType' object has no attribute 'group'"
+    }
+  }
+}
