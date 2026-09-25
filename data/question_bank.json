@@ -1,81 +1,1129 @@
 [
-  {"id": "q001", "topic": "Data Structures", "type": "short_answer", "difficulty": "easy",
-   "prompt": "What is the difference between an array and a linked list?",
-   "keywords": ["contiguous", "memory", "pointer", "insertion", "deletion", "random access", "size"]},
-
-  {"id": "q002", "topic": "Data Structures", "type": "short_answer", "difficulty": "medium",
-   "prompt": "Explain how a hash table handles collisions.",
-   "keywords": ["chaining", "open addressing", "linked list", "probing", "load factor", "hash function"]},
-
-  {"id": "q003", "topic": "Dynamic Programming", "type": "short_answer", "difficulty": "medium",
-   "prompt": "Explain the difference between memoization and tabulation.",
-   "keywords": ["top-down", "bottom-up", "recursion", "overlapping subproblems", "table", "cache"]},
-
-  {"id": "q004", "topic": "Dynamic Programming", "type": "short_answer", "difficulty": "hard",
-   "prompt": "How would you approach the 0/1 knapsack problem? Describe your strategy.",
-   "keywords": ["weight", "value", "subset", "table", "capacity", "optimal", "dp array"]},
-
-  {"id": "q005", "topic": "DBMS", "type": "mcq", "difficulty": "easy",
-   "prompt": "Which normal form removes transitive dependency on the primary key?",
-   "options": ["1NF", "2NF", "3NF", "BCNF"], "answer": "3NF"},
-
-  {"id": "q006", "topic": "DBMS", "type": "short_answer", "difficulty": "medium",
-   "prompt": "What is the difference between a clustered and a non-clustered index?",
-   "keywords": ["physical order", "leaf node", "one per table", "pointer", "separate structure"]},
-
-  {"id": "q007", "topic": "OOP", "type": "short_answer", "difficulty": "easy",
-   "prompt": "Explain polymorphism with an example.",
-   "keywords": ["overloading", "overriding", "same interface", "different implementation", "runtime", "compile time"]},
-
-  {"id": "q008", "topic": "OOP", "type": "mcq", "difficulty": "easy",
-   "prompt": "Which OOP principle restricts direct access to an object's internal state?",
-   "options": ["Inheritance", "Encapsulation", "Polymorphism", "Abstraction"], "answer": "Encapsulation"},
-
-  {"id": "q009", "topic": "Operating Systems", "type": "short_answer", "difficulty": "medium",
-   "prompt": "What is a deadlock, and what are the four necessary conditions for it to occur?",
-   "keywords": ["mutual exclusion", "hold and wait", "no preemption", "circular wait", "resource", "process"]},
-
-  {"id": "q010", "topic": "Operating Systems", "type": "short_answer", "difficulty": "medium",
-   "prompt": "Explain the difference between a process and a thread.",
-   "keywords": ["independent memory", "shared memory", "lightweight", "context switch", "address space"]},
-
-  {"id": "q011", "topic": "System Design", "type": "short_answer", "difficulty": "hard",
-   "prompt": "How would you design a URL shortener at a high level?",
-   "keywords": ["hash", "encoding", "database", "collision", "redirect", "cache", "scale", "unique id"]},
-
-  {"id": "q012", "topic": "System Design", "type": "short_answer", "difficulty": "medium",
-   "prompt": "What is the difference between horizontal and vertical scaling?",
-   "keywords": ["more machines", "bigger machine", "distributed", "single server", "load balancer"]},
-
-  {"id": "q013", "topic": "Computer Networks", "type": "short_answer", "difficulty": "medium",
-   "prompt": "Explain the difference between TCP and UDP.",
-   "keywords": ["connection-oriented", "connectionless", "reliable", "unreliable", "handshake", "ordering"]},
-
-  {"id": "q014", "topic": "Computer Networks", "type": "mcq", "difficulty": "easy",
-   "prompt": "Which layer of the OSI model is responsible for routing?",
-   "options": ["Data Link", "Network", "Transport", "Session"], "answer": "Network"},
-
-  {"id": "q015", "topic": "Python", "type": "short_answer", "difficulty": "easy",
-   "prompt": "What is the difference between a list and a tuple in Python?",
-   "keywords": ["mutable", "immutable", "brackets", "parentheses", "performance"]},
-
-  {"id": "q016", "topic": "Python", "type": "short_answer", "difficulty": "medium",
-   "prompt": "Explain how Python's garbage collection works, at a high level.",
-   "keywords": ["reference count", "cyclic", "garbage collector", "memory", "generational"]},
-
-  {"id": "q017", "topic": "Machine Learning", "type": "short_answer", "difficulty": "medium",
-   "prompt": "What is overfitting, and name two ways to reduce it.",
-   "keywords": ["training data", "generalize", "regularization", "cross-validation", "more data", "dropout", "test set"]},
-
-  {"id": "q018", "topic": "Data Structures", "type": "short_answer", "difficulty": "hard",
-   "prompt": "How does a self-balancing binary search tree (e.g. AVL or Red-Black) maintain O(log n) operations?",
-   "keywords": ["rotation", "balance factor", "height", "rebalance", "insertion", "deletion"]},
-
-  {"id": "q019", "topic": "DBMS", "type": "short_answer", "difficulty": "hard",
-   "prompt": "What is a database transaction, and what do the ACID properties guarantee?",
-   "keywords": ["atomicity", "consistency", "isolation", "durability", "commit", "rollback"]},
-
-  {"id": "q020", "topic": "System Design", "type": "short_answer", "difficulty": "medium",
-   "prompt": "What problem does a load balancer solve, and name one algorithm it might use.",
-   "keywords": ["distribute traffic", "round robin", "least connections", "availability", "single point of failure"]}
+ {
+  "id": "q001",
+  "topic": "Data Structures",
+  "type": "short_answer",
+  "difficulty": "easy",
+  "prompt": "What is the difference between an array and a linked list?",
+  "keywords": [
+   "contiguous|adjacent|consecutive memory|next to each other|one block|single block|block of memory",
+   "random access|index|O(1) access|direct access",
+   "pointer|reference|next node|link|nodes|node",
+   "insertion|insert|adding",
+   "deletion|delete|removing",
+   "fixed size|resize|dynamic size|grow"
+  ],
+  "ideal_answer": "An array stores elements in contiguous memory, so any element can be read by index in O(1), but its size is fixed (or resizing means copying) and inserting or deleting in the middle shifts elements. A linked list stores nodes anywhere in memory, each holding a pointer to the next, so it grows dynamically and inserts/deletes in O(1) once you have the node, but access by position is O(n) and each node costs extra memory for the pointer."
+ },
+ {
+  "id": "q002",
+  "topic": "Data Structures",
+  "type": "short_answer",
+  "difficulty": "medium",
+  "prompt": "Explain how a hash table handles collisions.",
+  "keywords": [
+   "collision|same bucket|same index|same slot",
+   "chaining|separate chaining|linked list|bucket list",
+   "open addressing|probing|linear probing|quadratic probing|double hashing",
+   "load factor|resize|rehash",
+   "hash function|hashing"
+  ],
+  "ideal_answer": "A collision happens when two keys hash to the same bucket. With separate chaining each bucket holds a list of entries and colliding keys are appended to it. With open addressing the table probes for another free slot (linear or quadratic probing, or double hashing). Keeping the load factor low by resizing and rehashing, and using a good hash function, keeps operations close to O(1)."
+ },
+ {
+  "id": "q003",
+  "topic": "Dynamic Programming",
+  "type": "short_answer",
+  "difficulty": "medium",
+  "prompt": "Explain the difference between memoization and tabulation.",
+  "keywords": [
+   "top-down|top down|recursive|recursion",
+   "bottom-up|bottom up|iterative|loop|loops|for loop",
+   "cache|store results|memo|lookup",
+   "table|array|dp table",
+   "overlapping subproblems|same subproblems|repeated subproblems"
+  ],
+  "ideal_answer": "Both avoid recomputing overlapping subproblems. Memoization is top-down: you write the natural recursion and cache each result the first time it is computed. Tabulation is bottom-up: you fill a table iteratively from the smallest subproblems up to the answer, which avoids recursion depth limits and often allows space optimisation."
+ },
+ {
+  "id": "q004",
+  "topic": "Dynamic Programming",
+  "type": "short_answer",
+  "difficulty": "hard",
+  "prompt": "How would you approach the 0/1 knapsack problem? Describe your strategy.",
+  "keywords": [
+   "weight|capacity",
+   "value|profit",
+   "include or exclude|take or skip|choose or not|pick or not",
+   "dp table|table|2d array|dp array|memo",
+   "optimal substructure|subproblem|best value",
+   "o(n*w)|n x w|n*w|pseudo-polynomial"
+  ],
+  "ideal_answer": "Define dp[i][w] as the best value using the first i items with capacity w. For each item you either skip it (dp[i-1][w]) or take it if it fits (value + dp[i-1][w - weight]) and keep the maximum. Filling the table bottom-up takes O(n*W) time, and space can be reduced to one row by iterating capacity backwards."
+ },
+ {
+  "id": "q005",
+  "topic": "DBMS",
+  "type": "mcq",
+  "difficulty": "easy",
+  "prompt": "Which normal form removes transitive dependency on the primary key?",
+  "options": [
+   "1NF",
+   "2NF",
+   "3NF",
+   "BCNF"
+  ],
+  "answer": "3NF",
+  "ideal_answer": "3NF: every non-key attribute must depend only on the key, not on another non-key attribute."
+ },
+ {
+  "id": "q006",
+  "topic": "DBMS",
+  "type": "short_answer",
+  "difficulty": "medium",
+  "prompt": "What is the difference between a clustered and a non-clustered index?",
+  "keywords": [
+   "physical order|sorted on disk|stores the rows|data order",
+   "one per table|only one|single clustered",
+   "separate structure|separate from the data|secondary index",
+   "pointer|row locator|reference to the row|lookup",
+   "range queries|range scan|faster reads"
+  ],
+  "ideal_answer": "A clustered index defines the physical order of the rows, so the table data itself is the index's leaf level; there can be only one per table and it makes range scans fast. A non-clustered index is a separate structure that stores the key plus a pointer (row locator) back to the data, so a table can have many, at the cost of an extra lookup and more storage and write overhead."
+ },
+ {
+  "id": "q007",
+  "topic": "OOP",
+  "type": "short_answer",
+  "difficulty": "easy",
+  "prompt": "Explain polymorphism with an example.",
+  "keywords": [
+   "same interface|same method name|common interface|one interface",
+   "different implementation|different behaviour|behaves differently",
+   "overriding|override|runtime polymorphism|dynamic dispatch",
+   "overloading|compile time|static polymorphism",
+   "example|for instance|e.g|such as|like"
+  ],
+  "ideal_answer": "Polymorphism means one interface, many implementations: code calls the same method and each object responds in its own way. Runtime polymorphism comes from method overriding — for example Shape.area() implemented differently by Circle and Square, chosen at runtime. Compile-time polymorphism comes from method overloading, where the method is chosen by its parameter types."
+ },
+ {
+  "id": "q008",
+  "topic": "OOP",
+  "type": "mcq",
+  "difficulty": "easy",
+  "prompt": "Which OOP principle restricts direct access to an object's internal state?",
+  "options": [
+   "Inheritance",
+   "Encapsulation",
+   "Polymorphism",
+   "Abstraction"
+  ],
+  "answer": "Encapsulation",
+  "ideal_answer": "Encapsulation hides internal state behind methods (private fields, getters/setters)."
+ },
+ {
+  "id": "q009",
+  "topic": "Operating Systems",
+  "type": "short_answer",
+  "difficulty": "medium",
+  "prompt": "What is a deadlock, and what are the four necessary conditions for it to occur?",
+  "keywords": [
+   "mutual exclusion|non-shareable",
+   "hold and wait|holding while waiting",
+   "no preemption|cannot be taken away|can't be forcibly",
+   "circular wait|cycle|circular chain",
+   "waiting forever|blocked forever|each waiting for another|indefinitely"
+  ],
+  "ideal_answer": "A deadlock is when a set of processes are blocked forever, each waiting for a resource held by another. It needs all four Coffman conditions: mutual exclusion (resources can't be shared), hold and wait, no preemption (resources can't be taken away) and circular wait. Breaking any one of them, e.g. ordering resource acquisition, prevents it."
+ },
+ {
+  "id": "q010",
+  "topic": "Operating Systems",
+  "type": "short_answer",
+  "difficulty": "medium",
+  "prompt": "Explain the difference between a process and a thread.",
+  "keywords": [
+   "own address space|separate memory|independent memory|isolated memory",
+   "shared memory|share memory|same address space|share the heap",
+   "lightweight|cheaper|less overhead|lighter|smaller|less resources",
+   "context switch|switching",
+   "crash|isolation|one thread can crash|fault isolation"
+  ],
+  "ideal_answer": "A process is an independent program in execution with its own address space and resources, so processes are isolated from each other. Threads are lightweight units of execution inside a process that share its memory and resources, which makes creating and context-switching them cheaper and communication easy, but a bug in one thread can corrupt shared data or crash the whole process, so shared state needs synchronisation."
+ },
+ {
+  "id": "q011",
+  "topic": "System Design",
+  "type": "short_answer",
+  "difficulty": "hard",
+  "prompt": "How would you design a URL shortener at a high level?",
+  "keywords": [
+   "unique id|counter|id generator|key generation",
+   "base62|encoding|hash|short code",
+   "database|key-value store|store the mapping|table",
+   "redirect|301|302",
+   "cache|redis|memcached",
+   "collision|duplicate|uniqueness",
+   "scale|sharding|replication|read heavy"
+  ],
+  "ideal_answer": "Generate a unique ID per long URL (a counter or key-generation service, or a hash with collision checks) and encode it in base62 to get a short code. Store code→URL in a key-value store or database; on a request, look up the code and send a 301/302 redirect. The workload is read-heavy, so put a cache like Redis in front, replicate and shard the store, and add analytics or expiry as needed."
+ },
+ {
+  "id": "q012",
+  "topic": "System Design",
+  "type": "short_answer",
+  "difficulty": "medium",
+  "prompt": "What is the difference between horizontal and vertical scaling?",
+  "keywords": [
+   "more machines|add servers|more servers|more nodes|scale out",
+   "bigger machine|bigger server|server bigger|bigger|more cpu|more ram|upgrade the server|upgrading|scale up|more powerful",
+   "load balancer|distribute traffic|distribute load",
+   "hardware limit|ceiling|upper limit|limited by the machine",
+   "single point of failure|downtime|redundancy|fault tolerance"
+  ],
+  "ideal_answer": "Vertical scaling (scale up) makes one server more powerful by adding CPU, RAM or disk; it's simple but hits a hardware ceiling and the server remains a single point of failure. Horizontal scaling (scale out) adds more machines and spreads load across them with a load balancer; it scales further and adds redundancy, but the app must handle distribution — stateless servers, shared data and consistency."
+ },
+ {
+  "id": "q013",
+  "topic": "Computer Networks",
+  "type": "short_answer",
+  "difficulty": "medium",
+  "prompt": "Explain the difference between TCP and UDP.",
+  "keywords": [
+   "connection-oriented|connection oriented|three-way handshake|handshake",
+   "connectionless|no connection|no handshake",
+   "reliable|retransmission|acknowledgement|guaranteed delivery",
+   "ordering|in order|sequence numbers",
+   "faster|low latency|less overhead|lightweight",
+   "video|streaming|gaming|dns|voip"
+  ],
+  "ideal_answer": "TCP is connection-oriented (three-way handshake) and reliable: it acknowledges and retransmits lost segments, delivers data in order and does flow and congestion control. UDP is connectionless and just sends datagrams with no delivery or ordering guarantees, so it has less overhead and latency — good for streaming, gaming, VoIP and DNS, while TCP suits web pages, email and file transfer."
+ },
+ {
+  "id": "q014",
+  "topic": "Computer Networks",
+  "type": "mcq",
+  "difficulty": "easy",
+  "prompt": "Which layer of the OSI model is responsible for routing?",
+  "options": [
+   "Data Link",
+   "Network",
+   "Transport",
+   "Session"
+  ],
+  "answer": "Network",
+  "ideal_answer": "The network layer (layer 3, IP) routes packets between networks."
+ },
+ {
+  "id": "q015",
+  "topic": "Python",
+  "type": "short_answer",
+  "difficulty": "easy",
+  "prompt": "What is the difference between a list and a tuple in Python?",
+  "keywords": [
+   "mutable|can be changed|modify",
+   "immutable|cannot be changed|can't be modified|read-only",
+   "hashable|dictionary key|dict key|set",
+   "faster|less memory|performance|lighter",
+   "square brackets|[]|parentheses|()"
+  ],
+  "ideal_answer": "Lists are mutable — you can append, remove or change items — and are written with square brackets. Tuples are immutable and written with parentheses; because they can't change they are hashable (usable as dict keys or set members when their items are hashable) and slightly faster and lighter. Use tuples for fixed records, lists for collections that change."
+ },
+ {
+  "id": "q016",
+  "topic": "Python",
+  "type": "short_answer",
+  "difficulty": "medium",
+  "prompt": "Explain how Python's garbage collection works, at a high level.",
+  "keywords": [
+   "reference count|refcount|reference counting",
+   "zero references|count reaches zero|freed immediately",
+   "cycle|cyclic|circular reference",
+   "generational|generations|gen 0",
+   "gc module|garbage collector|collector"
+  ],
+  "ideal_answer": "CPython mainly uses reference counting: every object tracks how many references point to it and is freed as soon as the count drops to zero. Reference counting can't free cycles (objects referring to each other), so a cyclic garbage collector periodically finds unreachable cycles. It is generational — new objects are checked often, long-lived ones less — and can be tuned through the gc module."
+ },
+ {
+  "id": "q017",
+  "topic": "Machine Learning",
+  "type": "short_answer",
+  "difficulty": "medium",
+  "prompt": "What is overfitting, and name two ways to reduce it.",
+  "keywords": [
+   "memorize|noise|fits the training data too well|too complex",
+   "generalize|unseen data|new data|test set",
+   "regularization|l1|l2|weight decay|penalty",
+   "cross-validation|validation set|k-fold",
+   "more data|data augmentation|bigger dataset",
+   "dropout|early stopping|simpler model|pruning"
+  ],
+  "ideal_answer": "Overfitting is when a model learns the training data, including its noise, so well that it performs poorly on unseen data — high training accuracy, low validation accuracy. You can reduce it with regularization (L1/L2), more or augmented data, a simpler model, dropout or early stopping, and you detect it with a validation set or cross-validation."
+ },
+ {
+  "id": "q018",
+  "topic": "Data Structures",
+  "type": "short_answer",
+  "difficulty": "hard",
+  "prompt": "How does a self-balancing binary search tree (e.g. AVL or Red-Black) maintain O(log n) operations?",
+  "keywords": [
+   "height|balanced|log n|depth",
+   "rotation|rotate|left rotation|right rotation",
+   "balance factor|height difference|red-black|colour|color",
+   "rebalance|restructure|fix up|after insertion",
+   "worst case|degenerate|skewed|linked list"
+  ],
+  "ideal_answer": "A plain BST can degenerate into a linked list (O(n)). Self-balancing trees keep the height O(log n) by checking an invariant after every insertion or deletion — AVL trees keep each node's balance factor (height difference) within ±1, red-black trees enforce colour rules — and restoring it with rotations (and recolouring), which take O(1) each."
+ },
+ {
+  "id": "q019",
+  "topic": "DBMS",
+  "type": "short_answer",
+  "difficulty": "hard",
+  "prompt": "What is a database transaction, and what do the ACID properties guarantee?",
+  "keywords": [
+   "unit of work|group of operations|group of queries|set of operations|single logical|as one unit",
+   "atomicity|atomic|all or nothing",
+   "consistency|consistent|valid state|constraints",
+   "isolation|isolated|concurrent|don't interfere",
+   "durability|durable|persist|survive crash|survives a crash|permanent",
+   "commit|rollback"
+  ],
+  "ideal_answer": "A transaction is a group of operations treated as one logical unit of work. Atomicity: all of it happens or none (rollback on failure). Consistency: it moves the database from one valid state to another, respecting constraints. Isolation: concurrent transactions don't see each other's partial work. Durability: once committed, changes survive crashes."
+ },
+ {
+  "id": "q020",
+  "topic": "System Design",
+  "type": "short_answer",
+  "difficulty": "medium",
+  "prompt": "What problem does a load balancer solve, and name one algorithm it might use.",
+  "keywords": [
+   "distribute traffic|spread requests|distribute load|share the load|divides the traffic|divide traffic|split traffic|spread traffic|spreads requests|spreads incoming requests",
+   "availability|single point of failure|failover|redundancy",
+   "health check|unhealthy|detect failures",
+   "round robin|least connections|ip hash|weighted",
+   "scale|horizontal scaling|more servers"
+  ],
+  "ideal_answer": "A load balancer spreads incoming requests across several servers so no single server is overloaded, which lets you scale horizontally and keeps the service available if one server fails (health checks take it out of rotation). Common algorithms are round robin, weighted round robin, least connections and IP hash for sticky sessions."
+ },
+ {
+  "id": "q021",
+  "topic": "Data Structures",
+  "type": "short_answer",
+  "difficulty": "easy",
+  "prompt": "What is the difference between a stack and a queue? Give a use case for each.",
+  "keywords": [
+   "lifo|last in first out",
+   "fifo|first in first out",
+   "push|pop|top",
+   "enqueue|dequeue|front|rear",
+   "use case|undo|function call|recursion|scheduling|bfs|printer|buffer"
+  ],
+  "ideal_answer": "A stack is LIFO — the last item pushed is the first popped — used for function calls, undo and DFS or expression parsing. A queue is FIFO — items are dequeued in the order they were enqueued — used for task scheduling, buffers and BFS."
+ },
+ {
+  "id": "q022",
+  "topic": "Data Structures",
+  "type": "short_answer",
+  "difficulty": "medium",
+  "prompt": "What is a heap, and how is it used to implement a priority queue?",
+  "keywords": [
+   "complete binary tree|array",
+   "heap property|parent smaller|parent larger|min-heap|max-heap",
+   "o(log n)|log n|sift|heapify|bubble up",
+   "priority queue|highest priority|minimum element",
+   "o(1)|peek|top element"
+  ],
+  "ideal_answer": "A heap is a complete binary tree, usually stored in an array, where every parent is ≤ its children (min-heap) or ≥ (max-heap). The top element is the min/max, available in O(1); insert and extract re-establish the heap property by sifting up or down in O(log n). That makes it the standard priority-queue implementation."
+ },
+ {
+  "id": "q023",
+  "topic": "Data Structures",
+  "type": "short_answer",
+  "difficulty": "medium",
+  "prompt": "When would you choose a hash map over a balanced BST, and vice versa?",
+  "keywords": [
+   "o(1)|constant time|average",
+   "o(log n)|logarithmic",
+   "ordered|sorted|range query|in order|min max",
+   "worst case|collisions|guaranteed",
+   "memory|space"
+  ],
+  "ideal_answer": "A hash map gives average O(1) lookups/inserts but no ordering and a worse worst case under collisions. A balanced BST gives O(log n) guaranteed operations and keeps keys sorted, so it supports range queries, ordered iteration, floor/ceiling and min/max. Choose the hash map for pure key lookup, the BST when order matters."
+ },
+ {
+  "id": "q024",
+  "topic": "Data Structures",
+  "type": "short_answer",
+  "difficulty": "medium",
+  "prompt": "What is a trie and what problems is it good for?",
+  "keywords": [
+   "prefix|prefixes",
+   "character|node per character|children",
+   "autocomplete|search suggestions|dictionary|spell",
+   "o(length)|length of the word|o(m)",
+   "memory|space"
+  ],
+  "ideal_answer": "A trie is a tree where each edge/node represents a character, so each path from the root spells a prefix. Lookups and inserts cost O(length of the word) regardless of how many words are stored, and all words with a prefix sit in one subtree — ideal for autocomplete, spell checking and prefix search, at the cost of extra memory."
+ },
+ {
+  "id": "q025",
+  "topic": "Data Structures",
+  "type": "short_answer",
+  "difficulty": "hard",
+  "prompt": "How would you detect a cycle in a linked list, and why does it work?",
+  "keywords": [
+   "two pointers|slow and fast|tortoise and hare|floyd",
+   "move one step|two steps|different speeds",
+   "meet|catch up|same node",
+   "o(1) space|constant space|no extra memory",
+   "hash set|visited|set of nodes"
+  ],
+  "ideal_answer": "Floyd's tortoise-and-hare: move a slow pointer one step and a fast pointer two steps. If there's a cycle the fast pointer enters it and gains one node per step, so it must eventually meet the slow pointer; if it reaches null there is no cycle. It's O(n) time and O(1) space, versus a hash set of visited nodes which needs O(n) space."
+ },
+ {
+  "id": "q026",
+  "topic": "Algorithms",
+  "type": "short_answer",
+  "difficulty": "easy",
+  "prompt": "Explain binary search and its time complexity.",
+  "keywords": [
+   "sorted|ordered",
+   "middle|mid|halve|half",
+   "o(log n)|log n|logarithmic",
+   "compare|target|greater|smaller",
+   "left|right|discard"
+  ],
+  "ideal_answer": "Binary search works on a sorted array: compare the target with the middle element, then discard the half that can't contain it and repeat. Each step halves the search space, so it takes O(log n) comparisons."
+ },
+ {
+  "id": "q027",
+  "topic": "Algorithms",
+  "type": "short_answer",
+  "difficulty": "medium",
+  "prompt": "Compare quicksort and merge sort.",
+  "keywords": [
+   "divide and conquer|split|partition",
+   "o(n log n)|n log n",
+   "worst case|o(n^2)|n squared|bad pivot",
+   "stable|stability",
+   "in-place|extra space|o(n) space|memory",
+   "pivot"
+  ],
+  "ideal_answer": "Both are O(n log n) divide-and-conquer sorts. Quicksort partitions around a pivot and sorts in place, is usually fastest in practice, but degrades to O(n²) with bad pivots and isn't stable. Merge sort splits, sorts halves and merges them, always O(n log n) and stable, but needs O(n) extra space — good for linked lists and external sorting."
+ },
+ {
+  "id": "q028",
+  "topic": "Algorithms",
+  "type": "short_answer",
+  "difficulty": "medium",
+  "prompt": "What is the difference between BFS and DFS, and when would you use each?",
+  "keywords": [
+   "queue|level by level|breadth",
+   "stack|recursion|depth|backtrack",
+   "shortest path|unweighted|fewest edges",
+   "memory|space",
+   "cycle detection|topological|connected components|explore all paths"
+  ],
+  "ideal_answer": "BFS explores level by level using a queue, so in an unweighted graph it finds the shortest path (fewest edges), but can use lots of memory on wide graphs. DFS goes deep first using a stack or recursion, uses memory proportional to depth, and suits cycle detection, topological sort, connected components and backtracking."
+ },
+ {
+  "id": "q029",
+  "topic": "Algorithms",
+  "type": "short_answer",
+  "difficulty": "medium",
+  "prompt": "What is a greedy algorithm? Give an example where greedy fails.",
+  "keywords": [
+   "locally optimal|best choice at each step|local",
+   "globally optimal|overall optimal|global",
+   "example|coin change|knapsack|activity selection|dijkstra|huffman",
+   "fails|not optimal|counterexample|doesn't work",
+   "dynamic programming|dp"
+  ],
+  "ideal_answer": "A greedy algorithm makes the locally best choice at each step hoping it leads to a global optimum. It works when the problem has the greedy-choice property (activity selection, Huffman coding, Dijkstra). It fails for e.g. coin change with coins {1,3,4} and amount 6 — greedy picks 4+1+1 but 3+3 is better — or 0/1 knapsack, where dynamic programming is needed."
+ },
+ {
+  "id": "q030",
+  "topic": "Algorithms",
+  "type": "short_answer",
+  "difficulty": "hard",
+  "prompt": "How does Dijkstra's algorithm work, and what are its limitations?",
+  "keywords": [
+   "shortest path|shortest distance",
+   "priority queue|min-heap|smallest distance",
+   "relax|update distance|relaxation",
+   "negative weights|negative edges",
+   "bellman-ford|bellman ford",
+   "o(e log v)|e log v|(v+e) log v"
+  ],
+  "ideal_answer": "Dijkstra finds shortest paths from one source in a graph with non-negative weights. It repeatedly takes the unvisited node with the smallest known distance from a priority queue and relaxes its edges. With a binary heap it runs in O((V+E) log V). It fails with negative edge weights — use Bellman-Ford then."
+ },
+ {
+  "id": "q031",
+  "topic": "DBMS",
+  "type": "short_answer",
+  "difficulty": "easy",
+  "prompt": "What is the difference between a primary key and a foreign key?",
+  "keywords": [
+   "unique|uniquely identifies",
+   "not null|null",
+   "references|refers to|points to|another table|parent table",
+   "referential integrity|integrity|consistency",
+   "one per table|only one"
+  ],
+  "ideal_answer": "A primary key uniquely identifies each row of a table and can't be null; a table has one. A foreign key is a column that references the primary key of another (parent) table, linking the tables and enforcing referential integrity so child rows can't point to rows that don't exist."
+ },
+ {
+  "id": "q032",
+  "topic": "DBMS",
+  "type": "short_answer",
+  "difficulty": "medium",
+  "prompt": "What is normalization and why do we do it?",
+  "keywords": [
+   "redundancy|duplicate data|repetition",
+   "anomalies|update anomaly|insert anomaly|delete anomaly",
+   "normal forms|1nf|2nf|3nf|bcnf",
+   "dependency|functional dependency",
+   "split tables|decompose|smaller tables",
+   "joins|denormalization|trade-off"
+  ],
+  "ideal_answer": "Normalization organises tables to reduce redundancy and avoid insert, update and delete anomalies by decomposing them according to functional dependencies into normal forms (1NF, 2NF, 3NF, BCNF). The trade-off is more joins, which is why read-heavy systems sometimes denormalize."
+ },
+ {
+  "id": "q033",
+  "topic": "DBMS",
+  "type": "short_answer",
+  "difficulty": "medium",
+  "prompt": "Explain the different types of SQL joins.",
+  "keywords": [
+   "inner join|matching rows|both tables",
+   "left join|left outer|all rows from the left",
+   "right join|right outer",
+   "full outer|full join|all rows from both",
+   "null|no match",
+   "cross join|cartesian"
+  ],
+  "ideal_answer": "INNER JOIN returns only rows with matches in both tables. LEFT (outer) JOIN returns all rows from the left table plus matches, with NULLs where there is no match; RIGHT JOIN is the mirror. FULL OUTER JOIN returns all rows from both, NULL-filled where unmatched, and CROSS JOIN returns the Cartesian product."
+ },
+ {
+  "id": "q034",
+  "topic": "DBMS",
+  "type": "short_answer",
+  "difficulty": "medium",
+  "prompt": "What does an index do, and what are its costs?",
+  "keywords": [
+   "faster reads|speed up|lookup|search",
+   "b-tree|b+ tree|sorted structure",
+   "full table scan|scan every row",
+   "write overhead|slower inserts|slower writes|updates",
+   "storage|extra space|disk space",
+   "selectivity|which columns"
+  ],
+  "ideal_answer": "An index is an extra data structure, usually a B+ tree, that lets the database find rows by a column without scanning the whole table, so reads and joins get much faster. The cost is extra storage and slower inserts, updates and deletes because the index must be maintained, so you index selective columns used in WHERE/JOIN/ORDER BY."
+ },
+ {
+  "id": "q035",
+  "topic": "DBMS",
+  "type": "short_answer",
+  "difficulty": "hard",
+  "prompt": "Explain transaction isolation levels and the anomalies they prevent.",
+  "keywords": [
+   "read uncommitted",
+   "read committed|dirty read",
+   "repeatable read|non-repeatable read",
+   "serializable|phantom",
+   "trade-off|performance|concurrency|locking"
+  ],
+  "ideal_answer": "Read uncommitted allows dirty reads. Read committed prevents dirty reads but a row can change between two reads (non-repeatable read). Repeatable read keeps rows you've read stable but can still see phantom rows. Serializable prevents all of these by making transactions behave as if run one at a time. Stronger levels cost concurrency."
+ },
+ {
+  "id": "q036",
+  "topic": "DBMS",
+  "type": "mcq",
+  "difficulty": "easy",
+  "prompt": "Which SQL clause filters groups after aggregation?",
+  "options": [
+   "WHERE",
+   "HAVING",
+   "GROUP BY",
+   "ORDER BY"
+  ],
+  "answer": "HAVING",
+  "ideal_answer": "HAVING filters groups after GROUP BY/aggregation; WHERE filters rows before it."
+ },
+ {
+  "id": "q037",
+  "topic": "Operating Systems",
+  "type": "short_answer",
+  "difficulty": "easy",
+  "prompt": "What is virtual memory?",
+  "keywords": [
+   "illusion|larger than physical|more memory than ram",
+   "paging|pages|page table",
+   "disk|swap|secondary storage",
+   "address translation|virtual address|physical address|mmu",
+   "isolation|protection|each process"
+  ],
+  "ideal_answer": "Virtual memory gives each process its own large address space that is mapped to physical memory by the MMU using page tables. Pages not in RAM live on disk (swap) and are loaded on a page fault, so programs can use more memory than physically exists and processes are isolated from each other."
+ },
+ {
+  "id": "q038",
+  "topic": "Operating Systems",
+  "type": "short_answer",
+  "difficulty": "medium",
+  "prompt": "What is the difference between paging and segmentation?",
+  "keywords": [
+   "fixed size|fixed-size|equal size",
+   "variable size|variable-size|logical units",
+   "internal fragmentation",
+   "external fragmentation",
+   "page table|segment table",
+   "code|stack|heap|logical"
+  ],
+  "ideal_answer": "Paging splits memory into fixed-size pages/frames, which eliminates external fragmentation but can cause internal fragmentation, and uses a page table for translation. Segmentation splits a program into variable-size logical segments (code, stack, heap) with a segment table; it matches the program's structure but suffers external fragmentation."
+ },
+ {
+  "id": "q039",
+  "topic": "Operating Systems",
+  "type": "short_answer",
+  "difficulty": "medium",
+  "prompt": "Compare common CPU scheduling algorithms.",
+  "keywords": [
+   "fcfs|first come first served|fifo",
+   "sjf|shortest job|srtf",
+   "round robin|time quantum|time slice",
+   "priority|starvation|aging",
+   "waiting time|turnaround|response time|throughput"
+  ],
+  "ideal_answer": "FCFS runs jobs in arrival order — simple, but short jobs can wait behind long ones. SJF/SRTF runs the shortest job first for minimum average waiting time but needs burst estimates and can starve long jobs. Round robin gives each process a time quantum for good response time. Priority scheduling can starve low priorities, fixed with aging."
+ },
+ {
+  "id": "q040",
+  "topic": "Operating Systems",
+  "type": "short_answer",
+  "difficulty": "medium",
+  "prompt": "What is the difference between a mutex and a semaphore?",
+  "keywords": [
+   "mutual exclusion|one thread|lock",
+   "counter|count|n resources|multiple",
+   "ownership|owner|same thread unlocks",
+   "binary semaphore|signal|wait|p and v",
+   "critical section|race condition|synchronization"
+  ],
+  "ideal_answer": "A mutex is a lock for mutual exclusion: one thread owns it and only the owner can unlock it, protecting a critical section. A semaphore is a counter with wait/signal operations that allows up to N threads to use a resource and can be signalled by another thread, so it's also used for signalling between threads."
+ },
+ {
+  "id": "q041",
+  "topic": "Operating Systems",
+  "type": "short_answer",
+  "difficulty": "hard",
+  "prompt": "What is thrashing and how can it be prevented?",
+  "keywords": [
+   "page faults|paging|swapping",
+   "more time paging than executing|cpu utilization drops|little useful work",
+   "working set|locality",
+   "too many processes|multiprogramming|not enough frames",
+   "reduce|page fault frequency|suspend|more memory"
+  ],
+  "ideal_answer": "Thrashing happens when processes don't have enough frames for their working sets, so they page-fault constantly and the system spends more time swapping than executing; CPU utilisation collapses. It is prevented by using the working-set model or page-fault-frequency control to give processes enough frames, lowering the degree of multiprogramming or adding memory."
+ },
+ {
+  "id": "q042",
+  "topic": "Computer Networks",
+  "type": "short_answer",
+  "difficulty": "easy",
+  "prompt": "What happens when you type a URL into the browser and press Enter?",
+  "keywords": [
+   "dns|resolve|ip address",
+   "tcp|connection|handshake",
+   "tls|https|ssl|encryption",
+   "http request|get request|request",
+   "response|html|render"
+  ],
+  "ideal_answer": "The browser resolves the domain to an IP with DNS, opens a TCP connection (three-way handshake) and, for HTTPS, negotiates TLS. It sends an HTTP GET request, the server returns a response with HTML, and the browser parses it, fetches CSS/JS/images and renders the page."
+ },
+ {
+  "id": "q043",
+  "topic": "Computer Networks",
+  "type": "short_answer",
+  "difficulty": "medium",
+  "prompt": "How does DNS resolution work?",
+  "keywords": [
+   "domain name|hostname",
+   "ip address|address",
+   "cache|cached|ttl",
+   "resolver|recursive",
+   "root|tld|authoritative"
+  ],
+  "ideal_answer": "DNS maps names to IP addresses. The client asks a recursive resolver, which checks its cache (respecting TTLs); if missing it asks a root server, then the TLD server (.com), then the domain's authoritative server, and returns and caches the answer."
+ },
+ {
+  "id": "q044",
+  "topic": "Computer Networks",
+  "type": "short_answer",
+  "difficulty": "medium",
+  "prompt": "What is the difference between HTTP and HTTPS?",
+  "keywords": [
+   "encryption|encrypted|plain text",
+   "tls|ssl",
+   "certificate|certificate authority|ca|identity",
+   "port 443|443|port 80",
+   "man-in-the-middle|eavesdropping|tampering|integrity"
+  ],
+  "ideal_answer": "HTTPS is HTTP over TLS: traffic is encrypted and integrity-protected, and the server proves its identity with a certificate signed by a trusted CA, preventing eavesdropping and man-in-the-middle tampering. HTTP sends plain text on port 80; HTTPS uses port 443."
+ },
+ {
+  "id": "q045",
+  "topic": "Computer Networks",
+  "type": "short_answer",
+  "difficulty": "hard",
+  "prompt": "Explain TCP congestion control at a high level.",
+  "keywords": [
+   "congestion window|cwnd",
+   "slow start|exponential",
+   "additive increase|linear|congestion avoidance",
+   "multiplicative decrease|halve|reduce",
+   "packet loss|timeout|duplicate ack"
+  ],
+  "ideal_answer": "TCP limits in-flight data with a congestion window. In slow start the window grows exponentially until a threshold, then congestion avoidance grows it linearly (additive increase). When loss is detected via timeouts or duplicate ACKs, the window is cut (multiplicative decrease) — AIMD — so senders share bandwidth fairly without collapsing the network."
+ },
+ {
+  "id": "q046",
+  "topic": "Computer Networks",
+  "type": "mcq",
+  "difficulty": "easy",
+  "prompt": "Which protocol is used to automatically assign IP addresses to devices on a network?",
+  "options": [
+   "DNS",
+   "DHCP",
+   "ARP",
+   "ICMP"
+  ],
+  "answer": "DHCP",
+  "ideal_answer": "DHCP leases IP addresses (and gateway/DNS settings) to devices automatically."
+ },
+ {
+  "id": "q047",
+  "topic": "OOP",
+  "type": "short_answer",
+  "difficulty": "easy",
+  "prompt": "What is the difference between a class and an object?",
+  "keywords": [
+   "blueprint|template",
+   "instance|instantiated",
+   "memory|allocated",
+   "attributes|fields|properties|state",
+   "methods|behaviour|behavior"
+  ],
+  "ideal_answer": "A class is a blueprint that defines attributes (state) and methods (behaviour). An object is an instance of that class created at runtime with its own memory and values — e.g. class Car, objects myCar and yourCar."
+ },
+ {
+  "id": "q048",
+  "topic": "OOP",
+  "type": "short_answer",
+  "difficulty": "medium",
+  "prompt": "What is the difference between an abstract class and an interface?",
+  "keywords": [
+   "abstract methods|no implementation|unimplemented",
+   "concrete methods|implementation|shared code",
+   "multiple inheritance|implement many|multiple interfaces",
+   "state|fields|constructor",
+   "contract|capability|can-do"
+  ],
+  "ideal_answer": "An abstract class can hold state, constructors and concrete methods alongside abstract ones, and a class extends only one — use it to share code among related classes. An interface defines a contract of methods (traditionally without implementation or state) and a class can implement many — use it for capabilities shared across unrelated classes."
+ },
+ {
+  "id": "q049",
+  "topic": "OOP",
+  "type": "short_answer",
+  "difficulty": "medium",
+  "prompt": "Explain composition vs inheritance. Why is composition often preferred?",
+  "keywords": [
+   "is-a|is a",
+   "has-a|has a|contains",
+   "tight coupling|coupled|fragile base class",
+   "flexible|swap|runtime|reuse",
+   "delegation|delegate"
+  ],
+  "ideal_answer": "Inheritance models an is-a relationship and reuses code by extending a base class, but couples subclasses tightly to their parent (fragile base class). Composition models has-a: an object contains other objects and delegates to them, so behaviour can be combined and swapped at runtime and classes stay loosely coupled — hence 'favour composition over inheritance'."
+ },
+ {
+  "id": "q050",
+  "topic": "OOP",
+  "type": "short_answer",
+  "difficulty": "hard",
+  "prompt": "Explain the SOLID principles briefly.",
+  "keywords": [
+   "single responsibility|one reason to change",
+   "open/closed|open closed|open for extension",
+   "liskov|substitut",
+   "interface segregation|small interfaces|specific interfaces",
+   "dependency inversion|depend on abstractions|dependency injection"
+  ],
+  "ideal_answer": "Single responsibility: a class has one reason to change. Open/closed: open for extension, closed for modification. Liskov substitution: subclasses must be usable wherever the base type is. Interface segregation: prefer small, specific interfaces. Dependency inversion: depend on abstractions, not concrete implementations."
+ },
+ {
+  "id": "q051",
+  "topic": "OOP",
+  "type": "short_answer",
+  "difficulty": "medium",
+  "prompt": "What is abstraction, and how is it different from encapsulation?",
+  "keywords": [
+   "hide complexity|essential|what it does|implementation details",
+   "encapsulation|bundle|data and methods",
+   "access modifiers|private|restrict access|hide data",
+   "interface|abstract class",
+   "example|car|remote|for instance|e.g"
+  ],
+  "ideal_answer": "Abstraction exposes only what an object does and hides how — e.g. you call car.start() without knowing the engine internals — typically via interfaces or abstract classes. Encapsulation bundles data with the methods that use it and restricts direct access (private fields, getters/setters) to protect the object's state. Abstraction is about design-level hiding of complexity; encapsulation is about protecting data."
+ },
+ {
+  "id": "q052",
+  "topic": "System Design",
+  "type": "short_answer",
+  "difficulty": "medium",
+  "prompt": "What is caching and what are common cache eviction policies?",
+  "keywords": [
+   "faster|latency|reduce load|avoid recomputation",
+   "lru|least recently used",
+   "lfu|least frequently used",
+   "ttl|expiry|expire",
+   "invalidation|stale|consistency",
+   "redis|memcached|cdn"
+  ],
+  "ideal_answer": "A cache keeps frequently used data in fast storage (memory, Redis/Memcached, a CDN) to cut latency and backend load. When it's full it evicts entries — LRU removes the least recently used, LFU the least frequently used, FIFO the oldest — and TTLs expire data. The hard part is invalidation: avoiding stale data when the source changes."
+ },
+ {
+  "id": "q053",
+  "topic": "System Design",
+  "type": "short_answer",
+  "difficulty": "hard",
+  "prompt": "Explain the CAP theorem.",
+  "keywords": [
+   "consistency",
+   "availability",
+   "partition tolerance|network partition",
+   "only two|trade-off|choose",
+   "cp|ap|example"
+  ],
+  "ideal_answer": "In a distributed system, when a network partition happens you must choose between consistency (every read sees the latest write) and availability (every request gets a response). Partition tolerance isn't optional, so systems are effectively CP (e.g. HBase, ZooKeeper) or AP (e.g. Cassandra, DynamoDB) during partitions."
+ },
+ {
+  "id": "q054",
+  "topic": "System Design",
+  "type": "short_answer",
+  "difficulty": "medium",
+  "prompt": "SQL vs NoSQL: how do you choose?",
+  "keywords": [
+   "schema|structured|fixed schema|flexible schema",
+   "acid|transactions|strong consistency",
+   "joins|relational|relationships",
+   "horizontal scaling|scale out|sharding",
+   "document|key-value|column|graph",
+   "eventual consistency|base"
+  ],
+  "ideal_answer": "SQL databases have a fixed schema, relations with joins and ACID transactions — good for structured data with complex queries and strong consistency (payments, orders). NoSQL stores (document, key-value, wide-column, graph) have flexible schemas and scale out easily, often with eventual consistency — good for large, fast-changing or unstructured data. Choose by data shape, query patterns, consistency needs and scale."
+ },
+ {
+  "id": "q055",
+  "topic": "System Design",
+  "type": "short_answer",
+  "difficulty": "medium",
+  "prompt": "What is a message queue and why would you use one?",
+  "keywords": [
+   "asynchronous|async|background",
+   "decouple|decoupling|loosely coupled",
+   "producer|consumer|publish|subscribe",
+   "buffer|spikes|load leveling|backpressure",
+   "retry|durable|reliability",
+   "kafka|rabbitmq|sqs"
+  ],
+  "ideal_answer": "A message queue lets producers publish messages that consumers process asynchronously. It decouples services, buffers traffic spikes, allows retries and durable delivery, and lets you scale consumers independently — e.g. sending emails or processing uploads in the background with RabbitMQ, Kafka or SQS."
+ },
+ {
+  "id": "q056",
+  "topic": "System Design",
+  "type": "short_answer",
+  "difficulty": "hard",
+  "prompt": "What is database sharding and what problems does it introduce?",
+  "keywords": [
+   "split data|partition|horizontal partitioning",
+   "shard key|partition key",
+   "scale writes|scale|distribute load",
+   "hotspot|uneven|imbalance",
+   "cross-shard|joins|transactions",
+   "rebalancing|resharding|consistent hashing"
+  ],
+  "ideal_answer": "Sharding splits a large table horizontally across databases by a shard key so storage and writes scale out. It introduces problems: choosing a key that avoids hotspots, cross-shard joins and transactions become hard, rebalancing when adding shards (consistent hashing helps) and more operational complexity."
+ },
+ {
+  "id": "q057",
+  "topic": "Python",
+  "type": "short_answer",
+  "difficulty": "medium",
+  "prompt": "What are decorators in Python and why are they useful?",
+  "keywords": [
+   "function|wraps|wrapper",
+   "takes a function|returns a function|higher-order",
+   "@|at syntax|syntax",
+   "logging|timing|authentication|caching|reuse",
+   "without modifying|without changing|extend behaviour"
+  ],
+  "ideal_answer": "A decorator is a higher-order function that takes a function and returns a wrapper around it, applied with @name. It adds behaviour — logging, timing, caching, access checks — without modifying the original function, keeping such cross-cutting code reusable."
+ },
+ {
+  "id": "q058",
+  "topic": "Python",
+  "type": "short_answer",
+  "difficulty": "medium",
+  "prompt": "What are generators and how do they differ from lists?",
+  "keywords": [
+   "yield",
+   "lazy|on demand|one at a time",
+   "memory|less memory|memory efficient",
+   "iterate once|exhausted|iterator",
+   "large|infinite|streams"
+  ],
+  "ideal_answer": "A generator produces values lazily with yield, one at a time on demand, instead of building everything in memory. That makes it memory-efficient for large or infinite sequences and streams, but it can only be iterated once and doesn't support indexing, unlike a list."
+ },
+ {
+  "id": "q059",
+  "topic": "Python",
+  "type": "short_answer",
+  "difficulty": "hard",
+  "prompt": "What is the GIL, and how does it affect multithreading in Python?",
+  "keywords": [
+   "global interpreter lock|gil",
+   "one thread|single thread|at a time|bytecode",
+   "cpu-bound|cpu bound",
+   "i/o-bound|io-bound|io bound|waiting",
+   "multiprocessing|processes|asyncio"
+  ],
+  "ideal_answer": "The Global Interpreter Lock lets only one thread execute Python bytecode at a time in CPython. Threads still help for I/O-bound work because the GIL is released while waiting, but CPU-bound code doesn't speed up with threads — use multiprocessing, native extensions or other interpreters for that, and asyncio for many concurrent I/O tasks."
+ },
+ {
+  "id": "q060",
+  "topic": "Python",
+  "type": "short_answer",
+  "difficulty": "easy",
+  "prompt": "What is the difference between `is` and `==` in Python?",
+  "keywords": [
+   "identity|same object|memory",
+   "equality|equal value|same value",
+   "id()|id",
+   "none|is none",
+   "__eq__|eq"
+  ],
+  "ideal_answer": "== checks value equality (it calls __eq__), while `is` checks identity — whether both names refer to the same object in memory (same id()). Use `is` for singletons like None, and == for comparing values."
+ },
+ {
+  "id": "q061",
+  "topic": "Python",
+  "type": "short_answer",
+  "difficulty": "medium",
+  "prompt": "Explain shallow copy vs deep copy in Python.",
+  "keywords": [
+   "shallow|copy.copy|top level",
+   "deep|copy.deepcopy|recursively",
+   "nested|inner objects|references",
+   "shared|affects the original|same inner",
+   "independent|separate"
+  ],
+  "ideal_answer": "A shallow copy (copy.copy, list slicing) creates a new outer object but shares references to the nested objects, so changing an inner list shows up in both. A deep copy (copy.deepcopy) recursively copies nested objects, giving a fully independent copy."
+ },
+ {
+  "id": "q062",
+  "topic": "Machine Learning",
+  "type": "short_answer",
+  "difficulty": "easy",
+  "prompt": "What is the difference between supervised and unsupervised learning?",
+  "keywords": [
+   "labeled|labels|labelled|target",
+   "unlabeled|no labels|unlabelled",
+   "classification|regression",
+   "clustering|dimensionality reduction|k-means|pca",
+   "patterns|structure|groups"
+  ],
+  "ideal_answer": "Supervised learning trains on labelled examples to predict a target — classification or regression. Unsupervised learning finds structure in unlabelled data, such as clustering (k-means) or dimensionality reduction (PCA)."
+ },
+ {
+  "id": "q063",
+  "topic": "Machine Learning",
+  "type": "short_answer",
+  "difficulty": "medium",
+  "prompt": "Explain the bias-variance trade-off.",
+  "keywords": [
+   "bias|underfitting|too simple",
+   "variance|overfitting|too complex|sensitive",
+   "trade-off|balance|sweet spot",
+   "error|total error|generalization",
+   "regularization|model complexity|more data"
+  ],
+  "ideal_answer": "Bias is error from overly simple assumptions (underfitting); variance is error from being too sensitive to the training data (overfitting). Increasing model complexity lowers bias but raises variance, so you tune complexity and regularization — and add data — to minimise total generalisation error."
+ },
+ {
+  "id": "q064",
+  "topic": "Machine Learning",
+  "type": "short_answer",
+  "difficulty": "medium",
+  "prompt": "What are precision and recall, and when does each matter more?",
+  "keywords": [
+   "precision|predicted positives|false positives",
+   "recall|actual positives|false negatives|sensitivity",
+   "trade-off|threshold",
+   "f1|f1 score|harmonic mean",
+   "example|spam|cancer|fraud|medical"
+  ],
+  "ideal_answer": "Precision is the share of predicted positives that are correct (penalises false positives); recall is the share of actual positives that were found (penalises false negatives). Precision matters when false alarms are costly (spam filtering), recall when misses are costly (cancer screening, fraud). Changing the threshold trades one for the other; F1 is their harmonic mean."
+ },
+ {
+  "id": "q065",
+  "topic": "Machine Learning",
+  "type": "short_answer",
+  "difficulty": "medium",
+  "prompt": "How does gradient descent work?",
+  "keywords": [
+   "loss|cost function|error",
+   "gradient|derivative|slope",
+   "learning rate|step size",
+   "minimum|minimize|converge",
+   "batch|stochastic|mini-batch|sgd"
+  ],
+  "ideal_answer": "Gradient descent minimises a loss function by repeatedly computing the gradient of the loss with respect to the parameters and stepping in the opposite direction, scaled by the learning rate, until it converges. Batch uses all data per step, stochastic one example and mini-batch a small batch; too large a learning rate diverges, too small is slow."
+ },
+ {
+  "id": "q066",
+  "topic": "Machine Learning",
+  "type": "short_answer",
+  "difficulty": "hard",
+  "prompt": "Why do we split data into training, validation and test sets?",
+  "keywords": [
+   "training|fit|learn",
+   "validation|tune|hyperparameters|model selection",
+   "test|final|unbiased|unseen",
+   "overfitting|leakage|data leakage",
+   "cross-validation|k-fold"
+  ],
+  "ideal_answer": "The training set is used to fit the model, the validation set to tune hyperparameters and choose between models, and the untouched test set gives an unbiased estimate of performance on unseen data. Reusing the test set for tuning leaks information and overestimates accuracy; k-fold cross-validation helps when data is scarce."
+ },
+ {
+  "id": "q067",
+  "topic": "Web Development",
+  "type": "short_answer",
+  "difficulty": "easy",
+  "prompt": "What is the difference between GET and POST requests?",
+  "keywords": [
+   "retrieve|read|fetch",
+   "create|submit|send data|modify",
+   "url|query string|query parameters",
+   "body|request body",
+   "idempotent|safe|cache|bookmark"
+  ],
+  "ideal_answer": "GET retrieves data, sends parameters in the URL query string, is safe and idempotent and can be cached or bookmarked. POST submits data in the request body to create or change something on the server, isn't idempotent and isn't cached."
+ },
+ {
+  "id": "q068",
+  "topic": "Web Development",
+  "type": "short_answer",
+  "difficulty": "medium",
+  "prompt": "What is REST? Describe its key principles.",
+  "keywords": [
+   "resources|urls|endpoints",
+   "http methods|get|post|put|delete|verbs",
+   "stateless|no session",
+   "json|representation",
+   "status codes|200|404"
+  ],
+  "ideal_answer": "REST is an architectural style where everything is a resource identified by a URL and manipulated with standard HTTP methods (GET, POST, PUT/PATCH, DELETE). It's stateless — each request carries what's needed — returns representations such as JSON, uses meaningful status codes and is cacheable."
+ },
+ {
+  "id": "q069",
+  "topic": "Web Development",
+  "type": "short_answer",
+  "difficulty": "medium",
+  "prompt": "Explain the difference between cookies, sessions and tokens (like JWT) for authentication.",
+  "keywords": [
+   "cookie|browser stores|sent automatically",
+   "session|server-side|session id",
+   "token|jwt|signed",
+   "stateless|no server storage",
+   "expiry|revocation|logout|httponly|secure"
+  ],
+  "ideal_answer": "A cookie is data the browser stores and sends automatically. Session auth keeps state on the server and gives the browser only a session ID cookie, so logout and revocation are easy. Token auth (e.g. JWT) gives the client a signed token carrying the claims, so the server stays stateless, but revoking tokens before expiry is harder. Either way use HttpOnly/Secure flags and short expiry."
+ },
+ {
+  "id": "q070",
+  "topic": "Web Development",
+  "type": "short_answer",
+  "difficulty": "hard",
+  "prompt": "What are XSS and CSRF attacks, and how do you prevent them?",
+  "keywords": [
+   "xss|cross-site scripting|inject script|malicious script",
+   "escape|sanitize|encode output|csp|content security policy",
+   "csrf|cross-site request forgery|forged request",
+   "csrf token|token|samesite",
+   "cookies|logged in|user's session"
+  ],
+  "ideal_answer": "XSS injects malicious script into a page other users view; prevent it by escaping/encoding output, sanitising input and adding a Content Security Policy. CSRF tricks a logged-in user's browser into sending a forged request with their cookies; prevent it with CSRF tokens, SameSite cookies and checking origin."
+ },
+ {
+  "id": "q071",
+  "topic": "Web Development",
+  "type": "short_answer",
+  "difficulty": "medium",
+  "prompt": "What is CORS and why does it exist?",
+  "keywords": [
+   "same-origin policy|same origin",
+   "cross-origin|different origin|different domain",
+   "headers|access-control-allow-origin",
+   "preflight|options",
+   "browser|security"
+  ],
+  "ideal_answer": "Browsers enforce the same-origin policy, so scripts can't read responses from another origin. CORS lets a server relax that deliberately with headers like Access-Control-Allow-Origin; for non-simple requests the browser first sends an OPTIONS preflight. It protects users because other sites can't read data using their credentials."
+ },
+ {
+  "id": "q072",
+  "topic": "Dynamic Programming",
+  "type": "short_answer",
+  "difficulty": "easy",
+  "prompt": "What two properties must a problem have for dynamic programming to apply?",
+  "keywords": [
+   "overlapping subproblems|same subproblems|repeated subproblems",
+   "optimal substructure|optimal solution built from|subproblem solutions",
+   "store|cache|memo|table|reuse",
+   "recursion|recurrence|state",
+   "example|fibonacci|knapsack|lcs"
+  ],
+  "ideal_answer": "Overlapping subproblems — the same subproblems are solved repeatedly, so storing their results pays off — and optimal substructure — the optimal answer can be built from optimal answers to subproblems. Fibonacci, knapsack and longest common subsequence all have both; you define a state and recurrence, then memoize or tabulate."
+ },
+ {
+  "id": "q073",
+  "topic": "Dynamic Programming",
+  "type": "short_answer",
+  "difficulty": "medium",
+  "prompt": "How would you find the longest common subsequence of two strings?",
+  "keywords": [
+   "dp[i][j]|2d table|table|matrix",
+   "match|characters equal|same character|+1",
+   "max|maximum|skip one",
+   "o(m*n)|m x n|m*n",
+   "backtrack|reconstruct|trace back"
+  ],
+  "ideal_answer": "Let dp[i][j] be the LCS length of the first i characters of A and first j of B. If A[i-1] == B[j-1], dp[i][j] = dp[i-1][j-1] + 1; otherwise take max(dp[i-1][j], dp[i][j-1]). Filling the table is O(m*n) time and space (space can drop to two rows), and backtracking through it reconstructs the subsequence."
+ },
+ {
+  "id": "q074",
+  "topic": "Dynamic Programming",
+  "type": "short_answer",
+  "difficulty": "medium",
+  "prompt": "Explain the coin change problem (minimum coins) and its DP solution.",
+  "keywords": [
+   "minimum coins|fewest coins",
+   "dp[amount]|array of size amount|amount",
+   "for each coin|try every coin|each denomination",
+   "min|dp[x - coin] + 1|+ 1",
+   "greedy fails|not greedy|infinity|impossible"
+  ],
+  "ideal_answer": "dp[x] is the fewest coins to make amount x: dp[0] = 0 and dp[x] = min over coins c ≤ x of dp[x - c] + 1, with infinity meaning impossible. Filling it from 1 to the amount is O(amount × coins). Greedy picking of the largest coin fails for some coin systems, which is why DP is needed."
+ }
 ]

@@ -296,7 +296,10 @@ def _discard(path):
         pass
 (Path(__file__).parent / "data").mkdir(exist_ok=True)
 
-db.init_db()
+try:
+    db.init_db()
+except RuntimeError as _db_error:  # show a clear message instead of a long traceback
+    raise SystemExit(f"\n[Prepwise] {_db_error}\n") from None
 configure_metrics()
 
 
@@ -568,11 +571,16 @@ def register():
     if request.method == "POST":
         email = _normal_email(request.form.get("email"))
         password = request.form.get("password", "")
+        # The sign-up form always sends a name; older clients that don't are asked for it later.
+        raw_name = request.form.get("display_name")
+        display_name, name_problem = auth.clean_display_name(raw_name) if raw_name is not None else (None, None)
         problem = None if EMAIL_RE.match(email) else "Enter a valid email address."
+        problem = problem or name_problem
         problem = problem or auth.password_problem(password, request.form.get("confirm_password", ""), email)
         if problem:
             flash(problem, "error")
-            return render_template("auth/register.html", email=email), 400
+            return render_template("auth/register.html", email=email,
+                                   display_name=request.form.get("display_name", "")[:60]), 400
 
         # Same response whether or not the address already has an account, so sign-up can't be
         # used to find out who is registered. The real owner is told by email instead.
@@ -595,14 +603,14 @@ def register():
             db.set_pending_password(existing["id"], password_hash, _digest(nonce))
             auth.issue_otp(existing, auth.PURPOSE_VERIFY, background=True)
         else:
-            user_row = db.get_user_by_id(db.create_user(email, password_hash))
+            user_row = db.get_user_by_id(db.create_user(email, password_hash, display_name))
             # Emails go out in the background on every branch, so response time is the same
             # whether or not the address already has an account.
             auth.issue_otp(user_row, auth.PURPOSE_VERIFY, force=True, background=True)
         flash(f"We've sent a {auth.OTP_LENGTH}-digit code to {email}. Enter it below to finish signing up. "
               "(Already have an account? Just log in.)", "success")
         return redirect(url_for("verify_email", email=email))
-    return render_template("auth/register.html", email=request.args.get("email", ""))
+    return render_template("auth/register.html", email=request.args.get("email", ""), display_name="")
 
 
 @app.route("/verify-email", methods=["GET", "POST"])
@@ -740,6 +748,18 @@ def change_password():
         flash("Your password has been changed. Any other devices have been signed out.", "success")
         return redirect(url_for("home"))
     return render_template("auth/change_password.html")
+
+
+@app.route("/account/name", methods=["POST"])
+@login_required
+def change_display_name():
+    name, problem = auth.clean_display_name(request.form.get("display_name"))
+    if problem:
+        flash(problem, "error")
+    else:
+        db.set_display_name(current_user.id, name)
+        flash("Your display name has been updated.", "success")
+    return redirect(url_for("change_password"))
 
 
 @app.route("/logout", methods=["POST"])
@@ -1012,7 +1032,7 @@ def resume_feedback_api(candidate_id):
     return jsonify(feedback)
 
 
-PUBLIC_QUESTION_FIELDS = ("topic", "type", "difficulty", "prompt", "options", "reason", "source", "category")
+PUBLIC_QUESTION_FIELDS = ("topic", "type", "difficulty", "prompt", "options", "reason", "source", "category", "mode", "repeat")
 
 
 def _public_question(question: dict) -> dict:
@@ -1029,43 +1049,92 @@ def _target_difficulty(skill_profiles: dict) -> str:
     return "easy" if level < 50 else ("medium" if level < 75 else "hard")
 
 
+INTERVIEW_TOPIC_FOCUS = {"Behavioral": "behavioral", "Projects": "mixed", "Internships": "mixed", "Resume Skills": "skills"}
+
+
+def practice_url(candidate_id, topic=None, mode=None):
+    """Link to the right practice mode for a skill topic (used by the dashboard's Practice buttons)."""
+    if topic in INTERVIEW_TOPIC_FOCUS:
+        return url_for("practice", candidate_id=candidate_id, mode="interview", topic=INTERVIEW_TOPIC_FOCUS[topic])
+    if topic and topic in generator.technical_topics():
+        return url_for("practice", candidate_id=candidate_id, mode="technical", topic=topic)
+    return url_for("practice", candidate_id=candidate_id, mode=mode) if mode else url_for("practice", candidate_id=candidate_id)
+
+
+app.jinja_env.globals["practice_url"] = practice_url
+
+
+def _practice_choice(profile: dict):
+    """(mode, choice value) from the query string, else the last one used, else Technical/recommended."""
+    remembered = session.get("practice_choice") or {}
+    mode = request.args.get("mode") or remembered.get("mode") or "technical"
+    mode = mode if mode in ("interview", "technical") else "technical"
+    if "topic" in request.args:
+        value = request.args.get("topic") or ""
+    else:
+        value = remembered.get(mode, "")
+    if mode == "technical":
+        value = value if value in generator.technical_topics() else "recommended"
+    else:
+        value = generator.resolve_focus(profile, value)["value"]
+    choices = dict(remembered, mode=mode)
+    choices[mode] = value
+    session["practice_choice"] = choices
+    return mode, value
+
+
 @app.route("/practice/<int:candidate_id>")
 @login_required
 def practice(candidate_id):
     candidate = db.get_candidate(candidate_id)
+    profile = json.loads(candidate["profile_json"])
+    mode, value = _practice_choice(profile)
     issued = db.get_open_issued_question(candidate_id)
+    if issued is not None:
+        q = issued["question"]
+        if q.get("mode", "technical") != mode or q.get("choice", value) != value:
+            db.close_issued_question(issued["id"], "switched")  # user changed mode/topic: not counted
+            issued = None
     if issued is None:
-        profile = json.loads(candidate["profile_json"])
         attempts = db.get_attempts(candidate_id)
         dsa_performance = db.get_dsa_performance(candidate_id)
         skill_profiles = _skill_profiles(attempts, dsa_performance)
-        # Focus on weak topics first, then topics that still need evidence.
-        weak_topics = analytics.weak_topics_from_profiles(skill_profiles) + [
-            t for t, p in skill_profiles.items() if p["status"] == "needs_data"
-        ]
+        answered = db.get_answered_question_ids(candidate_id)
+        previous = db.get_recent_question_prompts(candidate_id)
         with Timer() as t:
-            question = generator.pick_next_question(
-                profile_skills=profile.get("skills", []),
-                weak_topics=weak_topics,
-                answered_ids=db.get_answered_question_ids(candidate_id),
-                profile=profile,
-                difficulty=_target_difficulty(skill_profiles),
-                previous_prompts=db.get_recent_question_prompts(candidate_id),
-            )
+            if mode == "interview":
+                question = generator.pick_interview_question(
+                    profile, generator.resolve_focus(profile, value), answered,
+                    difficulty=_target_difficulty(skill_profiles), previous_prompts=previous)
+            else:
+                # Recommended = weak topics first, then topics that still need evidence.
+                weak_topics = analytics.weak_topics_from_profiles(skill_profiles) + [
+                    t for t, p in skill_profiles.items() if p["status"] == "needs_data"
+                ]
+                question = generator.pick_technical_question(
+                    profile, None if value == "recommended" else value, weak_topics, answered,
+                    difficulty=_target_difficulty(skill_profiles), previous_prompts=previous)
         if not question:
-            flash("You've answered every question available right now — nice work. Check your dashboard.")
+            flash("No questions are available for that choice right now. Try another topic.", "error")
             return redirect(url_for("dashboard", candidate_id=candidate_id))
+        question = dict(question, mode=mode, choice=value)
         issue_id = f"iq-{uuid.uuid4().hex}"
         db.save_issued_question(issue_id, candidate_id, question)
-        log_event("question_issued", source=question.get("source", "bank"), topic=question.get("topic"),
+        log_event("question_issued", source=question.get("source", "bank"), topic=question.get("topic"), mode=mode,
                   difficulty=question.get("difficulty"), ms=t.ms)
         issued = {"id": issue_id, "question": question}
 
+    focus_options = generator.interview_focus_options(profile)
     return render_template(
         "practice.html",
         candidate_id=candidate_id,
         issue_id=issued["id"],
         question=_public_question(issued["question"]),
+        mode=mode,
+        choice=value,
+        technical_topics=generator.technical_topics(),
+        focus_options=focus_options,
+        focus_label=generator.resolve_focus(profile, value)["label"] if mode == "interview" else value,
         candidate_id_for_nav=candidate_id,
     )
 

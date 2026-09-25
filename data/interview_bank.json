@@ -1,0 +1,344 @@
+{
+ "behavioral": [
+  {
+   "id": "bh01",
+   "topic": "Behavioral",
+   "type": "short_answer",
+   "difficulty": "easy",
+   "prompt": "Tell me about yourself.",
+   "keywords": [
+    "background|studying|student|degree|currently",
+    "projects|built|developed|worked on",
+    "skills|experience with|good at|strength",
+    "internship|intern|worked at|team",
+    "goal|looking for|interested in|want to|aspire|role"
+   ],
+   "ideal_answer": "A strong answer is a 60–90 second story, not a résumé read-out: who you are now (degree, focus), 2–3 highlights that prove your skills (a project or internship with a concrete result), what you enjoy or are good at, and why you're interested in this kind of role."
+  },
+  {
+   "id": "bh02",
+   "topic": "Behavioral",
+   "type": "short_answer",
+   "difficulty": "medium",
+   "prompt": "Describe a challenging bug or problem you solved. How did you approach it?",
+   "keywords": [
+    "situation|context|background|when i was|at the time|during",
+    "debug|investigate|logs|reproduce|root cause|traced",
+    "fix|solution|solved|resolved",
+    "result|outcome|impact|in the end|finally|improved|reduced|increased|delivered|succeeded",
+    "learned|lesson|takeaway|next time|would do differently|realised|realized"
+   ],
+   "ideal_answer": "Use STAR: set the scene briefly, explain why it was hard, walk through how you investigated (reproducing it, logs, narrowing down the root cause), what you changed, the measurable result, and what you'd do to prevent it next time."
+  },
+  {
+   "id": "bh03",
+   "topic": "Behavioral",
+   "type": "short_answer",
+   "difficulty": "medium",
+   "prompt": "Tell me about a time you worked in a team and faced a disagreement. How did you handle it?",
+   "keywords": [
+    "situation|context|background|when i was|at the time|during",
+    "disagree|conflict|different opinion|different views|argument",
+    "listen|discuss|understand|talked|communicate|communicated|communication",
+    "compromise|agreed|consensus|decided together|data|prototype",
+    "result|outcome|impact|in the end|finally|improved|reduced|increased|delivered|succeeded"
+   ],
+   "ideal_answer": "A strong answer describes a real disagreement without blaming anyone, shows you listened to understand the other view, explains how the team decided (data, a quick prototype, a compromise), and ends with the outcome and what you learned about working with others."
+  },
+  {
+   "id": "bh04",
+   "topic": "Behavioral",
+   "type": "short_answer",
+   "difficulty": "medium",
+   "prompt": "Tell me about a time you failed or made a mistake. What did you learn?",
+   "keywords": [
+    "situation|context|background|when i was|at the time|during",
+    "mistake|failed|failure|went wrong|error|missed",
+    "own|responsibility|my fault|i should have|accountable|accountability",
+    "fix|recover|corrected|made up|resolved",
+    "learned|lesson|takeaway|next time|would do differently|realised|realized"
+   ],
+   "ideal_answer": "Pick a real, moderate mistake, take ownership rather than blaming others, explain what you did to fix or limit the damage, and focus on the concrete lesson and how you've applied it since."
+  },
+  {
+   "id": "bh05",
+   "topic": "Behavioral",
+   "type": "short_answer",
+   "difficulty": "easy",
+   "prompt": "How do you handle tight deadlines or multiple competing priorities?",
+   "keywords": [
+    "prioritize|prioritise|priority|most important|urgent",
+    "plan|break down|schedule|list|timeline|estimate",
+    "communicate|inform|update|stakeholders|ask for help|flag early",
+    "focus|time management|avoid distractions",
+    "example|for instance|once|during|last semester|when i"
+   ],
+   "ideal_answer": "Show a method: list and prioritise tasks by impact and urgency, break work into steps with a timeline, communicate early if something will slip, and back it up with a short real example where it worked."
+  },
+  {
+   "id": "bh06",
+   "topic": "Behavioral",
+   "type": "short_answer",
+   "difficulty": "easy",
+   "prompt": "Why do you want to work in software engineering / this role?",
+   "keywords": [
+    "enjoy|passion|interested|love|excited",
+    "build|solve problems|create|impact|users",
+    "experience|project|internship|when i",
+    "learn|grow|improve|skills",
+    "company|team|role|product"
+   ],
+   "ideal_answer": "Connect genuine motivation to evidence: what you enjoy (building things people use, solving problems), a moment from a project or internship that confirmed it, and what you hope to learn and contribute in this specific role or company."
+  },
+  {
+   "id": "bh07",
+   "topic": "Behavioral",
+   "type": "short_answer",
+   "difficulty": "easy",
+   "prompt": "What are your strengths and weaknesses?",
+   "keywords": [
+    "strength|good at|strong",
+    "weakness|improve|working on|struggle",
+    "example|for instance|when i|in my project|once",
+    "steps|improving|practice|course|feedback|habit",
+    "relevant|role|team"
+   ],
+   "ideal_answer": "Give one or two strengths backed by a concrete example, and one real (not disguised-strength) weakness together with the specific steps you're taking to improve it."
+  },
+  {
+   "id": "bh08",
+   "topic": "Behavioral",
+   "type": "short_answer",
+   "difficulty": "medium",
+   "prompt": "Describe a time you had to learn a new technology quickly.",
+   "keywords": [
+    "situation|context|background|when i was|at the time|during",
+    "learn|new technology|new framework|never used|unfamiliar",
+    "documentation|tutorial|course|docs|practice|small project|asked",
+    "applied|used it|built|shipped|delivered",
+    "result|outcome|impact|in the end|finally|improved|reduced|increased|delivered|succeeded"
+   ],
+   "ideal_answer": "Explain the situation and why you needed the technology, how you learned it efficiently (docs, a small prototype, asking others), how you applied it in the real task, and the result."
+  },
+  {
+   "id": "bh09",
+   "topic": "Behavioral",
+   "type": "short_answer",
+   "difficulty": "medium",
+   "prompt": "Tell me about a time you took initiative or led something.",
+   "keywords": [
+    "situation|context|background|when i was|at the time|during",
+    "initiative|took the lead|led|volunteered|proposed|started",
+    "team|others|members|organised|organized|coordinated",
+    "action|i decided|i did|i took|i implemented|i organised|i organized|i spoke|i proposed|steps",
+    "result|outcome|impact|in the end|finally|improved|reduced|increased|delivered|succeeded"
+   ],
+   "ideal_answer": "Describe something you started or led without being asked, how you brought others along, the concrete actions you took, and the outcome — ideally with a number (time saved, users, grade, bugs fixed)."
+  },
+  {
+   "id": "bh10",
+   "topic": "Behavioral",
+   "type": "short_answer",
+   "difficulty": "easy",
+   "prompt": "Where do you see yourself in five years?",
+   "keywords": [
+    "grow|growth|learn|develop",
+    "skills|expertise|specialize|specialise|deeper",
+    "responsibility|lead|mentor|ownership",
+    "company|team|role|contribute",
+    "goal|aim|hope|plan"
+   ],
+   "ideal_answer": "Show ambition that fits the role: growing deep expertise in an area, taking on more ownership or mentoring, and contributing to the team's goals — without sounding like you plan to leave soon."
+  },
+  {
+   "id": "bh11",
+   "topic": "Behavioral",
+   "type": "short_answer",
+   "difficulty": "easy",
+   "prompt": "How do you receive and act on feedback?",
+   "keywords": [
+    "feedback|criticism|review|comments",
+    "listen|open|welcome|appreciate",
+    "ask|clarify|understand",
+    "act|change|improve|applied|implemented",
+    "example|once|code review|when i|my mentor"
+   ],
+   "ideal_answer": "Say you welcome feedback, listen without being defensive, ask questions to understand it, and act on it — backed by a specific example such as code-review comments that changed how you write code."
+  },
+  {
+   "id": "bh12",
+   "topic": "Behavioral",
+   "type": "short_answer",
+   "difficulty": "medium",
+   "prompt": "Describe a situation where you had to explain a technical concept to a non-technical person.",
+   "keywords": [
+    "situation|context|background|when i was|at the time|during",
+    "simple|simplify|analogy|example|without jargon|plain language",
+    "understand|audience|their level|check|questions",
+    "result|outcome|impact|in the end|finally|improved|reduced|increased|delivered|succeeded"
+   ],
+   "ideal_answer": "Describe who you were explaining to and why, how you adapted — an analogy, avoiding jargon, visuals — how you checked they understood, and what happened as a result."
+  }
+ ],
+ "project_templates": [
+  {
+   "tid": "proj-walk",
+   "difficulty": "easy",
+   "prompt": "Walk me through your project \"{title}\". What problem did it solve, and what was your role?",
+   "keywords": [
+    "problem|goal|purpose|needed|users|built it to",
+    "my role|i built|i designed|i developed|i was responsible|i implemented|i worked on",
+    "{tech}",
+    "architecture|components|frontend|backend|database|api|flow",
+    "result|outcome|impact|users|accuracy|performance|learned"
+   ],
+   "ideal_answer": "A strong answer explains the problem and who it was for, your specific contribution (not just the team's), the main components and technologies ({tech}) and how they fit together, and a concrete result or what you learned."
+  },
+  {
+   "tid": "proj-tech",
+   "difficulty": "medium",
+   "prompt": "In \"{title}\", why did you choose {tech_first}? What alternatives did you consider?",
+   "keywords": [
+    "{tech_first}",
+    "alternative|instead|compared|other options|considered|versus|vs",
+    "trade-off|trade off|pros and cons|advantage|disadvantage|downside",
+    "requirement|because|needed|performance|easy|familiar|ecosystem|scalab|cost"
+   ],
+   "ideal_answer": "Explain the requirement that drove the choice, name at least one realistic alternative, compare them honestly (performance, ease of use, ecosystem, cost, team familiarity) and admit any downside you accepted."
+  },
+  {
+   "tid": "proj-challenge",
+   "difficulty": "medium",
+   "prompt": "What was the hardest technical challenge you faced in \"{title}\", and how did you solve it?",
+   "keywords": [
+    "challenge|problem|difficult|hard|issue|bug",
+    "investigate|debug|research|tried|experiment|analyzed|analysed|analysis",
+    "solution|solved|fixed|resolved|implemented|changed",
+    "result|outcome|worked|improved|faster|reduced",
+    "learned|lesson|takeaway|next time|would do differently|realised|realized"
+   ],
+   "ideal_answer": "Name one specific challenge, explain why it was hard, how you investigated and what you tried, the solution you chose and why, the result, and what you would do differently."
+  },
+  {
+   "tid": "proj-scale",
+   "difficulty": "hard",
+   "prompt": "If \"{title}\" suddenly had 100x more users, what would break first and how would you fix it?",
+   "keywords": [
+    "bottleneck|break|slow|overload|limit",
+    "database|index|query|replica|shard",
+    "cache|caching|redis|cdn",
+    "load balancer|horizontal|more servers|scale out|autoscaling",
+    "monitor|metrics|logging|load test|measure"
+   ],
+   "ideal_answer": "Identify the likely bottleneck for this project (often the database or a synchronous call), then propose fixes: indexing and caching, read replicas, stateless servers behind a load balancer, background queues — and say you'd measure with monitoring and load tests first."
+  },
+  {
+   "tid": "proj-test",
+   "difficulty": "medium",
+   "prompt": "How did you test \"{title}\", and how did you make sure it worked correctly?",
+   "keywords": [
+    "unit test|unit tests|pytest|junit|jest",
+    "integration|end-to-end|e2e|api test",
+    "edge case|corner case|invalid input|error handling",
+    "manual|user testing|feedback|demo",
+    "bug|found|fixed|ci|automated"
+   ],
+   "ideal_answer": "Describe the kinds of tests you used (unit, integration or end-to-end, manual checks), which edge cases you covered, a bug testing caught, and how you'd improve the test setup (automation/CI)."
+  },
+  {
+   "tid": "proj-improve",
+   "difficulty": "easy",
+   "prompt": "If you rebuilt \"{title}\" today, what would you do differently?",
+   "keywords": [
+    "differently|improve|change|refactor|redo",
+    "design|architecture|structure|code quality",
+    "test|documentation|security|performance",
+    "because|learned|since|realised|realized",
+    "feature|users|feedback"
+   ],
+   "ideal_answer": "Show reflection: name concrete changes (architecture, testing, security, performance or a feature), explain why — what you learned since — and how it would help users or maintainability."
+  }
+ ],
+ "internship_templates": [
+  {
+   "tid": "int-walk",
+   "difficulty": "easy",
+   "prompt": "Tell me about your internship at {company} as {role}. What did you work on?",
+   "keywords": [
+    "team|project|product|company",
+    "my role|i worked on|i built|i was responsible|my task|i developed",
+    "{tech}",
+    "result|impact|delivered|shipped|improved|used by",
+    "learned|learnt|lesson|skill"
+   ],
+   "ideal_answer": "Explain the team and product, your specific responsibilities and what you built, the technologies you used ({tech}), a concrete result, and what you learned."
+  },
+  {
+   "tid": "int-learn",
+   "difficulty": "easy",
+   "prompt": "What is the most valuable thing you learned during your internship at {company}?",
+   "keywords": [
+    "learned|learnt|lesson|realised|realized",
+    "example|when|project|task|situation",
+    "code review|best practice|team|process|production",
+    "apply|since then|now i|changed how",
+    "why|because|important|valuable"
+   ],
+   "ideal_answer": "Pick one specific lesson (technical or professional), tell the short story of how you learned it, and show how you've applied it since."
+  },
+  {
+   "tid": "int-collab",
+   "difficulty": "medium",
+   "prompt": "Describe how you collaborated with your team during your internship at {company}.",
+   "keywords": [
+    "team|mentor|manager|colleagues|engineers",
+    "communicate|communicated|communication|standup|meeting|slack|update|sync",
+    "code review|pull request|pr|feedback",
+    "tools|git|jira|agile|sprint",
+    "result|delivered|helped|outcome"
+   ],
+   "ideal_answer": "Explain how the team worked (stand-ups, sprints, code reviews, tools), how you communicated progress and asked for help, a moment where collaboration mattered, and the outcome."
+  },
+  {
+   "tid": "int-challenge",
+   "difficulty": "medium",
+   "prompt": "What was a difficult task during your internship at {company}, and how did you handle it?",
+   "keywords": [
+    "situation|context|background|when i was|at the time|during",
+    "difficult|challenge|hard|unfamiliar|problem",
+    "asked|mentor|research|documentation|debug|broke it down",
+    "result|outcome|impact|in the end|finally|improved|reduced|increased|delivered|succeeded",
+    "learned|lesson|takeaway|next time|would do differently|realised|realized"
+   ],
+   "ideal_answer": "Use STAR: the task, why it was difficult, the steps you took (research, asking your mentor, breaking it down), the result and what you learned."
+  }
+ ],
+ "skill_templates": [
+  {
+   "tid": "skill-used",
+   "difficulty": "easy",
+   "prompt": "Your resume lists {skill}. Tell me about a time you used it in a real project.",
+   "keywords": [
+    "{skill}",
+    "project|built|developed|internship|assignment",
+    "feature|implemented|used it to|for the",
+    "challenge|problem|difficult|learned",
+    "result|worked|outcome|improved"
+   ],
+   "ideal_answer": "Name the project, what you used {skill} for specifically, a challenge you hit with it and how you solved it, and the result — interviewers want evidence that the skill on your resume is real."
+  },
+  {
+   "tid": "skill-depth",
+   "difficulty": "medium",
+   "prompt": "What are the strengths and limitations of {skill}? When would you not use it?",
+   "keywords": [
+    "{skill}",
+    "strength|advantage|good at|pros|benefit",
+    "limitation|disadvantage|drawback|cons|weakness|not suitable",
+    "alternative|instead|another|other",
+    "when|use case|situation|depends"
+   ],
+   "ideal_answer": "Show depth: what {skill} is good at and why, its real limitations, a situation where you'd pick an alternative (and which one), and how you decide."
+  }
+ ]
+}

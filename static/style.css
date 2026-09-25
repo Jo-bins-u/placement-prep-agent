@@ -76,11 +76,10 @@ textarea { resize: vertical; }
 }
 
 .brand-mark {
-  width: 18px;
-  height: 18px;
-  border-radius: 5px;
-  background: linear-gradient(135deg, var(--accent), var(--green));
-  box-shadow: inset 0 0 0 3px rgba(255,255,255,0.4);
+  width: 26px;
+  height: 26px;
+  flex: 0 0 auto;
+  filter: drop-shadow(0 2px 4px rgba(111, 61, 240, 0.28));
 }
 
 .site-nav {
@@ -1100,6 +1099,74 @@ a.update-option:hover { border-color: var(--accent); }
 
 .question-card {
   padding: 24px 24px 20px;
+}
+
+.mode-card.is-active {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-soft), var(--shadow);
+}
+
+.mode-current {
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 0.78rem;
+}
+
+.topic-picker {
+  display: grid;
+  gap: 6px;
+  padding-bottom: 18px;
+  margin-bottom: 18px;
+  border-bottom: 1px solid var(--border);
+}
+
+.topic-picker label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.topic-picker-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.topic-picker select {
+  flex: 1 1 260px;
+  width: 100%;
+  min-width: 0;
+  max-width: 460px;
+  padding: 10px 12px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-xs);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+}
+
+.js .topic-apply.js-optional { display: none; }
+
+.question-badges {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.question-note {
+  margin: -4px 0 14px;
+  padding: 10px 14px;
+  border-radius: var(--radius-xs);
+  background: var(--surface-alt);
+  color: var(--muted);
+  font-size: 0.88rem;
 }
 
 .question-header {
@@ -3151,4 +3218,98 @@ textarea[name="answer_text"]:focus, .code-editor:focus {
 /* Narrow hero graph: drop the small card labels so cards don't touch the nodes */
 @container (max-width: 420px) {
   .flow-card__label { display: none; }
+}
+
+
+/* ---- answer feedback ---- */
+.concept-chips {
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: 1px solid transparent;
+}
+
+.chip.covered { background: var(--green-soft); color: var(--green); border-color: #c8ecdc; }
+.chip.partial { background: var(--amber-soft); color: #9a5f14; border-color: #f4dcb6; }
+.chip.missing { background: var(--surface-alt); color: var(--muted); border-color: var(--border); }
+
+.chip-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin: 8px 0 0;
+  color: var(--muted-soft);
+  font-size: 0.78rem;
+}
+
+.feedback-columns {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 14px;
+  margin: 4px 0 16px;
+}
+
+.feedback-box {
+  padding: 14px 16px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--surface-alt);
+}
+
+.feedback-box.good { border-color: #c8ecdc; background: var(--green-soft); }
+.feedback-box.improve { border-color: #f4dcb6; background: var(--amber-soft); }
+
+.feedback-box h3 {
+  margin: 0 0 6px;
+  font-size: 0.95rem;
+}
+
+.feedback-box ul {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 4px;
+  font-size: 0.92rem;
+}
+
+.model-answer {
+  margin: 0 0 16px;
+  padding: 14px 16px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-strong);
+  background: var(--surface-strong);
+}
+
+.model-answer summary {
+  cursor: pointer;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.model-answer p {
+  margin: 10px 0 0;
+  line-height: 1.7;
+}
+
+.field-hint { color: var(--muted-soft); font-size: 0.8rem; }
+.account-section-title { margin: 22px 0 10px; font-size: 1.05rem; }
+.name-form { margin-bottom: 4px; }
+
+.name-nudge {
+  margin: 0 0 16px;
+  padding: 10px 14px;
+  border-radius: var(--radius-xs);
+  background: var(--accent-soft);
+  color: var(--primary);
+  font-size: 0.9rem;
 }

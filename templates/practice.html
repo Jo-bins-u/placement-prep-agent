@@ -12,13 +12,14 @@
   </section>
 
   <section class="mode-grid">
-    <article class="mode-card card">
+    <article class="mode-card card{% if mode == 'interview' %} is-active{% endif %}">
       <div class="mode-icon blue" aria-hidden="true">💬</div>
       <h2>Interview</h2>
-      <p>Practice questions based on your resume, projects, and skill profile.</p>
+      <p>Questions an interviewer asks about <strong>you</strong>: your projects, internships and skills, plus behavioural &amp; HR questions.</p>
       <div class="mode-footer">
-        <span>Resume-based</span>
-        <a href="#current-question" class="btn btn-primary small">Start interview</a>
+        <span>Resume &amp; behavioural</span>
+        {% if mode == 'interview' %}<span class="mode-current">Selected</span>
+        {% else %}<a href="{{ url_for('practice', candidate_id=candidate_id, mode='interview') }}" class="btn btn-primary small">Start interview</a>{% endif %}
       </div>
     </article>
 
@@ -32,26 +33,58 @@
       </div>
     </article>
 
-    <article class="mode-card card">
+    <article class="mode-card card{% if mode == 'technical' %} is-active{% endif %}">
       <div class="mode-icon amber" aria-hidden="true">🧠</div>
       <h2>Technical</h2>
-      <p>Strengthen core concepts tied to the topics you are currently underperforming in.</p>
+      <p>Core concepts: DBMS, OS, networks, OOP, system design and more. Pick a topic, or focus on your weak areas.</p>
       <div class="mode-footer">
-        <span>Skill gap</span>
-        <a href="#current-question" class="btn btn-primary small">Start practice</a>
+        <span>Concepts by topic</span>
+        {% if mode == 'technical' %}<span class="mode-current">Selected</span>
+        {% else %}<a href="{{ url_for('practice', candidate_id=candidate_id, mode='technical') }}" class="btn btn-primary small">Start practice</a>{% endif %}
       </div>
     </article>
   </section>
 
   <section class="card question-card" id="current-question">
+    <form method="get" action="{{ url_for('practice', candidate_id=candidate_id) }}" class="topic-picker" id="topic-picker">
+      <input type="hidden" name="mode" value="{{ mode }}">
+      <label for="topic-select">{{ 'Interview topic' if mode == 'interview' else 'Technical topic' }}</label>
+      <div class="topic-picker-row">
+        <select id="topic-select" name="topic">
+          {% if mode == 'interview' %}
+            {% for group in ['General', 'My projects', 'My internships'] %}
+              {% set items = focus_options | selectattr(2, 'equalto', group) | list %}
+              {% if items %}
+              <optgroup label="{{ group }}">
+                {% for value, label, _ in items %}
+                <option value="{{ value }}" {% if value == choice %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+              </optgroup>
+              {% endif %}
+            {% endfor %}
+          {% else %}
+            <option value="recommended" {% if choice == 'recommended' %}selected{% endif %}>Recommended - my weak areas first</option>
+            {% for t in technical_topics %}
+            <option value="{{ t }}" {% if t == choice %}selected{% endif %}>{{ t }}</option>
+            {% endfor %}
+          {% endif %}
+        </select>
+        <button type="submit" class="btn btn-ghost small topic-apply">Change topic</button>
+      </div>
+    </form>
+
     <div class="question-header">
       <div>
-        <p class="eyebrow">Current recommendation</p>
+        <p class="eyebrow">{{ 'Interview question' if mode == 'interview' else 'Technical question' }}</p>
         <h2>{{ question.topic|topic }} · {{ question.difficulty|title }}</h2>
       </div>
-      {% if question.source == 'ai' %}<span class="badge-soft secondary" title="{{ question.reason }}">Personalised</span>{% endif %}
-      <span class="badge-soft">{{ 'Multiple choice' if question.type == 'mcq' else question.type|replace('_', ' ') }}</span>
+      <div class="question-badges">
+        {% if question.source == 'ai' %}<span class="badge-soft secondary" title="{{ question.reason }}">Personalised</span>{% endif %}
+        <span class="badge-soft">{{ 'Multiple choice' if question.type == 'mcq' else question.type|replace('_', ' ') }}</span>
+      </div>
     </div>
+    {% if question.repeat %}<p class="question-note">You've answered every question in this topic — here's one to practise again.</p>{% endif %}
+    {% if mode == 'interview' %}<p class="question-note">Answer as you would out loud in an interview: be specific about what <em>you</em> did. For behavioural questions, use Situation → Task → Action → Result.</p>{% endif %}
 
     <p class="question-prompt">{{ question.prompt }}</p>
 
@@ -70,7 +103,7 @@
         </fieldset>
       {% else %}
         <label for="answer_text" class="visually-hidden">Your answer</label>
-        <textarea id="answer_text" name="answer_text" rows="7" placeholder="Type your answer here…" required></textarea>
+        <textarea id="answer_text" name="answer_text" rows="8" placeholder="{{ 'Type your answer in your own words…' if mode == 'technical' else 'Answer in your own words, as you would in the interview — be specific about what you did…' }}" required></textarea>
       {% endif %}
 
       <div class="submit-row">
@@ -83,4 +116,16 @@
     </form>
   </section>
 </div>
+{% endblock %}
+{% block scripts %}
+<script nonce="{{ csp_nonce() }}">
+  (function () {
+    // Switch topic as soon as a new one is picked (the button remains for keyboard / no-JS users).
+    var picker = document.getElementById('topic-picker');
+    var select = document.getElementById('topic-select');
+    if (!picker || !select) return;
+    picker.querySelector('.topic-apply').classList.add('js-optional');
+    select.addEventListener('change', function () { picker.submit(); });
+  })();
+</script>
 {% endblock %}

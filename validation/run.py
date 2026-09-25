@@ -167,7 +167,7 @@ def suite_evaluator(args) -> dict:
                 score, _ = evaluator.evaluate_answer(q, answer)
                 mcq_correct.append(score == expected)
             continue
-        keywords = list(q.get("keywords", []))
+        keywords = [evaluator.concept_name(k) for k in q.get("keywords", [])]
         if not keywords:
             continue
         half = keywords[: max(1, len(keywords) // 2)]
@@ -202,7 +202,26 @@ def suite_evaluator(args) -> dict:
         1.0 if min(v["high"]) > max(v["mid"]) and min(v["mid"]) > max(v["low"]) else 0.0
         for v in by_question.values() if {"high", "mid", "low"} <= set(v)
     ]
+    # Realistic, hand-written answers (synonyms, typos, partial and wrong answers): the current
+    # scorer versus the old exact-keyword method, both without the AI grader.
+    from validation.datasets.answers import ANSWERS
+    by_id = {q["id"]: q for q in bank}
+
+    def keyword_only(question, answer):
+        names = [evaluator.concept_name(k) for k in question.get("keywords", [])]
+        stems = set(evaluator._stems(answer))
+        hits = sum(all(s in stems for s in (evaluator._stems(n) or [n.lower()])) for n in names)
+        return 100.0 * hits / len(names) if names else 0.0
+
+    real_new, real_old = [], []
+    for qid, band, answer in ANSWERS:
+        real_new.append(band_of(evaluator.rubric_details(by_id[qid], answer)["score"]) == band)
+        real_old.append(band_of(keyword_only(by_id[qid], answer)) == band)
+
     result = {
+        "realistic_answers": len(ANSWERS),
+        "realistic_band_accuracy": M.mean([1.0 if ok else 0.0 for ok in real_new]),
+        "realistic_band_accuracy_keyword_only": M.mean([1.0 if ok else 0.0 for ok in real_old]),
         "short_answer_cases": len(rows),
         "mcq_cases": len(mcq_correct),
         "band_accuracy": M.mean([1.0 if e == p else 0.0 for e, p in zip(expected, predicted)]),
@@ -214,9 +233,11 @@ def suite_evaluator(args) -> dict:
         "confusion": M.confusion(expected, predicted),
         "latency_ms": {"mean": M.mean(latencies), "p95": M.percentile(latencies, 0.95)},
         "note": "Synthetic answers per question: explains all key concepts / explains half / bare keyword list (should be capped at 50) / "
-                "off-topic / empty. Measures rubric scoring consistency without the AI grader; paraphrases without the key terms "
-                "need the AI grader (see the ai_guards suite).",
+                "off-topic / empty. Measures rubric scoring consistency without the AI grader. The realistic set "
+                "(validation/datasets/answers.py) checks tolerance for synonyms, informal wording and typos.",
     }
+    log.info("[evaluator] realistic answers: band accuracy %s (old exact-keyword method: %s) on %d answers",
+             pct(result["realistic_band_accuracy"]), pct(result["realistic_band_accuracy_keyword_only"]), len(ANSWERS))
     log.info("[evaluator] %d short-answer + %d MCQ cases | band accuracy %s | Spearman rho %.3f | MAE %.1f pts | monotonic %s | MCQ accuracy %s",
              len(rows), len(mcq_correct), pct(result["band_accuracy"]), result["spearman_rho"], result["mae_vs_target"],
              pct(result["monotonic_rate"]), pct(result["mcq_accuracy"]))
@@ -718,7 +739,9 @@ def _headline(results: dict) -> list:
         ]
     if "evaluator" in results:
         r = results["evaluator"]
-        rows += [("Answer scoring band accuracy", r["band_accuracy"], 0.80),
+        rows += [("Realistic answers band accuracy (synonyms/typos)", r["realistic_band_accuracy"], 0.80),
+                 ("  ...same answers, old exact-keyword method", r["realistic_band_accuracy_keyword_only"], None),
+                 ("Answer scoring band accuracy", r["band_accuracy"], 0.80),
                  ("Answer scoring Spearman rho", r["spearman_rho"], 0.80),
                  ("MCQ scoring accuracy", r["mcq_accuracy"], 1.0)]
     if "dsa" in results:
@@ -766,7 +789,9 @@ def _markdown(results: dict, headline: list, stamp: str, duration: float) -> str
         lines += ["", "## Answer evaluator", "", f"{r['short_answer_cases']} short-answer cases, {r['mcq_cases']} MCQ cases.", "",
                   f"* Band accuracy: {pct(r['band_accuracy'])}", f"* Spearman ρ: {r['spearman_rho']:.3f} · Pearson r: {r['pearson_r']:.3f}",
                   f"* MAE vs target: {r['mae_vs_target']:.1f} points", f"* Correct ordering (full > partial > off-topic): {pct(r['monotonic_rate'])}",
-                  f"* MCQ accuracy: {pct(r['mcq_accuracy'])}", "", f"_{r['note']}_"]
+                  f"* MCQ accuracy: {pct(r['mcq_accuracy'])}",
+                  f"* Realistic hand-written answers ({r['realistic_answers']}): band accuracy {pct(r['realistic_band_accuracy'])} "
+                  f"vs {pct(r['realistic_band_accuracy_keyword_only'])} for the old exact-keyword method", "", f"_{r['note']}_"]
     if "dsa" in results:
         r = results["dsa"]
         lines += ["", "## Code judge", "", f"{r['problems']} problems, {r['submissions']} submissions · accuracy {pct(r['judge_accuracy'])} · "

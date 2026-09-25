@@ -6,13 +6,22 @@
 <meta name="csrf-token" content="{{ csrf_token() }}">
 <title>{% block title %}Prepwise | Placement Prep Agent{% endblock %}</title>
 <script nonce="{{ csp_nonce() }}">document.documentElement.classList.add('js');</script>
+<link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='logo.svg', v=asset_version('logo.svg')) }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css', v=asset_version('style.css')) }}">
 </head>
 <body class="site-body">
   <div class="site-shell">
     <header class="site-header">
       <a href="{{ url_for('home') }}" class="brand-block display" aria-label="Prepwise home">
-        <span class="brand-mark" aria-hidden="true"></span>
+        <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+          <defs>
+            <linearGradient id="pw-bolt" x1="25" y1="2" x2="7" y2="30" gradientUnits="userSpaceOnUse">
+              <stop offset="0" stop-color="#c24df8"/><stop offset="0.55" stop-color="#8b3cf0"/><stop offset="1" stop-color="#4f46e5"/>
+            </linearGradient>
+          </defs>
+          <path d="M20.2 1.5 5.5 18.2h9.1L11.3 30.5l15.2-18h-9.2l2.9-11Z" fill="url(#pw-bolt)"/>
+          <path d="M20.2 1.5 5.5 18.2h3.4L19 6.4l1.2-4.9Z" fill="#ffffff" opacity="0.28"/>
+        </svg>
         <span>Prepwise</span>
       </a>
 
@@ -28,8 +37,8 @@
 
       <div class="header-actions">
         {% if current_user.is_authenticated %}
-        <a href="{{ url_for('change_password') }}" class="account-link" title="Account: {{ current_user.email }} — change password">
-          <span class="user-email">{{ current_user.email }}</span><span class="account-short">Account</span>
+        <a href="{{ url_for('change_password') }}" class="account-link" title="Account: {{ current_user.email }}">
+          <span class="user-email">{{ current_user.display_name or current_user.email }}</span><span class="account-short">{{ current_user.display_name or 'Account' }}</span>
         </a>
         <form method="post" action="{{ url_for('logout') }}" class="logout-form">{{ csrf_field() }}<button type="submit" class="btn btn-ghost small">Log out</button></form>
         {% else %}
@@ -49,6 +58,9 @@
         </div>
         {% endif %}
       {% endwith %}
+      {% if current_user.is_authenticated and not current_user.display_name and request.endpoint != 'change_password' %}
+      <p class="name-nudge">What should we call you? <a href="{{ url_for('change_password') }}#display_name" class="link-button">Add your name</a> — it's only used for display.</p>
+      {% endif %}
       {% block content %}{% endblock %}
     </main>
   </div>

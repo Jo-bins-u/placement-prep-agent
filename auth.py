@@ -67,6 +67,23 @@ def burn_password_check(password: str) -> None:
     check_password(password, _DUMMY_HASH[0])
 
 
+DISPLAY_NAME_MAX = 40
+
+
+def clean_display_name(value) -> tuple:
+    """(cleaned name, error or None). Display only: letters, digits, spaces and . - ' _ allowed."""
+    import unicodedata
+    name = " ".join(str(value or "").split())
+    name = "".join(ch for ch in name if unicodedata.category(ch)[0] != "C")  # no control/invisible chars
+    if len(name) < 2:
+        return "", "Please enter a name of at least 2 characters."
+    if len(name) > DISPLAY_NAME_MAX:
+        return "", f"Please keep your name under {DISPLAY_NAME_MAX} characters."
+    if not all(ch.isalnum() or ch in " .-'_" for ch in name):
+        return "", "Names can use letters, numbers, spaces and . - ' _ only."
+    return name, None
+
+
 PASSWORD_MAX_BYTES = 72  # bcrypt only uses the first 72 bytes (and bcrypt 5 rejects longer input)
 
 # A small offline blocklist of the most common passwords that pass the length/letter/digit rules.
@@ -362,6 +379,7 @@ class User(UserMixin):
         self.is_verified = user_dict["is_verified"]
         self.created_at = user_dict["created_at"]
         self.session_version = int(user_dict.get("session_version") or 0)
+        self.display_name = user_dict.get("display_name") or ""
 
     def _fingerprint(self) -> str:
         from services.security import password_fingerprint

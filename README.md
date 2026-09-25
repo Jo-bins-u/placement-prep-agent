@@ -172,6 +172,23 @@ HTTP request is logged as one JSON line in `logs/app_metrics.jsonl`.
   Without mail settings, set `FLASK_DEBUG=1` (or `PREPWISE_PRINT_OTP=1`) on your own machine to
   see codes in the server console for local testing.
 
+## Practice modes and answer scoring
+
+* **Interview** — questions an interviewer asks about *you*: your projects, internships and
+  resume skills, plus behavioural/HR questions. Pick "Mixed", "Behavioral & HR", "Skills on my
+  resume", or a specific project/internship from your resume.
+* **Technical** — core concepts (Data Structures, Algorithms, DP, DBMS, OS, Networks, OOP,
+  System Design, Python, ML, Web). Pick a topic or "Recommended" (weak areas first).
+  74 bank questions (`tools/build_question_bank.py`) plus AI-generated ones when `GROQ_API_KEY` is set.
+* **Scoring** — each key point accepts several phrasings (synonyms), small typos are tolerated,
+  half-explained points get partial credit, and the answer is compared in meaning with a model
+  answer, so a correct answer in your own words scores well. With the AI grader it judges point by
+  point with partial credit. Feedback shows covered/partial/missing points, what you did well,
+  how to improve, and a model answer. On 38 realistic hand-written answers the rubric puts
+  94.7% in the right band vs 36.8% for the old exact-keyword method (`python -m validation.run`).
+* **Display name** — asked at sign-up (display only; you still sign in with your email) and
+  editable on the Account page.
+
 ## Security settings
 
 * `SECRET_KEY` is required (32+ characters); there is no built-in fallback.

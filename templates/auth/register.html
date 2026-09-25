@@ -12,6 +12,12 @@
 
     <form method="post" action="{{ url_for('register') }}" class="auth-form" data-busy-label="Creating account…">{{ csrf_field() }}
       <div class="form-group">
+        <label for="display_name">Your name</label>
+        <input type="text" id="display_name" name="display_name" required minlength="2" maxlength="40" value="{{ display_name }}"
+               placeholder="What should we call you?" autocomplete="nickname">
+        <small class="field-hint">Shown in the app only — you still sign in with your email.</small>
+      </div>
+      <div class="form-group">
         <label for="email">Email address</label>
         <input type="email" id="email" name="email" required value="{{ email }}" placeholder="you@example.com" autocomplete="email">
       </div>

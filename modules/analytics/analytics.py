@@ -172,12 +172,14 @@ def recommend_from_profiles(profiles: dict) -> list:
     for topic, p in profiles.items():
         if p["status"] == "weak":
             recs.append({
+                "topic": topic,
                 "title": f"Practice more {topic} questions",
                 "reason": f"Proficiency {p['score']}% across {p['attempts']} attempts — below the {int(WEAK_THRESHOLD)}% target",
             })
     for topic, p in profiles.items():
         if p["status"] == "needs_data":
             recs.append({
+                "topic": topic,
                 "title": f"Measure your {topic} skill",
                 "reason": f"Answer {p['attempts_needed']} more {topic} question{'s' if p['attempts_needed'] != 1 else ''} to get a reliable score",
             })

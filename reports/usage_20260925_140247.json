@@ -1,0 +1,144 @@
+{
+  "generated": "20260925_140247",
+  "database": {
+    "users": 5,
+    "verified_users": 3,
+    "profiles": 5,
+    "profiles_with_internships": 2,
+    "avg_projects_per_profile": 3.6,
+    "avg_internships_per_profile": 0.8,
+    "avg_skills_per_profile": 15.4,
+    "answers": 4,
+    "answer_mean_score": 30.474999999999998,
+    "answers_by_topic": {
+      "Data Structures": {
+        "count": 1,
+        "mean": 33.3
+      },
+      "Machine Learning": {
+        "count": 1,
+        "mean": 28.6
+      },
+      "Python": {
+        "count": 1,
+        "mean": 40.0
+      },
+      "System Design": {
+        "count": 1,
+        "mean": 20.0
+      }
+    },
+    "code_submissions": 0,
+    "code_accepted_rate": 0.0,
+    "code_mean_score": 0.0,
+    "code_by_difficulty": {}
+  },
+  "runtime": {
+    "events": 90,
+    "first_event": "2026-09-24T12:32:44.565",
+    "last_event": "2026-09-25T08:17:27.384",
+    "requests": 72,
+    "server_error_rate": 0.05555555555555555,
+    "latency_ms_by_endpoint": {
+      "home": {
+        "count": 11,
+        "p50": 29.368,
+        "p95": 8769.2045
+      },
+      "register": {
+        "count": 10,
+        "p50": 498.09850000000006,
+        "p95": 12613.224399999992
+      },
+      "login": {
+        "count": 10,
+        "p50": 174.16,
+        "p95": 2623.863599999999
+      },
+      "dashboard": {
+        "count": 8,
+        "p50": 15499.858,
+        "p95": 20442.41275
+      },
+      "reset_password": {
+        "count": 8,
+        "p50": 6.2485,
+        "p95": 52170.595949999966
+      },
+      "forgot_password": {
+        "count": 6,
+        "p50": 4.8875,
+        "p95": 7662.923
+      },
+      "practice": {
+        "count": 5,
+        "p50": 20988.287,
+        "p95": 25541.8586
+      },
+      "verify_email": {
+        "count": 4,
+        "p50": 11.754999999999999,
+        "p95": 20352.250249999994
+      },
+      "verify_profile": {
+        "count": 3,
+        "p50": 9416.167,
+        "p95": 10051.144
+      },
+      "upload": {
+        "count": 2,
+        "p50": 29185.158000000003,
+        "p95": 54898.7646
+      },
+      "submit_answer": {
+        "count": 2,
+        "p50": 20737.234,
+        "p95": 26773.966
+      },
+      "resend_code": {
+        "count": 1,
+        "p50": 4.273,
+        "p95": 4.273
+      },
+      "logout": {
+        "count": 1,
+        "p50": 18505.872,
+        "p95": 18505.872
+      },
+      "dsa_practice": {
+        "count": 1,
+        "p50": 13112.276,
+        "p95": 13112.276
+      }
+    },
+    "resumes_parsed": 2,
+    "resume_parse_failures": 0,
+    "parse_ms": {
+      "mean": 715.34,
+      "p95": 814.6163
+    },
+    "parse_avg_fields": {
+      "skills": 16.0,
+      "projects": 4.0,
+      "internships": 2.0,
+      "education": 1.0
+    },
+    "parse_email_found_rate": 1.0,
+    "answers_evaluated": 2,
+    "answer_score_mean": 24.3,
+    "answer_score_valid_rate": 1.0,
+    "answer_eval_ms_mean": 663.6305,
+    "code_runs": 0,
+    "code_run_status": {},
+    "code_submissions": 0,
+    "code_submission_status": {},
+    "code_judge_ms_mean": 0.0,
+    "otp_issued": 3,
+    "otp_email_delivery_rate": 1.0,
+    "otp_verify_attempts": 2,
+    "otp_verify_results": {
+      "ok": 2
+    },
+    "otp_success_rate": 1.0
+  }
+}

@@ -132,9 +132,20 @@ def get_conn():
             if _POSTGRES_CONFIGURED and os.getenv("PREPWISE_ALLOW_SQLITE_FALLBACK") != "1":
                 # A configured database is unreachable (or refused TLS). Don't silently switch to a
                 # local SQLite file - that would split users' data between two databases.
-                raise RuntimeError(f"Could not connect to the configured (remote) PostgreSQL database: {type(e).__name__}. "
-                                   "Check DATABASE_URL and your network (set PREPWISE_ALLOW_SQLITE_FALLBACK=1 "
-                                   "to fall back to a local SQLite file instead).") from e
+                text = str(e)
+                if "resolve host" in text or "getaddrinfo" in text or "Name or service not known" in text:
+                    why = ("this computer couldn't look up the database server's address (DNS). Check that you're "
+                           "online; if you are, try another network or DNS (e.g. 1.1.1.1 / 8.8.8.8), or turn off a VPN/proxy")
+                elif "timeout" in text.lower() or "timed out" in text.lower():
+                    why = "the database server didn't answer in time (network/firewall, or the Supabase project is paused)"
+                elif "password" in text.lower() or "authentication" in text.lower():
+                    why = "the username or password in DATABASE_URL was rejected"
+                else:
+                    why = f"{type(e).__name__}"
+                raise RuntimeError(
+                    f"Can't connect to your PostgreSQL database: {why}.\n"
+                    "To keep working offline, add PREPWISE_ALLOW_SQLITE_FALLBACK=1 to .env - the app will then use a "
+                    "local SQLite file (data saved there is separate from your online database).") from e
             print(f"[DATABASE] PostgreSQL not available ({type(e).__name__}). Using SQLite at {SQLITE_DB_PATH}")
             _USE_SQLITE = True
 
@@ -150,6 +161,7 @@ EXTRA_COLUMNS = [
     ("app_users", "pending_password_hash", "TEXT"),  # re-sign-up password, applied only once the email is verified
     ("app_users", "pending_password_nonce", "TEXT"), # ...and only in the browser session that chose it
     ("app_users", "session_version", "INTEGER DEFAULT 0"),  # bumped on logout: invalidates copied cookies
+    ("app_users", "display_name", "TEXT"),           # shown in the app only; never used to sign in
 ]
 
 
@@ -388,11 +400,11 @@ def init_db():
     _apply_extra_columns()
 
 
-def create_user(email: str, password_hash: str) -> int:
+def create_user(email: str, password_hash: str, display_name: str | None = None) -> int:
     conn = get_conn()
     cur = conn.execute(
-        "INSERT INTO app_users (email, password_hash, created_at) VALUES (%s, %s, %s) RETURNING id",
-        (email, password_hash, datetime.utcnow().isoformat())
+        "INSERT INTO app_users (email, password_hash, created_at, display_name) VALUES (%s, %s, %s, %s) RETURNING id",
+        (email, password_hash, datetime.utcnow().isoformat(), display_name)
     )
     user_id = cur.fetchone()["id"]  # fetch before commit (SQLite can't commit mid-statement)
     conn.commit()
@@ -834,5 +846,12 @@ def apply_pending_password(user_id: int, nonce_hash) -> bool:
 def bump_session_version(user_id: int) -> None:
     conn = get_conn()
     conn.execute("UPDATE app_users SET session_version = COALESCE(session_version, 0) + 1 WHERE id = %s", (user_id,))
+    conn.commit()
+    conn.close()
+
+
+def set_display_name(user_id: int, display_name) -> None:
+    conn = get_conn()
+    conn.execute("UPDATE app_users SET display_name = %s WHERE id = %s", (display_name, user_id))
     conn.commit()
     conn.close()
