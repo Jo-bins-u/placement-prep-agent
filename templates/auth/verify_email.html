@@ -6,86 +6,19 @@
   <div class="auth-card card">
     <div class="auth-header">
       <h1 class="display">Check your email</h1>
-      <p class="subtitle">We sent a 6-digit verification code to <strong>{{ email }}</strong>.</p>
+      <p class="subtitle">Enter the 6-digit code we sent to <strong>{{ email }}</strong>. It expires in 10 minutes.</p>
     </div>
 
-
-    <form method="post" action="{{ url_for('verify_email') }}" class="auth-form otp-form" id="otp-form" data-busy-label="Verifying…">
-      <input type="hidden" name="user_id" value="{{ user_id }}">
+    <form method="post" action="{{ url_for('verify_email') }}" class="auth-form otp-form" data-busy-label="Verifying…">{{ csrf_field() }}
       <input type="hidden" name="email" value="{{ email }}">
-      <div class="form-group">
-        <label id="otp-label" for="otp-0">Verification code</label>
-        <div class="otp-inputs" role="group" aria-labelledby="otp-label">
-          {% for i in range(6) %}
-          <input type="text" id="otp-{{ i }}" inputmode="numeric" maxlength="1" pattern="[0-9]" class="otp-digit"
-                 required autocomplete="{{ 'one-time-code' if i == 0 else 'off' }}" aria-label="Digit {{ i + 1 }}">
-          {% endfor %}
-        </div>
-        <input type="hidden" name="otp" id="full-otp">
-      </div>
-
+      {% include "auth/_otp_field.html" %}
       <button type="submit" class="btn btn-primary full-width">Verify account</button>
     </form>
 
     <div class="auth-footer">
-      <p>The code expires in 10 minutes. Didn't get it? Check your spam folder.</p>
+      {% include "auth/_resend.html" %}
+      <p>Wrong email? <a href="{{ url_for('register') }}" class="link-button">Sign up again</a></p>
     </div>
   </div>
 </section>
-{% endblock %}
-
-{% block scripts %}
-<script>
-  (function () {
-    const inputs = Array.from(document.querySelectorAll('.otp-digit'));
-    const hiddenInput = document.getElementById('full-otp');
-
-    function sync() {
-      hiddenInput.value = inputs.map(function (input) { return input.value; }).join('');
-    }
-
-    function fillFrom(index, text) {
-      const digits = (text || '').replace(/\D/g, '').slice(0, inputs.length - index);
-      digits.split('').forEach(function (d, offset) { inputs[index + offset].value = d; });
-      const next = Math.min(index + digits.length, inputs.length - 1);
-      inputs[next].focus();
-      sync();
-    }
-
-    inputs.forEach(function (input, index) {
-      input.addEventListener('input', function () {
-        const value = input.value.replace(/\D/g, '');
-        if (value.length > 1) {           // autofill / fast typing dropped several digits into one box
-          input.value = '';
-          fillFrom(index, value);
-          return;
-        }
-        input.value = value;
-        if (value && index < inputs.length - 1) inputs[index + 1].focus();
-        sync();
-      });
-
-      input.addEventListener('keydown', function (e) {
-        if (e.key === 'Backspace' && input.value === '' && index > 0) {
-          inputs[index - 1].value = '';
-          inputs[index - 1].focus();
-          sync();
-          e.preventDefault();
-        } else if (e.key === 'ArrowLeft' && index > 0) {
-          inputs[index - 1].focus();
-        } else if (e.key === 'ArrowRight' && index < inputs.length - 1) {
-          inputs[index + 1].focus();
-        }
-      });
-
-      input.addEventListener('paste', function (e) {
-        e.preventDefault();
-        fillFrom(index, (e.clipboardData || window.clipboardData).getData('text'));
-      });
-    });
-
-    document.getElementById('otp-form').addEventListener('submit', sync);
-    inputs[0].focus();
-  })();
-</script>
 {% endblock %}

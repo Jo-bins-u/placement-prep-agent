@@ -6,8 +6,8 @@
 {% set skills = profile.skills or [] %}
 {% set projects = profile.projects or [] %}
 {% set education = profile.education or [] %}
-{% set certifications = profile.certifications or [] %}
-{% set profile_sections = [contact.name, contact.email, contact.phone, education, skills, projects] %}
+{% set internships = profile.internships or [] %}
+{% set profile_sections = [contact.name, contact.email, contact.phone, education, skills, projects, internships] %}
 {% set filled_sections = profile_sections|select|list|length %}
 {% set completeness = (filled_sections * 100 / profile_sections|length)|round|int %}
 {% set interview_avg = ((attempts|sum(attribute='score')) / (attempts|length))|round(1) if attempts else 0 %}
@@ -21,6 +21,7 @@
     <div class="cta-row">
       <a href="{{ url_for('practice', candidate_id=candidate['id']) }}" class="btn btn-primary">Continue Practice</a>
       <a href="{{ url_for('dsa_practice', candidate_id=candidate['id']) }}" class="btn btn-secondary">Open DSA</a>
+      <button type="button" class="btn btn-ghost" data-open-dialog="update-dialog">Update resume</button>
     </div>
   </section>
 
@@ -31,9 +32,9 @@
       <span class="metric-foot">{{ filled_sections }} of {{ profile_sections|length }} profile sections filled</span>
     </article>
     <article class="metric-card card">
-      <span class="metric-label">Overall practice</span>
+      <span class="metric-label">Overall proficiency</span>
       <strong class="metric-value">{{ avg_score }}%</strong>
-      <span class="metric-foot">Across all practice topics</span>
+      <span class="metric-foot">Confidence-weighted across {{ skill_profiles|length }} topic{{ '' if skill_profiles|length == 1 else 's' }}</span>
     </article>
     <article class="metric-card card">
       <span class="metric-label">DSA score</span>
@@ -58,20 +59,33 @@
           <a href="{{ url_for('practice', candidate_id=candidate['id']) }}" class="link-button">Practice</a>
         </div>
 
-        {% if topic_scores %}
+        {% if skill_profiles %}
+        {% set status_labels = {'strong': 'Strong', 'developing': 'Developing', 'weak': 'Needs work', 'needs_data': 'Needs more data'} %}
         <div class="skill-list">
-          {% for topic, score in topic_scores.items() %}
-          <div class="skill-progress">
+          {% for topic, p in skill_profiles.items() %}
+          <div class="skill-progress skill-progress--{{ p.status }}">
             <div class="skill-meta">
-              <span>{{ topic|topic }}</span>
-              <strong>{{ score }}%</strong>
+              <span class="skill-name">{{ topic|topic }}</span>
+              <span class="skill-status {{ p.status }}">{{ status_labels[p.status] }}</span>
+              <strong>{{ p.score|round|int }}%</strong>
             </div>
-            <div class="progress-bar" role="progressbar" aria-label="{{ topic|topic }}" aria-valuenow="{{ score }}" aria-valuemin="0" aria-valuemax="100"><span class="{{ 'low' if score < 50 else ('mid' if score < 75 else 'high') }}" style="width: {{ [[score, 0]|max, 100]|min }}%"></span></div>
+            <div class="progress-bar" role="progressbar" aria-label="{{ topic|topic }} proficiency" aria-valuenow="{{ p.score }}" aria-valuemin="0" aria-valuemax="100">
+              <span class="{{ 'pending' if p.status == 'needs_data' else ('low' if p.score < 50 else ('mid' if p.score < 75 else 'high')) }}" style="width: {{ [[p.score, 0]|max, 100]|min }}%"></span>
+            </div>
+            <div class="skill-evidence">
+              <span>{{ p.attempts }} attempt{{ '' if p.attempts == 1 else 's' }}{% if p.dsa_attempts and p.interview_attempts %} ({{ p.interview_attempts }} interview · {{ p.dsa_attempts }} DSA){% endif %}</span>
+              <span>Avg {{ p.raw_average|round|int }}%</span>
+              <span title="How much evidence backs this score">Confidence: {{ p.confidence_label|capitalize }}</span>
+              {% if p.trend is not none %}<span class="{{ 'up' if p.trend > 0 else ('down' if p.trend < 0 else '') }}">{{ '▲' if p.trend > 0 else ('▼' if p.trend < 0 else '•') }} {{ p.trend|abs|round|int }} pts recently</span>{% endif %}
+              {% if p.status == 'needs_data' %}<span class="needs">{{ p.attempts_needed }} more to rate</span>{% endif %}
+            </div>
           </div>
           {% endfor %}
         </div>
-        {% else %}
-        <p class="empty-hint">No practice data yet. Complete your first practice session to start seeing performance.</p>
+        <details class="metric-explainer">
+          <summary>How is this calculated?</summary>
+          <p>Each skill's proficiency is estimated from every attempt on that topic (interview answers and DSA submissions), not a single answer. Recent attempts count more, and with little evidence the score is pulled towards a neutral 50%, so one bad answer can't sink a skill. A skill is rated only after 3 attempts, and confidence grows as you answer more.</p>
+        </details>
         {% endif %}
       </article>
 
@@ -113,14 +127,14 @@
           <div class="focus-item">
             <div>
               <h3>{{ topic|topic }}</h3>
-              <p>{{ topic_scores[topic] }}% current proficiency</p>
+              <p>{{ skill_profiles[topic].score|round|int }}% proficiency · {{ skill_profiles[topic].attempts }} attempts</p>
             </div>
             <a href="{{ url_for('practice', candidate_id=candidate['id']) }}" class="btn btn-ghost small">Practice</a>
           </div>
           {% endfor %}
         </div>
         {% else %}
-        <p class="empty-hint">{% if topic_scores %}No weak areas right now — you're in a strong rhythm. Keep practicing to maintain momentum.{% else %}Weak areas will show up here once you've answered a few questions.{% endif %}</p>
+        <p class="empty-hint">{% set rated = skill_profiles.values()|rejectattr('status', 'equalto', 'needs_data')|list %}{% if rated %}No weak areas right now — you're in a strong rhythm. Keep practicing to maintain momentum.{% else %}Weak areas appear once a topic has at least 3 attempts. Keep practicing to build up your skill map.{% endif %}</p>
         {% endif %}
       </article>
 
@@ -148,6 +162,76 @@
         {% endif %}
       </article>
     </div>
+  </section>
+
+  <section class="card panel-block internships-panel" id="internships">
+    <div class="panel-header">
+      <div>
+        <p class="eyebrow">Internships</p>
+        <h2>Where you've worked</h2>
+      </div>
+      {% if internships %}
+      <div class="internship-summary">
+        <span><strong>{{ internships|length }}</strong> internship{{ '' if internships|length == 1 else 's' }}</span>
+        {% set companies = internships|map(attribute='company')|select|unique|list %}
+        {% if companies %}<span><strong>{{ companies|length }}</strong> compan{{ 'y' if companies|length == 1 else 'ies' }}</span>{% endif %}
+        <button type="button" class="btn btn-ghost small" data-open-details="internships">View all details</button>
+      </div>
+      {% endif %}
+    </div>
+
+    {% if internships %}
+    <ol class="intern-timeline">
+      {% for item in internships %}
+      {% set points = item.description_points or ([item.description] if item.description else []) %}
+      <li class="intern-entry">
+        <span class="intern-logo tone-{{ loop.index0 % 4 }}" aria-hidden="true">{{ (item.company or item.role)|initials }}</span>
+        <div class="intern-body">
+          <div class="intern-head">
+            <div class="intern-title">
+              <h3>{{ item.role or 'Internship' }}</h3>
+              <p class="intern-org">
+                {% if item.company %}<span class="intern-company">{{ item.company }}</span>{% endif %}
+                {% if item.location %}<span class="intern-location">{{ item.location }}</span>{% endif %}
+              </p>
+            </div>
+            {% if item.duration %}
+            <div class="intern-when">
+              <span class="intern-dates">{{ item.duration }}</span>
+              {% set length = item.duration|span_length %}
+              {% if length %}<span class="intern-length">{{ length }}</span>{% endif %}
+            </div>
+            {% endif %}
+          </div>
+
+          {% if points %}
+          <ul class="intern-highlights">
+            {% for point in points[:2] %}<li>{{ point }}</li>{% endfor %}
+          </ul>
+          {% endif %}
+
+          <div class="intern-foot">
+            {% if item.tech_stack %}
+            <div class="mini-chips">{% for tech in item.tech_stack[:6] %}<span class="mini-chip">{{ tech }}</span>{% endfor %}</div>
+            {% else %}<span></span>{% endif %}
+            <button type="button" class="link-button" data-open-details="internships" data-target="intern-{{ loop.index0 }}">
+              {{ 'See all ' ~ points|length ~ ' points' if points|length > 2 else 'Details' }} →
+            </button>
+          </div>
+        </div>
+      </li>
+      {% endfor %}
+    </ol>
+    {% else %}
+    <div class="intern-empty">
+      <span class="intern-logo tone-0" aria-hidden="true">+</span>
+      <div>
+        <strong>No internships on your profile yet</strong>
+        <p>Add them manually or re-upload your resume — they strengthen your resume score and your interview questions.</p>
+      </div>
+      <button type="button" class="btn btn-primary small" data-open-dialog="update-dialog">Add internships</button>
+    </div>
+    {% endif %}
   </section>
 
   <section class="bottom-grid">
@@ -212,37 +296,235 @@
           <p class="eyebrow">Resume profile</p>
           <h2>Your work</h2>
         </div>
+        <button type="button" class="link-button" data-open-dialog="update-dialog">Update</button>
       </div>
       <div class="profile-summary">
-        <div><span>Projects</span><strong>{{ projects|length }}</strong></div>
-        <div><span>Skills</span><strong>{{ skills|length }}</strong></div>
-        <div><span>Education</span><strong>{{ education|length }}</strong></div>
-        <div><span>Certifications</span><strong>{{ certifications|length }}</strong></div>
+        <button type="button" data-open-details="projects"><span>Projects</span><strong>{{ projects|length }}</strong><em>View all →</em></button>
+        <button type="button" data-open-details="internships"><span>Internships</span><strong>{{ internships|length }}</strong><em>View all →</em></button>
+        <button type="button" data-open-details="skills"><span>Skills</span><strong>{{ skills|length }}</strong><em>View all →</em></button>
+        <button type="button" data-open-details="education"><span>Education</span><strong>{{ education|length }}</strong><em>View all →</em></button>
       </div>
       {% if projects %}
       <div class="project-list">
-        {% for proj in projects[:2] %}
-        <div class="project-card">
-          <h3>{{ proj.title or 'Untitled project' }}</h3>
-          {% if proj.description %}<p>{{ proj.description }}</p>{% endif %}
+        {% for proj in projects %}
+        <button type="button" class="project-card" data-open-details="projects" data-target="project-{{ loop.index0 }}">
+          <span class="project-card__title">{{ proj.title or proj.name or 'Untitled project' }}</span>
+          {% if proj.description %}<span class="project-card__summary">{{ proj.description|truncate(110) }}</span>{% endif %}
           {% if proj.tech_stack %}
-          <div class="mini-chips">
-            {% for tech in proj.tech_stack %}
-            <span class="mini-chip">{{ tech }}</span>
-            {% endfor %}
-          </div>
+          <span class="mini-chips">
+            {% for tech in proj.tech_stack[:4] %}<span class="mini-chip">{{ tech }}</span>{% endfor %}
+            {% if proj.tech_stack|length > 4 %}<span class="mini-chip muted">+{{ proj.tech_stack|length - 4 }}</span>{% endif %}
+          </span>
           {% endif %}
-        </div>
+        </button>
         {% endfor %}
-        {% if projects|length > 2 %}
-        <a href="{{ url_for('verify_profile', candidate_id=candidate['id']) }}" class="link-button">+ {{ projects|length - 2 }} more project{{ '' if projects|length == 3 else 's' }} · Edit profile</a>
-        {% endif %}
       </div>
       {% else %}
-      <p class="empty-hint">No project data detected yet. Upload a resume with a projects section to personalize your dashboard.</p>
+      <p class="empty-hint">No project data detected yet. <button type="button" class="link-button" data-open-dialog="update-dialog">Add projects or re-upload your resume</button>.</p>
       {% endif %}
     </article>
   </section>
 </div>
+
+{# ---------- Full profile details ---------- #}
+<dialog class="modal details-modal" id="details-dialog" aria-labelledby="details-title">
+  <div class="modal__head">
+    <div>
+      <p class="eyebrow">Resume profile</p>
+      <h2 id="details-title">Complete details</h2>
+    </div>
+    <button type="button" class="modal__close" data-close-dialog aria-label="Close">×</button>
+  </div>
+
+  <div class="tabs" role="tablist" aria-label="Profile sections">
+    <button type="button" role="tab" id="tab-projects" aria-controls="panel-projects" data-tab="projects">Projects <span>{{ projects|length }}</span></button>
+    <button type="button" role="tab" id="tab-internships" aria-controls="panel-internships" data-tab="internships">Internships <span>{{ internships|length }}</span></button>
+    <button type="button" role="tab" id="tab-skills" aria-controls="panel-skills" data-tab="skills">Skills <span>{{ skills|length }}</span></button>
+    <button type="button" role="tab" id="tab-education" aria-controls="panel-education" data-tab="education">Education <span>{{ education|length }}</span></button>
+  </div>
+
+  <div class="modal__body">
+    <section role="tabpanel" id="panel-projects" aria-labelledby="tab-projects" class="detail-list" hidden>
+      {% for proj in projects %}
+      <article class="detail-item" id="project-{{ loop.index0 }}">
+        <h3>{{ proj.title or proj.name or 'Untitled project' }}</h3>
+        {% set points = proj.description_points or ([proj.description] if proj.description else []) %}
+        {% if points %}
+        <ul>{% for point in points %}<li>{{ point }}</li>{% endfor %}</ul>
+        {% endif %}
+        {% if proj.tech_stack %}
+        <div class="mini-chips">{% for tech in proj.tech_stack %}<span class="mini-chip">{{ tech }}</span>{% endfor %}</div>
+        {% endif %}
+        {% if proj.links %}
+        <p class="detail-links">{% for link in proj.links %}{% set href = link|safe_url %}{% if href %}<a href="{{ href }}" target="_blank" rel="noopener noreferrer">{{ link }}</a>{% else %}<span>{{ link }}</span>{% endif %}{% endfor %}</p>
+        {% endif %}
+      </article>
+      {% else %}
+      <p class="empty-hint">No projects yet.</p>
+      {% endfor %}
+    </section>
+
+    <section role="tabpanel" id="panel-internships" aria-labelledby="tab-internships" class="detail-list" hidden>
+      {% for item in internships %}
+      <article class="detail-item" id="intern-{{ loop.index0 }}">
+        <h3>{{ item.role or 'Internship' }}</h3>
+        <p class="detail-meta">
+          {%- if item.company %}<strong>{{ item.company }}</strong>{% endif -%}
+          {%- if item.location %}<span>{{ item.location }}</span>{% endif -%}
+          {%- if item.duration %}<span>{{ item.duration }}</span>{% endif -%}
+        </p>
+        {% set points = item.description_points or ([item.description] if item.description else []) %}
+        {% if points %}
+        <ul>{% for point in points %}<li>{{ point }}</li>{% endfor %}</ul>
+        {% endif %}
+        {% if item.tech_stack %}
+        <div class="mini-chips">{% for tech in item.tech_stack %}<span class="mini-chip">{{ tech }}</span>{% endfor %}</div>
+        {% endif %}
+      </article>
+      {% else %}
+      <p class="empty-hint">No internships yet.</p>
+      {% endfor %}
+    </section>
+
+    <section role="tabpanel" id="panel-skills" aria-labelledby="tab-skills" hidden>
+      {% if skills %}
+      <div class="mini-chips skill-cloud">{% for skill in skills %}<span class="mini-chip">{{ skill }}</span>{% endfor %}</div>
+      {% else %}
+      <p class="empty-hint">No skills yet.</p>
+      {% endif %}
+    </section>
+
+    <section role="tabpanel" id="panel-education" aria-labelledby="tab-education" class="detail-list" hidden>
+      {% for edu in education %}
+      <article class="detail-item">
+        <h3>{{ edu.degree or edu.institution or 'Education' }}</h3>
+        <p class="detail-meta">
+          {%- if edu.degree and edu.institution %}<strong>{{ edu.institution }}</strong>{% endif -%}
+          {%- if edu.field_of_study %}<span>{{ edu.field_of_study }}</span>{% endif -%}
+          {%- if edu.specialization %}<span>{{ edu.specialization }}</span>{% endif -%}
+          {%- if edu.cgpa_or_percentage %}<span>Score: {{ edu.cgpa_or_percentage }}{% if edu.scale %} / {{ edu.scale }}{% endif %}</span>{% endif -%}
+        </p>
+      </article>
+      {% else %}
+      <p class="empty-hint">No education entries yet.</p>
+      {% endfor %}
+    </section>
+  </div>
+
+  <div class="modal__foot">
+    <a href="{{ url_for('verify_profile', candidate_id=candidate['id']) }}" class="btn btn-ghost small">Edit details</a>
+    <button type="button" class="btn btn-primary small" data-open-dialog="update-dialog">Update resume</button>
+  </div>
+</dialog>
+
+{# ---------- Update resume ---------- #}
+<dialog class="modal update-modal" id="update-dialog" aria-labelledby="update-title">
+  <div class="modal__head">
+    <div>
+      <p class="eyebrow">Resume</p>
+      <h2 id="update-title">Update your resume details</h2>
+    </div>
+    <button type="button" class="modal__close" data-close-dialog aria-label="Close">×</button>
+  </div>
+  <div class="modal__body update-options">
+    <a class="update-option" href="{{ url_for('verify_profile', candidate_id=candidate['id']) }}">
+      <span class="update-option__icon" aria-hidden="true">✎</span>
+      <span>
+        <strong>Edit manually</strong>
+        <small>Change your contact info, skills, education, projects and internships.</small>
+      </span>
+    </a>
+
+    <form class="update-option update-option--upload" method="post" enctype="multipart/form-data"
+          action="{{ url_for('reupload_resume', candidate_id=candidate['id']) }}" data-busy-label="Reading resume…">{{ csrf_field() }}
+      <span class="update-option__icon" aria-hidden="true">⇪</span>
+      <span class="update-option__body">
+        <strong>Re-upload your resume</strong>
+        <small>We'll read the new file and let you review the details. Your practice history is kept.</small>
+        <label class="file-drop compact">
+          <span class="file-drop__title">Choose a new resume</span>
+          <span class="file-drop__hint" data-file-hint>PDF or DOCX</span>
+          <input type="file" name="resume" accept=".pdf,.docx" required>
+        </label>
+        <button type="submit" class="btn btn-primary small">Upload and review</button>
+      </span>
+    </form>
+  </div>
+</dialog>
+{% endblock %}
+
+{% block scripts %}
+<script nonce="{{ csp_nonce() }}">
+(function () {
+  const details = document.getElementById('details-dialog');
+  const tabs = Array.from(details.querySelectorAll('[data-tab]'));
+
+  function showTab(name) {
+    tabs.forEach(function (tab) {
+      const active = tab.dataset.tab === name;
+      tab.setAttribute('aria-selected', active ? 'true' : 'false');
+      tab.tabIndex = active ? 0 : -1;
+      document.getElementById('panel-' + tab.dataset.tab).hidden = !active;
+    });
+  }
+
+  function openDialog(dialog) {
+    document.querySelectorAll('dialog[open]').forEach(function (d) { if (d !== dialog) d.close(); });
+    if (!dialog.open) dialog.showModal();
+  }
+
+  document.querySelectorAll('[data-open-details]').forEach(function (trigger) {
+    trigger.addEventListener('click', function () {
+      showTab(trigger.dataset.openDetails);
+      openDialog(details);
+      const target = trigger.dataset.target && document.getElementById(trigger.dataset.target);
+      if (target) {
+        target.scrollIntoView({ block: 'start' });
+        target.classList.remove('flash-highlight');
+        void target.offsetWidth;
+        target.classList.add('flash-highlight');
+      } else {
+        details.querySelector('.modal__body').scrollTop = 0;
+      }
+    });
+  });
+
+  tabs.forEach(function (tab, index) {
+    tab.addEventListener('click', function () { showTab(tab.dataset.tab); });
+    tab.addEventListener('keydown', function (e) {
+      if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+      const next = tabs[(index + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length];
+      next.focus();
+      showTab(next.dataset.tab);
+    });
+  });
+
+  document.querySelectorAll('[data-open-dialog]').forEach(function (trigger) {
+    trigger.addEventListener('click', function () { openDialog(document.getElementById(trigger.dataset.openDialog)); });
+  });
+
+  document.querySelectorAll('dialog.modal').forEach(function (dialog) {
+    dialog.querySelectorAll('[data-close-dialog]').forEach(function (btn) {
+      btn.addEventListener('click', function () { dialog.close(); });
+    });
+    // Close when clicking the dimmed backdrop.
+    dialog.addEventListener('click', function (e) {
+      const r = dialog.getBoundingClientRect();
+      if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) dialog.close();
+    });
+  });
+
+  document.querySelectorAll('.update-modal input[type="file"]').forEach(function (input) {
+    input.addEventListener('change', function () {
+      const file = input.files && input.files[0];
+      const drop = input.closest('.file-drop');
+      drop.querySelector('[data-file-hint]').textContent = file ? file.name : 'PDF or DOCX';
+      drop.classList.toggle('has-file', !!file);
+    });
+  });
+
+  showTab('projects');
+})();
+</script>
 {% endblock %}
 

@@ -1,9 +1,11 @@
 import unittest
 
-from modules.evaluation.ml_adapter import load_or_train_scorer, score_answer
+from modules.evaluation.ml_adapter import SOURCE_DATASET, SOURCE_SCORER_PATH, load_or_train_scorer, score_answer
 
 
 class MlAdapterTests(unittest.TestCase):
+    @unittest.skipUnless(SOURCE_DATASET.exists() or SOURCE_SCORER_PATH.exists(),
+                         "m3_upgrade/ seed dataset and scorer model are not in this repository")
     def test_scorer_model_loads_from_seed_dataset(self):
         scorer = load_or_train_scorer()
         self.assertIsNotNone(scorer)

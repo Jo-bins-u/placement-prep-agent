@@ -1,0 +1,23 @@
+{# "Resend code" form (outside the main form so it doesn't submit the OTP). #}
+<form method="post" action="{{ url_for('resend_code') }}" class="resend-form" data-resend>{{ csrf_field() }}
+  <input type="hidden" name="email" value="{{ email }}">
+  <input type="hidden" name="purpose" value="{{ purpose }}">
+  <span>Didn't get it? Check spam, or</span>
+  <button type="submit" class="link-button" data-resend-button>resend the code</button>
+</form>
+<script nonce="{{ csp_nonce() }}">
+  (function () {
+    // Mirror the server's 60 s cool-down so people don't click into an error.
+    const button = document.querySelector('[data-resend-button]');
+    if (!button) return;
+    let left = 60;
+    const label = button.textContent;
+    button.disabled = true;
+    const tick = function () {
+      if (left <= 0) { button.disabled = false; button.textContent = label; return; }
+      button.textContent = label + ' (' + left-- + 's)';
+      setTimeout(tick, 1000);
+    };
+    tick();
+  })();
+</script>

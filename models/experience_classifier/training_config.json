@@ -1,8 +1,0 @@
-{
-  "seed": 42,
-  "split": "80/10/10 by resume",
-  "model": "tfidf_logistic_regression",
-  "input_excludes": [
-    "employment_type"
-  ]
-}

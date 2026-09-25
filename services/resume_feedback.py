@@ -9,54 +9,42 @@ def _normalize_text(value):
     return re.sub(r"\s+", " ", str(value)).strip()
 
 
-def _score_experience(profile: dict) -> tuple[int, list[str], list[str], list[str]]:
-    work_entries = profile.get("experience") or []
-    internship_entries = profile.get("internships") or []
-    experience = profile.get("experience_raw") or []
-    text = " ".join(_normalize_text(item) for item in experience if item)
-    if not text and not work_entries and not internship_entries:
-        return 0, [], [], ["Add concrete work experience to show outcomes and ownership."]
+IMPACT_WORDS = ["built", "designed", "developed", "optimized", "led", "improved", "implemented", "architected", "deployed", "automated"]
 
-    work_count = len(work_entries)
-    internship_count = len(internship_entries)
-    metrics = {
-        "projects": len(profile.get("projects") or []),
-        "skills": len(profile.get("skills") or []),
-        "work_items": work_count,
-        "internship_items": internship_count,
-        "experience_items": len(experience),
-        "impact_markers": sum(1 for marker in ["built", "designed", "developed", "optimized", "led", "improved", "implemented", "architected"] if marker.lower() in text.lower()),
-    }
 
-    score = min(100, 35 + metrics["work_items"] * 12 + metrics["internship_items"] * 8 + metrics["impact_markers"] * 5 + metrics["projects"] * 8 + min(metrics["skills"], 15))
-    strengths = []
-    weaknesses = []
-    suggestions = []
+def _score_internships(profile: dict) -> tuple[int, list[str], list[str], list[str]]:
+    internships = [item for item in (profile.get("internships") or []) if isinstance(item, dict)]
+    if not internships:
+        return 30, [], ["No internships were found on the resume."], [
+            "Add any internships or industrial training with the company, dates, and what you built."
+        ]
 
-    if work_count >= 1:
-        strengths.append(f"Work experience includes {work_count} role entry(s).")
-    elif internship_count >= 1:
-        strengths.append(f"Internships provide {internship_count} entry(s) of relevant applied experience.")
+    text = " ".join(
+        _normalize_text(" ".join(item.get("description_points") or [item.get("description") or ""]))
+        for item in internships
+    ).lower()
+    detailed = sum(1 for item in internships if len(_normalize_text(item.get("description") or "").split()) >= 12)
+    with_dates = sum(1 for item in internships if item.get("duration"))
+    with_company = sum(1 for item in internships if item.get("company"))
+    impact = sum(1 for word in IMPACT_WORDS if word in text)
+    has_numbers = bool(re.search(r"\d+\s*(?:%|x|\+|ms|users|requests|samples)", text))
+
+    score = 45 + min(3, len(internships)) * 10 + detailed * 5 + min(impact, 4) * 3 + (8 if has_numbers else 0)
+    strengths, weaknesses, suggestions = [], [], []
+
+    strengths.append(f"{len(internships)} internship{'s' if len(internships) != 1 else ''} listed.")
+    if detailed == len(internships):
+        strengths.append("Each internship describes the work you did.")
     else:
-        weaknesses.append("Resume would benefit from more experience detail.")
-        suggestions.append("Add 1–2 fuller work entries with scope, tools, and outcomes.")
-
-    if internship_count:
-        strengths.append(f"Internships are tracked separately: {internship_count} internship entry(s).")
-    elif work_count:
-        strengths.append("The experience section is clearly separated from internships.")
-
-    if metrics["impact_markers"] >= 2:
-        strengths.append("Your responsibilities read as outcome-oriented and action-based.")
-    else:
-        weaknesses.append("Impact language is limited.")
-        suggestions.append("Add action verbs and measurable business outcomes to highlight ownership.")
-
-    if metrics["projects"] >= 1:
-        strengths.append("Project evidence is included.")
-    else:
-        weaknesses.append("Portfolio depth is light.")
-        suggestions.append("Add a few projects with role, stack, and business value.")
+        weaknesses.append("Some internships have little or no description.")
+        suggestions.append("Describe each internship in 2–3 bullets: the problem, what you built, and the tools used.")
+    if with_company < len(internships) or with_dates < len(internships):
+        weaknesses.append("Some internships are missing the company name or dates.")
+        suggestions.append("Show the company and start–end dates for every internship.")
+    if not has_numbers:
+        suggestions.append("Add measurable results to your internships (accuracy, latency, users, time saved).")
+    elif impact >= 2:
+        strengths.append("Internship work is described with clear, measurable impact.")
 
     return min(100, int(score)), strengths, weaknesses, suggestions
 
@@ -163,9 +151,7 @@ def analyze_resume_feedback(profile) -> dict:
             "skills": getattr(profile, "skills", []) or [],
             "education": getattr(profile, "education", []) or [],
             "projects": getattr(profile, "projects", []) or [],
-            "experience": getattr(profile, "experience", []) or [],
             "internships": getattr(profile, "internships", []) or [],
-            "experience_raw": getattr(profile, "experience_raw", []) or [],
         }
 
     category_scores = {}
@@ -174,9 +160,9 @@ def analyze_resume_feedback(profile) -> dict:
     suggestions = []
 
     for category, fn in [
-        ("experience", _score_experience),
-        ("skills", _score_skills),
         ("projects", _score_projects),
+        ("internships", _score_internships),
+        ("skills", _score_skills),
         ("education", _score_education),
     ]:
         score, cat_strengths, cat_weaknesses, cat_suggestions = fn(profile_data)
@@ -185,24 +171,18 @@ def analyze_resume_feedback(profile) -> dict:
         weaknesses.extend(cat_weaknesses)
         suggestions.extend(cat_suggestions)
 
-    work_count = len(profile_data.get("experience") or [])
-    internship_count = len(profile_data.get("internships") or [])
     overall_score = int(round(sum(category_scores.values()) / len(category_scores)))
 
     summary = {
         "overall_score": overall_score,
         "category_scores": category_scores,
-        "experience_breakdown": {
-            "work_experience": work_count,
-            "internships": internship_count,
-        },
         "strengths": strengths[:6],
         "weaknesses": weaknesses[:6],
         "suggestions": suggestions[:6],
         "summary": (
             "This resume shows a solid technical foundation with room to sharpen impact language and project depth."
             if overall_score >= 70 else
-            "This resume conveys a promising foundation, but it can be strengthened with clearer outcomes, stronger project storytelling, and fuller skill coverage."
+            "This resume conveys a promising foundation, but it can be strengthened with clearer outcomes, stronger project and internship descriptions, and fuller skill coverage."
         ),
     }
     return summary

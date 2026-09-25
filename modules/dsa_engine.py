@@ -64,7 +64,11 @@ def _base_problem(topic: str, difficulty: str, language: str, profile: Dict[str,
         difficulty_name = "medium"
 
     profile_skills = profile.get("skills", []) or []
-    resume_context = profile.get("experience_raw", []) or []
+    resume_context = [
+        item.get("description") or item.get("role") or ""
+        for item in (profile.get("internships") or [])
+        if isinstance(item, dict)
+    ]
     context_skills = [str(skill) for skill in profile_skills[:5]]
     skills = list(dict.fromkeys(DEFAULT_SKILLS + context_skills))
 

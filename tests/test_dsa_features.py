@@ -29,12 +29,25 @@ class DsaFeaturesTests(unittest.TestCase):
         self.assertIn(result["status"], {"correct", "partially_correct", "incorrect"})
 
     def test_api_routes_exist_for_dsa_operations(self):
+        import auth
+        import database as db
         client = app.test_client()
-        generate = client.post('/coding/problems/generate', json={"difficulty": "medium", "topic": "arrays", "language": "python", "profile": {"skills": ["Python", "Arrays"]}})
+        self.assertEqual(client.post('/coding/problems/generate', json={}).status_code, 401)  # login required
+        user = db.get_user_by_email("dsa-api@example.com")
+        uid = user["id"] if user else db.create_user("dsa-api@example.com", auth.hash_password("secret123"))
+        db.mark_user_verified(uid)
+        from modules.profile_parsing.schema import CandidateProfile, ContactInfo
+        cid = db.save_candidate(uid, CandidateProfile(contact=ContactInfo(name="d", email="dsa-api@example.com"), skills=["Python", "Arrays"]))
+        client.post("/login", data={"email": "dsa-api@example.com", "password": "secret123"})
+        # The problem is generated from the server's copy of the profile; client profile text is ignored.
+        self.assertEqual(client.post('/coding/problems/generate', json={"profile": {"skills": ["x"]}}).status_code, 400)
+        generate = client.post('/coding/problems/generate', json={"candidate_id": cid, "difficulty": "medium", "topic": "arrays", "language": "python", "profile": {"skills": ["ignored"]}})
         self.assertEqual(generate.status_code, 200)
         body = generate.get_json()
         self.assertIn("problem", body)
         self.assertNotIn("hidden_tests", body["problem"])
+        self.assertNotIn("hidden_test_cases", body["problem"])
+        self.assertNotIn("reference_solution", body["problem"])
 
 
 if __name__ == '__main__':

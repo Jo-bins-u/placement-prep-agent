@@ -45,3 +45,6 @@ dist/
 
 # Logs
 *.log
+
+# Runtime logs (metrics + validation)
+logs/

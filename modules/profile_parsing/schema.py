@@ -71,11 +71,31 @@ class Project:
 
 
 @dataclass
+class Internship:
+    role: Optional[str] = None
+    company: Optional[str] = None
+    duration: Optional[str] = None
+    location: Optional[str] = None
+    description: Optional[str] = None
+    description_points: List[str] = field(default_factory=list)
+    tech_stack: List[str] = field(default_factory=list)
+    raw_text: Optional[str] = None
+    id: str = field(default_factory=lambda: f"internship-{uuid4().hex[:12]}")
+
+    def __post_init__(self):
+        if not self.description_points and self.description:
+            self.description_points = [self.description]
+        if not self.description and self.description_points:
+            self.description = " ".join(self.description_points)
+
+
+@dataclass
 class CandidateProfile:
     contact: ContactInfo = field(default_factory=ContactInfo)
     skills: List[str] = field(default_factory=list)
     education: List[Education] = field(default_factory=list)
     projects: List[Project] = field(default_factory=list)
+    internships: List[Internship] = field(default_factory=list)
 
     # Fields the parser wasn't confident about — dashboard shows these
     # as "needs review" per PRD FR5.4, instead of guessing.

@@ -34,52 +34,51 @@ def load_question_bank():
 # ---------------------------------------------------------------------------
 # Public interface (unchanged signature — rest of app uses only these two)
 # ---------------------------------------------------------------------------
-def pick_next_question(profile_skills: list, weak_topics: list, answered_ids: set, profile: dict | None = None):
+def pick_next_question(profile_skills: list, weak_topics: list, answered_ids: set, profile: dict | None = None,
+                       *, difficulty: str | None = None, previous_prompts: list | None = None):
     """
-    Selection logic:
-    1. Try Groq LLM to generate a bespoke question (if API key is present).
-    2. If LLM is unavailable / fails, fall back to the static question bank
-       using the original priority order:
-         a) Weak-topic questions first
-         b) Skill-matched questions next
-         c) Any unanswered question as a last resort
+    1. Ask the LLM for a question grounded in the resume (validated in llm_service;
+       it sees the text of recent questions so it doesn't repeat them).
+    2. Otherwise pick from the static bank, never repeating an answered question:
+         weak / focus topics first, then topics matching resume skills, then anything,
+         preferring the requested difficulty within each group.
     """
-    # --- Attempt LLM generation ---
-    answered_topics = []
-    try:
-        bank = load_question_bank()
-        answered_topics = [q["topic"] for q in bank if q["id"] in answered_ids]
-    except Exception:
-        pass
-
     llm_question = generate_interview_question(
         profile or {"skills": profile_skills},
         weak_topics,
         set(answered_ids),
+        difficulty=difficulty,
+        previous_prompts=previous_prompts,
     )
     if llm_question:
         return llm_question
 
-    # --- Fallback: static question bank ---
     try:
         bank = load_question_bank()
     except Exception:
         return None
 
-    unanswered = [q for q in bank if q["id"] not in answered_ids]
-
+    asked_prompts = {p.strip().lower() for p in (previous_prompts or [])}
+    unanswered = [q for q in bank if q["id"] not in answered_ids and q["prompt"].strip().lower() not in asked_prompts]
     if not unanswered:
-        return None  # Candidate has answered everything in the bank
+        return None
 
-    weak_matches = [q for q in unanswered if q["topic"] in weak_topics]
-    if weak_matches:
-        return random.choice(weak_matches)
+    weak = {str(t).lower() for t in weak_topics}
+    skills = {str(s).lower() for s in profile_skills}
 
-    skill_matches = [q for q in unanswered if q["topic"] in profile_skills]
-    if skill_matches:
-        return random.choice(skill_matches)
+    def matches_skill(topic: str) -> bool:
+        t = topic.lower()
+        return any(t == s or t in s or s in t for s in skills if len(s) > 2)
 
-    return random.choice(unanswered)
+    for group in (
+        [q for q in unanswered if q["topic"].lower() in weak],
+        [q for q in unanswered if matches_skill(q["topic"])],
+        unanswered,
+    ):
+        if group:
+            preferred = [q for q in group if q.get("difficulty") == difficulty] if difficulty else []
+            return dict(random.choice(preferred or group), source="bank")
+    return None
 
 
 def get_question_by_id(question_id: str):

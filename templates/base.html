@@ -3,8 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="csrf-token" content="{{ csrf_token() }}">
 <title>{% block title %}Prepwise | Placement Prep Agent{% endblock %}</title>
-<script>document.documentElement.classList.add('js');</script>
+<script nonce="{{ csp_nonce() }}">document.documentElement.classList.add('js');</script>
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css', v=asset_version('style.css')) }}">
 </head>
 <body class="site-body">
@@ -16,18 +17,21 @@
       </a>
 
       <nav class="site-nav" aria-label="Primary navigation">
-        <a href="{{ url_for('home') }}" class="{% block nav_upload %}{% endblock %}">Upload Resume</a>
-        {% if candidate_id_for_nav %}
-        <a href="{{ url_for('dashboard', candidate_id=candidate_id_for_nav) }}" class="{% block nav_dashboard %}{% endblock %}">Dashboard</a>
-        <a href="{{ url_for('practice', candidate_id=candidate_id_for_nav) }}" class="{% block nav_practice %}{% endblock %}">Practice</a>
-        <a href="{{ url_for('dsa_practice', candidate_id=candidate_id_for_nav) }}" class="{% block nav_dsa %}{% endblock %}">DSA</a>
+        {% set nav_cid = candidate_id_for_nav or latest_candidate_id() %}
+        <a href="{{ url_for('home') }}" class="{% block nav_upload %}{% endblock %}">{{ 'Home' if nav_cid else 'Upload Resume' }}</a>
+        {% if nav_cid %}
+        <a href="{{ url_for('dashboard', candidate_id=nav_cid) }}" class="{% block nav_dashboard %}{% endblock %}">Dashboard</a>
+        <a href="{{ url_for('practice', candidate_id=nav_cid) }}" class="{% block nav_practice %}{% endblock %}">Practice</a>
+        <a href="{{ url_for('dsa_practice', candidate_id=nav_cid) }}" class="{% block nav_dsa %}{% endblock %}">DSA</a>
         {% endif %}
       </nav>
 
       <div class="header-actions">
         {% if current_user.is_authenticated %}
-        <span class="user-email" title="{{ current_user.email }}">{{ current_user.email }}</span>
-        <a href="{{ url_for('logout') }}" class="btn btn-ghost small">Log out</a>
+        <a href="{{ url_for('change_password') }}" class="account-link" title="Account: {{ current_user.email }} — change password">
+          <span class="user-email">{{ current_user.email }}</span><span class="account-short">Account</span>
+        </a>
+        <form method="post" action="{{ url_for('logout') }}" class="logout-form">{{ csrf_field() }}<button type="submit" class="btn btn-ghost small">Log out</button></form>
         {% else %}
         <a href="{{ url_for('login') }}" class="btn btn-ghost small">Log in</a>
         <a href="{{ url_for('register') }}" class="btn btn-primary small">Sign up</a>
@@ -48,7 +52,7 @@
       {% block content %}{% endblock %}
     </main>
   </div>
-  <script>
+  <script nonce="{{ csp_nonce() }}">
     // Disable the submit button once a form actually submits (after native validation passes),
     // so users can't double-submit. Forms opt in with data-busy-label="…".
     document.addEventListener('submit', function (event) {

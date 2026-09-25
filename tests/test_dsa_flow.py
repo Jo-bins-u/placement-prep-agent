@@ -15,7 +15,7 @@ class DsaFlowTests(unittest.TestCase):
     def test_generate_problem_for_profile(self):
         profile = {
             "skills": ["Python", "SQL", "Data Structures"],
-            "experience_raw": ["Built analytics tools using Python."],
+            "internships": [{"role": "Data Intern", "description": "Built analytics tools using Python."}],
         }
         problem = generate_dsa_problem(profile, difficulty="medium", topic="arrays", language="Python")
         self.assertIsInstance(problem, dict)
@@ -25,7 +25,7 @@ class DsaFlowTests(unittest.TestCase):
         self.assertTrue(validate_problem_schema(problem))
 
     def test_problem_schema_and_tests_are_valid(self):
-        profile = {"skills": ["Python"], "experience_raw": ["Software engineer intern"]}
+        profile = {"skills": ["Python"], "internships": [{"role": "Software engineer intern"}]}
         problem = generate_dsa_problem(profile, difficulty="easy", topic="strings", language="Python")
         self.assertIn("examples", problem)
         self.assertIn("hidden_tests", problem)
@@ -33,7 +33,7 @@ class DsaFlowTests(unittest.TestCase):
         self.assertGreater(len(problem["constraints"]), 0)
 
     def test_run_sample_tests_and_submit_success(self):
-        profile = {"skills": ["Python"], "experience_raw": ["Python developer"]}
+        profile = {"skills": ["Python"], "internships": [{"role": "Python developer intern"}]}
         problem = generate_dsa_problem(profile, difficulty="easy", topic="arrays", language="Python")
         raw_code = """
 def solution(nums):

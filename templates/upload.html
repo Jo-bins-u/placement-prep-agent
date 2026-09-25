@@ -7,7 +7,7 @@
     <h1 class="landing-hero__title display">Your resume becomes your preparation strategy.</h1>
     <p class="landing-hero__subtitle">
       Prepwise analyzes your resume, understands your skills and projects, builds a personalized candidate profile,
-      generates interview questions around your real experience, evaluates your answers, runs DSA coding challenges,
+      generates interview questions around your real projects and internships, evaluates your answers, runs DSA coding challenges,
       and continuously identifies the next improvement you should make.
     </p>
 
@@ -190,7 +190,7 @@
       <div class="engine-flow">
         <span>Skills</span>
         <span>Projects</span>
-        <span>Experience</span>
+        <span>Internships</span>
         <span>Target Role</span>
       </div>
     </div>
@@ -513,7 +513,7 @@
   <h2 class="section-title display">Your preparation should know you.</h2>
   <p>Upload your resume and let Prepwise build your personalized preparation path.</p>
 
-  <form action="{{ url_for('upload') }}" method="post" enctype="multipart/form-data" class="landing-upload-form" data-busy-label="Analyzing resume…">
+  <form action="{{ url_for('upload') }}" method="post" enctype="multipart/form-data" class="landing-upload-form" data-busy-label="Analyzing resume…">{{ csrf_field() }}
     <label for="resume" class="file-drop">
       <span class="file-drop__title">Choose a resume</span>
       <span class="file-drop__hint" id="resume-file-name">PDF or DOCX · click to browse</span>
@@ -544,7 +544,7 @@
 {% endblock %}
 
 {% block scripts %}
-<script>
+<script nonce="{{ csp_nonce() }}">
   (function () {
     var reveals = document.querySelectorAll('.reveal');
     var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;

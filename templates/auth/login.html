@@ -10,16 +10,19 @@
     </div>
 
 
-    <form method="post" action="{{ url_for('login') }}" class="auth-form" data-busy-label="Logging in…">
+    <form method="post" action="{{ url_for('login') }}" class="auth-form" data-busy-label="Logging in…">{{ csrf_field() }}
       <input type="hidden" name="next" value="{{ next }}">
 
       <div class="form-group">
         <label for="email">Email address</label>
-        <input type="email" id="email" name="email" required placeholder="you@example.com" autocomplete="email">
+        <input type="email" id="email" name="email" required value="{{ email }}" placeholder="you@example.com" autocomplete="email">
       </div>
       <div class="form-group">
         <label for="password">Password</label>
         <input type="password" id="password" name="password" required placeholder="••••••••" autocomplete="current-password">
+        <div class="auth-field-footer">
+          <a href="{{ url_for('forgot_password') }}" class="link-button small" data-forgot>Forgot password?</a>
+        </div>
       </div>
       
       <button type="submit" class="btn btn-primary full-width" id="login-submit-btn">Log in</button>
@@ -30,4 +33,18 @@
     </div>
   </div>
 </section>
+{% endblock %}
+
+
+{% block scripts %}
+<script nonce="{{ csp_nonce() }}">
+  // Carry the typed email over to the forgot-password page.
+  (function () {
+    const link = document.querySelector('[data-forgot]');
+    const email = document.getElementById('email');
+    link.addEventListener('click', function () {
+      if (email.value) link.href = link.href.split('?')[0] + '?email=' + encodeURIComponent(email.value);
+    });
+  })();
+</script>
 {% endblock %}

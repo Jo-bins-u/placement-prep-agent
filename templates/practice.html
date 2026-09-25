@@ -49,14 +49,14 @@
         <p class="eyebrow">Current recommendation</p>
         <h2>{{ question.topic|topic }} · {{ question.difficulty|title }}</h2>
       </div>
+      {% if question.source == 'ai' %}<span class="badge-soft secondary" title="{{ question.reason }}">Personalised</span>{% endif %}
       <span class="badge-soft">{{ 'Multiple choice' if question.type == 'mcq' else question.type|replace('_', ' ') }}</span>
     </div>
 
     <p class="question-prompt">{{ question.prompt }}</p>
 
-    <form action="{{ url_for('submit_answer', candidate_id=candidate_id) }}" method="post" class="answer-form" data-busy-label="Evaluating…">
-      <input type="hidden" name="question_id" value="{{ question.id }}">
-      <input type="hidden" name="question_json" value="{{ question_json | e }}">
+    <form action="{{ url_for('submit_answer', candidate_id=candidate_id) }}" method="post" class="answer-form" data-busy-label="Evaluating…">{{ csrf_field() }}
+      <input type="hidden" name="issue_id" value="{{ issue_id }}">
 
       {% if question.type == "mcq" %}
         <fieldset class="mcq-options">
@@ -74,8 +74,12 @@
       {% endif %}
 
       <div class="submit-row">
-        <button type="submit" class="btn btn-primary">Submit answer</button>
+        <button type="submit" class="btn btn-ghost" form="skip-form" formnovalidate>Skip question</button>
+        <button type="submit" class="btn btn-primary" id="submit-answer">Submit answer</button>
       </div>
+    </form>
+    <form id="skip-form" method="post" action="{{ url_for('skip_question', candidate_id=candidate_id) }}">{{ csrf_field() }}
+      <input type="hidden" name="issue_id" value="{{ issue_id }}">
     </form>
   </section>
 </div>

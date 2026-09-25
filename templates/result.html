@@ -21,6 +21,17 @@
     <div class="result-detail">
       <p class="eyebrow">Feedback</p>
       <p class="feedback-copy">{{ feedback }}</p>
+      {% if evaluation and question.type != 'mcq' %}
+      <div class="grading-breakdown">
+        {% if evaluation.matched %}<p><strong>Covered:</strong> {{ evaluation.matched|join(', ') }}</p>{% endif %}
+        {% if evaluation.missing %}<p><strong>To add:</strong> {{ evaluation.missing|join(', ') }}</p>{% endif %}
+        <p class="grading-method">
+          {% if evaluation.method == 'ai+rubric' %}Graded by AI review ({{ evaluation.ai_score|round|int }}) combined with key-concept coverage ({{ evaluation.rubric_score|round|int }}).
+          {% elif evaluation.method == 'model+rubric' %}Graded by the trained scoring model combined with key-concept coverage.
+          {% else %}Graded by key-concept coverage.{% endif %}
+        </p>
+      </div>
+      {% endif %}
     </div>
 
     <div class="result-detail">

@@ -21,7 +21,7 @@
   </section>
 
   <section class="card filters-card">
-    <form method="post" action="{{ url_for('generate_dsa', candidate_id=candidate_id) }}" class="filters-form" data-busy-label="Generating…">
+    <form method="post" action="{{ url_for('generate_dsa', candidate_id=candidate_id) }}" class="filters-form" data-busy-label="Generating…">{{ csrf_field() }}
       <label>
         <span>Difficulty</span>
         <select name="difficulty">
@@ -127,7 +127,7 @@
         </div>
       </div>
 
-      <form method="post" action="{{ url_for('submit_dsa', candidate_id=candidate_id) }}" id="dsa-submit-form" data-busy-label="Judging…">
+      <form method="post" action="{{ url_for('submit_dsa', candidate_id=candidate_id) }}" id="dsa-submit-form" data-busy-label="Judging…">{{ csrf_field() }}
         <input type="hidden" name="problem_id" value="{{ problem.id }}">
         <label for="code-editor" class="visually-hidden">Your solution</label>
         <textarea id="code-editor" name="code" class="code-editor" spellcheck="false" autocapitalize="off" autocomplete="off">{{ problem.starter_code }}</textarea>
@@ -147,7 +147,7 @@
 
 {% block scripts %}
 {% if problem %}
-<script>
+<script nonce="{{ csp_nonce() }}">
 (function () {
   const RUN_URL = {{ url_for('run_dsa', candidate_id=candidate_id)|tojson }};
   const PARAMS = {{ ((problem.function_signature.parameters if problem.function_signature else [])|map(attribute='name')|list)|tojson }};
@@ -194,11 +194,12 @@
     runtime_error: ['Runtime error', 'danger'],
     timeout: ['Time limit exceeded', 'danger'],
     configuration_error: ['No tests available', 'warning'],
+    unavailable: ['Runner unavailable', 'warning'],
   };
 
   function render(payload) {
     const status = STATUS[payload.status] || ['Error', 'danger'];
-    const tests = (payload.tests || []).map(function (test, index) {
+    const tests = payload.status === 'unavailable' ? '' : (payload.tests || []).map(function (test, index) {
       const ok = test.status === 'passed';
       const crashed = test.status === 'error' || test.status === 'timeout';
       const actual = crashed
@@ -216,7 +217,7 @@
       '<div class="result-shell">' +
         '<div class="result-topline"><h3>Run result</h3>' +
         '<span class="status-pill ' + status[1] + '">' + status[0] + '</span></div>' +
-        '<p class="result-metric">' + (payload.passed_tests || 0) + ' / ' + (payload.total_tests || 0) + ' visible tests passed</p>' +
+        (payload.status === 'unavailable' ? '' : '<p class="result-metric">' + (payload.passed_tests || 0) + ' / ' + (payload.total_tests || 0) + ' visible tests passed</p>') +
         '<div class="result-output">' + (tests || '<p class="test-error">' + esc(payload.message || payload.output || 'No output generated.') + '</p>') + '</div>' +
       '</div>';
   }
@@ -230,7 +231,7 @@
     try {
       const response = await fetch(RUN_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8', 'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').content },
         body: new URLSearchParams({ problem_id: problemId, code: editor.value })
       });
       let payload;

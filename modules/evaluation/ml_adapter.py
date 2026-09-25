@@ -26,6 +26,68 @@ SOURCE_VECTORIZER_PATH = PROJECT_ROOT / "m3_upgrade" / "scorer" / "scorer_model_
 FEEDBACK_MODEL_PATH = PROJECT_ROOT / "m3_upgrade" / "feedback_generator" / "feedback_model"
 
 
+def _signature_path(path: Path) -> Path:
+    return path.with_name(path.name + ".sig")
+
+
+def _data_signature(data: bytes) -> Optional[str]:
+    import hashlib
+    import hmac
+    try:
+        from services.security import get_secret_key
+        key = get_secret_key().encode("utf-8")
+    except Exception:
+        return None
+    return hmac.new(key, data, hashlib.sha256).hexdigest()
+
+
+def _load_trusted(path: Path):
+    """Read the file once, check the signature on exactly those bytes, then unpickle those
+    same bytes - so the file can't be swapped between the check and the load."""
+    import hmac
+    import io
+    sig_path = _signature_path(path)
+    if not path.exists() or not sig_path.exists():
+        return None
+    data = path.read_bytes()
+    expected = _data_signature(data)
+    if not expected or not hmac.compare_digest(expected, sig_path.read_text(encoding="utf-8").strip()):
+        return None
+    return joblib.load(io.BytesIO(data))  # nosec B301 - signed by this app
+
+
+def _file_signature(path: Path) -> Optional[str]:
+    """HMAC-SHA256 of the file keyed with the app's SECRET_KEY. joblib files are pickles and
+    loading one runs code, so only files this app wrote itself (and signed) are ever loaded."""
+    import hashlib
+    import hmac
+    try:
+        from services.security import get_secret_key
+        key = get_secret_key().encode("utf-8")
+    except Exception:
+        return None
+    digest = hmac.new(key, digestmod=hashlib.sha256)
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1 << 20), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _trusted(path: Path) -> bool:
+    import hmac
+    sig_path = _signature_path(path)
+    if not path.exists() or not sig_path.exists():
+        return False
+    expected = _file_signature(path)
+    return bool(expected) and hmac.compare_digest(expected, sig_path.read_text(encoding="utf-8").strip())
+
+
+def _sign(path: Path) -> None:
+    signature = _file_signature(path)
+    if signature:
+        _signature_path(path).write_text(signature, encoding="utf-8")
+
+
 def _make_text(question: Any, answer: Any) -> str:
     question_text = str(question or "")
     answer_text = str(answer or "")
@@ -51,13 +113,16 @@ def _load_seed_rows() -> list[dict]:
 @lru_cache(maxsize=1)
 def load_or_train_scorer() -> Optional[Dict[str, Any]]:
     """Return the trained scorer bundle or train it lazily from the bundled seed data."""
-    if SOURCE_SCORER_PATH.exists():
+    if SOURCE_SCORER_PATH.exists() and not _trusted(SOURCE_SCORER_PATH):
+        import logging
+        logging.getLogger("prepwise.models").warning(
+            "Ignoring %s: no valid signature (only models trained by this app are loaded).", SOURCE_SCORER_PATH.name)
+    elif SOURCE_SCORER_PATH.exists():
         try:
-            payload = joblib.load(SOURCE_SCORER_PATH)
+            payload = _load_trusted(SOURCE_SCORER_PATH)
             if isinstance(payload, dict) and payload.get("model") is not None:
                 if payload.get("backend") == "tfidf" and payload.get("vectorizer") is None:
-                    if SOURCE_VECTORIZER_PATH.exists():
-                        payload["vectorizer"] = joblib.load(SOURCE_VECTORIZER_PATH)
+                    payload["vectorizer"] = _load_trusted(SOURCE_VECTORIZER_PATH)
                 return payload
         except Exception:
             pass
@@ -85,6 +150,7 @@ def load_or_train_scorer() -> Optional[Dict[str, Any]]:
     try:
         SOURCE_SCORER_PATH.parent.mkdir(parents=True, exist_ok=True)
         joblib.dump(payload, SOURCE_SCORER_PATH)
+        _sign(SOURCE_SCORER_PATH)
     except Exception:
         pass
 
@@ -151,7 +217,10 @@ def _load_feedback_model():
         from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
         import torch
 
-        return AutoTokenizer.from_pretrained(FEEDBACK_MODEL_PATH), AutoModelForSeq2SeqLM.from_pretrained(FEEDBACK_MODEL_PATH), torch
+        # Local folder only (never downloads from the Hub) and safetensors only (no pickle weights).
+        tokenizer = AutoTokenizer.from_pretrained(FEEDBACK_MODEL_PATH, local_files_only=True)  # nosec B615
+        model = AutoModelForSeq2SeqLM.from_pretrained(FEEDBACK_MODEL_PATH, local_files_only=True, use_safetensors=True)  # nosec B615
+        return tokenizer, model, torch
     except Exception:
         return None
 
