@@ -1,271 +1,420 @@
-# Placement Prep Agent — Working Prototype
+# ⚡ Prepwise: AI Placement Preparation Agent
 
-This is a functional end-to-end slice of the full project: **upload a
-resume → get a parsed profile → practice real questions → get scored
-with feedback → see it all on a live dashboard.** Roughly half the PRD's
-functional requirements are genuinely implemented here; the rest are
-clearly marked stand-ins with a documented upgrade path.
+Prepwise is a web application that helps students prepare for campus placements.
+A student uploads a resume. Prepwise turns it into a profile and then offers
+three kinds of practice, all tied to that profile:
 
-## Run it
+- **Interview** questions about the student's own projects, internships and skills, plus behavioural/HR questions.
+- **Technical** concept questions across 11 core CS topics.
+- **DSA** coding problems, run in a sandbox.
 
-From the project root, use one command:
+Every answer is scored with clear, point-by-point feedback. A dashboard tracks strengths and weak areas over time and links straight to targeted practice.
 
-### Windows PowerShell
+> **Team:** Joyal Binsu (M1) · Aiswarya K V (M2) · Nihal Gireesh (M3) · Pulikanti Gowtham Roy (M4, M5)
+> **Guided by:** Prof. Chaitra P C
 
-```powershell
-.\start.ps1
+---
+
+## Contents
+
+1. [Features](#features)
+2. [Modules and completion status](#modules-and-completion-status)
+3. [Tech stack](#tech-stack)
+4. [Prerequisites](#prerequisites)
+5. [Setup and execution](#setup-and-execution)
+6. [Configuration reference (`.env`)](#configuration-reference-env)
+7. [Testing and validation](#testing-and-validation)
+8. [Running in production](#running-in-production)
+9. [Project structure](#project-structure)
+10. [Security](#security)
+11. [Troubleshooting](#troubleshooting)
+12. [Future scope](#future-scope)
+
+---
+
+## Features
+
+- **Resume parsing.**
+  - Accepts PDF or DOCX files.
+  - Extracts contact details, skills, education, projects and internships into a profile the student can review and edit.
+  - Resume feedback scores each section and suggests improvements.
+- **Interview mode.**
+  - Personalised questions such as "Walk me through project X", "Why did you pick Flask?" and "What would break at 100× users?".
+  - Also covers internship questions, skill-depth questions and STAR-style behavioural questions.
+  - Focus options: *Mixed*, *Behavioral & HR*, *Skills on my resume*, or one specific project or internship.
+- **Technical mode.**
+  - Concept questions in 11 topics: Data Structures, Algorithms, Dynamic Programming, DBMS, Operating Systems, Computer Networks, OOP, System Design, Python, Machine Learning and Web Development.
+  - Pick one topic, or choose *Recommended* to see weak areas first.
+- **DSA mode.**
+  - 57 verified coding problems with an in-browser editor.
+  - *Run* checks your code against sample tests; *Submit* checks it against hidden tests.
+  - Code runs in a locked-down Docker sandbox.
+- **AI questions.**
+  - With a Groq API key, questions come from Llama 3.3 70B and are personalised to the resume.
+  - Every AI question is validated before it is shown.
+  - Anything that fails validation falls back to the curated banks: 74 technical questions, 12 behavioural questions and resume templates.
+- **Fair answer scoring.**
+  - Each key point accepts synonyms, and small typos are tolerated.
+  - A point mentioned but not explained gets partial credit.
+  - The answer is also compared in meaning with a model answer, so a correct answer in the student's own words still scores well.
+  - Anti-gaming checks catch buzzword lists, copies of the question's own wording, and instructions aimed at the grader.
+  - An optional AI grader is blended with the rubric.
+- **Feedback page.**
+  - Each key point is marked covered ✓, partial ~ or missing ✗.
+  - Shows "What you did well", "How to improve" and a model answer.
+- **Analytics dashboard.**
+  - Proficiency per topic uses a Bayesian-smoothed, recency-weighted score.
+  - Shows focus areas, suggested practice with one-click links, DSA statistics and resume feedback.
+- **Accounts.**
+  - Email and password sign-up, verified with a 6-digit code.
+  - Forgot, reset and change password.
+  - A display name, used only for display.
+- **UI.**
+  - Responsive and card-based.
+  - Lightning-bolt branding with an animated intro that respects the system's "reduce motion" setting.
+
+---
+
+## Modules and completion status
+
+The project is split into five modules. All five are **implemented, integrated and tested**. The table shows what each covers. The checklist after it tracks the remaining project work.
+
+| Module | Owner | Code | What it does | Status |
+|---|---|---|---|---|
+| **M1: Resume / Profile Parsing** | Joyal Binsu | `modules/profile_parsing/`, `services/safe_parse.py`, `services/resume_worker.py`, `services/profile_sanitize.py` | Reads text from PDF/DOCX. A rule-based parser plus a skills taxonomy extracts the profile. The Verify/Edit page and resume feedback build on it. Parsing runs in a sandboxed worker. | ✅ Complete (macro-F1 0.977) |
+| **M2: Question Generation** | Aiswarya K V | `modules/question_generation/generator.py`, `services/llm_service.py`, `data/*.json`, `tools/build_*_bank.py` | Separate Interview and Technical modes with a topic/focus picker. Uses LLM questions with validation and falls back to the curated banks. Picks topics by weakness. | ✅ Complete |
+| **M3: Evaluation & Feedback** | Nihal Gireesh | `modules/evaluation/evaluator.py`, `modules/evaluation/ml_adapter.py`, `services/llm_service.py` | Scores against a concept rubric (synonyms, typos, partial credit) and meaning similarity (TF-IDF), optionally blended with an AI grader. Includes anti-gaming checks and structured feedback. | ✅ Complete (94.7% band accuracy) |
+| **M4: Analytics & Recommendation** | Pulikanti Gowtham Roy | `modules/analytics/analytics.py` | Computes Bayesian-smoothed, recency-weighted proficiency. Finds weak and strong topics, combines interview and DSA scores, and gives recommendations. | ✅ Complete |
+| **M5: Dashboard, DSA & Integration** | Pulikanti Gowtham Roy | `app.py`, `templates/`, `static/`, `modules/coding/`, `modules/dsa_engine.py` | Covers the Flask app, dashboard and UI, and the DSA bank, generator and Docker judge. Also covers accounts and security hardening. | ✅ Complete (judge accuracy 100%) |
+
+### Remaining work checklist
+
+- [x] M1 through M5 implemented
+- [x] Integration and end-to-end testing (184 automated tests)
+- [x] Numeric validation suite (`python -m validation.run`)
+- [x] Security audit and hardening (4 phases)
+- [ ] **Final documentation**: project report and this README (in progress)
+- [ ] **Demo preparation**: demo script, sample accounts and sample resumes (`sample_resume.pdf` / `.docx`)
+- [ ] Deploy a demo instance behind HTTPS (see [Running in production](#running-in-production))
+- [ ] Enable CI on GitHub: CI config is included (see [Testing and validation](#testing-and-validation))
+- [ ] Short user trial with classmates to collect feedback
+
+---
+
+## Tech stack
+
+| Layer | Technology |
+|---|---|
+| Backend | Python 3.10+, Flask, Flask-Login, Jinja2 |
+| Database | PostgreSQL (Supabase or local) via psycopg 3; SQLite fallback for local development |
+| Resume parsing | pdfplumber, python-docx, rule-based parser + skills taxonomy |
+| AI | Groq API: `llama-3.3-70b-versatile` (question generation and grading) |
+| Scoring | Concept rubric + scikit-learn TF-IDF (char n-grams) + optional AI grader |
+| Code execution | Docker sandbox (no network, read-only, non-root, CPU/memory/PID limits) |
+| Auth | bcrypt, HMAC-hashed one-time codes, Gmail SMTP |
+| Production server | waitress, behind an HTTPS reverse proxy (e.g. Caddy) |
+| Frontend | Server-rendered HTML, CSS, small vanilla JavaScript |
+
+---
+
+## Prerequisites
+
+| Requirement | Needed for | Notes |
+|---|---|---|
+| **Python 3.10 or newer** | everything | Tested on 3.11–3.13. On Windows, tick "Add Python to PATH" during install. |
+| **Git** (optional) | cloning the repo | You can also download the ZIP. |
+| **PostgreSQL database** (optional) | persistent multi-user data | A free [Supabase](https://supabase.com) project or a local PostgreSQL. Without one, a local SQLite file is used. |
+| **Groq API key** (optional) | AI questions and AI grading | Free key from [console.groq.com](https://console.groq.com). Without it, the curated question banks and rubric scoring are used. |
+| **Gmail account + App Password** (optional) | emailing verification codes | Needs 2-Step Verification enabled. Without it, codes can be printed in the console for local testing. |
+| **Docker Desktop** (recommended) | DSA *Run* / *Submit* | Code only runs inside Docker by default. |
+
+---
+
+## Setup and execution
+
+### Option A: Windows quick start (recommended)
+
+1. Open **PowerShell** in the project folder. If PowerShell blocks the script, double-click `start.bat` instead, or run once:
+   ```powershell
+   Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
+   ```
+2. Start the app:
+   ```powershell
+   .\start.ps1
+   ```
+   You can also double-click `start.bat`. The script does the following:
+   - creates a `.venv` virtual environment and installs `requirements.txt`;
+   - copies `.env.example` to `.env` if there is no `.env` yet;
+   - generates a strong `SECRET_KEY` into `.env`;
+   - checks that Docker is running and pins the sandbox image;
+   - starts the app.
+3. The first time, stop the app with **Ctrl+C** and edit `.env` with your own values (see [Configure `.env`](#configure-env)). Then run `.\start.ps1` again.
+4. Open **http://127.0.0.1:5000** in your browser.
+
+### Option B: Manual setup (Windows, macOS, Linux)
+
+```bash
+# 1. Get the code
+git clone <repository-url> placement-prep-agent
+cd placement-prep-agent
+
+# 2. Create and activate a virtual environment
+python -m venv .venv
+# Windows (PowerShell):  .\.venv\Scripts\Activate.ps1
+# macOS / Linux:         source .venv/bin/activate
+
+# 3. Install dependencies
+pip install --upgrade pip
+pip install -r requirements.txt
+
+# 4. Create your configuration
+cp .env.example .env          # Windows: copy .env.example .env
+python -c "import secrets; print('SECRET_KEY=' + secrets.token_urlsafe(64))" >> .env
+
+# 5. Edit .env (next section), then run
+python app.py
 ```
 
-### Windows Command Prompt
+Open **http://127.0.0.1:5000**.
 
-```cmd
-start.bat
-```
+### Configure `.env`
 
-This will:
-
-- create a local `.venv` if needed
-- install dependencies from `requirements.txt`
-- create a `.env` from `.env.example` if missing
-- generate a `SECRET_KEY` in `.env` if there isn't one (the app won't start without it)
-- start the app with `python app.py`
-
-Then open **http://127.0.0.1:5000**.
-
-If you want to customize the database connection, edit `.env` and set:
+Open `.env` in a text editor and replace the placeholders with **your own** values:
 
 ```dotenv
-DATABASE_URL=postgresql://<user>:<password>@localhost:5433/placement_prep
+# Required: signs sessions and codes (start.ps1 fills this in for you)
+SECRET_KEY=<long random string, 32+ characters>
+
+# Database: pick ONE of the options below
+DATABASE_URL=postgresql://<user>:<password>@<host>:<port>/<database>?sslmode=require
+
+# Optional: AI questions and grading
+GROQ_API_KEY=<your Groq API key>
+
+# Optional: email verification codes
+MAIL_USERNAME=<your gmail address>
+MAIL_PASSWORD=<16-character Gmail app password>
 ```
 
-## What's real vs. what's a stand-in
+> ⚠️ **Never commit or share `.env`.** It holds your database password and API keys. It is listed in `.gitignore`. Share `.env.example` instead.
 
-| Module | Status | Notes |
+**Database options**
+
+| Option | What to set | Notes |
 |---|---|---|
-| **M1 — Profile Parsing** | ✅ Real | Same code from your earlier module: PDF/DOCX → structured profile, section-splitting + regex + keyword matching. No changes needed here to keep this demo working. |
-| **M2 — Question Generation** | 🟡 Stand-in | Picks from a curated 20-question bank (`data/question_bank.json`) biased toward weak areas and resume skills — not a real RAG/LLM pipeline. `modules/question_generation/generator.py`'s `pick_next_question()` is the exact function boundary to replace with a real LLM call once you have an API key. Nothing downstream needs to change if the replacement returns the same `{id, topic, type, difficulty, prompt, ...}` shape. |
-| **M3 — Evaluation & Feedback** | 🟡 Stand-in | MCQ = exact match. Short answer = keyword-overlap against a rubric (each question's `keywords` list). This is real scoring, just not LLM-based — it genuinely fails answers that don't cover the right concepts (try it). `evaluator.py`'s `evaluate_answer()` is the swap point for an LLM grader later. |
-| **M4 — Analytics & Recommendation** | ✅ Real | Aggregates actual attempt scores per topic, flags anything under 50% as weak, generates recommendations from real data — not hardcoded. |
-| **M5 — Dashboard** | ✅ Real | Profile summary, skill fingerprint, weak areas, recommendations, and activity all render from live data, not mockup placeholders. This is the same visual design as the standalone dashboard mockup shared earlier, now wired to a real backend. |
+| **Supabase (cloud)** | `DATABASE_URL` from *Project Settings → Database → Connection string* (use the **pooler** URI), with `?sslmode=require` | Remote databases must use TLS. If a remote DB is unreachable, the app stops with a clear message instead of silently using SQLite. |
+| **Local PostgreSQL** | `DATABASE_URL=postgresql://<user>:<password>@localhost:5432/<db>` | Create the database first. Tables are created automatically on first start. |
+| **SQLite (zero setup)** | Leave `DATABASE_URL` pointing at an unavailable local server, or remove it | Used automatically for local development. Data lives in a local file. |
 
-**Why stand-ins instead of the real thing for M2/M3:** those need an LLM
-API key your team hasn't set up yet, and getting the *structure* right
-(how modules hand data to each other, what the dashboard needs, how
-scoring flows into weak-area detection) doesn't require it. Swapping in
-real LLM calls later is a contained change in two files, not a rewrite.
+**Email codes without Gmail (local testing only).** Remove or comment out the `MAIL_*` lines. Then add `PREPWISE_PRINT_OTP=1`, or `FLASK_DEBUG=1`, to `.env`. The 6-digit codes are then printed in the terminal. Never do this on a shared server.
 
-## Project structure
+**Gmail App Password.**
+1. Go to Google Account → Security and turn on 2-Step Verification.
+2. Open **App passwords** and create one for "Mail".
+3. Put the 16-character password in `MAIL_PASSWORD`.
 
-```
-app.py                          — Flask app, wires everything together
-  database.py                     — PostgreSQL storage for the configured placement_prep database
-data/question_bank.json         — M2's question bank
-modules/
-  profile_parsing/              — M1 (Joyal's module, unchanged)
-  question_generation/          — M2 stand-in (Aiswarya's module — replace generator.py)
-  evaluation/                   — M3 stand-in (Nihal's module — replace evaluator.py)
-  analytics/                    — M4 (Pulikanti's module, real logic)
-templates/                      — dashboard, upload, practice, result pages
-static/style.css                — shared design system
-sample_resume.pdf/.docx         — test fixtures
-```
+**DSA sandbox.** Keep Docker Desktop running. The first code run pulls `python:3.13-slim`. Only on a private development machine without Docker, you can set `PREPWISE_SANDBOX=local` to run code directly. Never do this on a server.
 
-## What each person should actually do with this
+### Using the app
 
-- **Joyal (M1):**  this just imports your existing code unchanged. If you improve education parsing (per your module's README), it'll flow through automatically.
-- **Aiswarya (M2):** replace `generator.py`'s `pick_next_question()` with a real RAG/LLM pipeline. Keep the return shape the same and nothing else breaks.
-- **Nihal (M3):** replace `evaluator.py`'s `evaluate_answer()` with LLM-based grading, especially for the cases keyword-matching gets wrong (right concept, different wording). Keep the `(score, feedback)` return signature.
-- **Pulikanti (M4/M5):** the analytics logic and dashboard are real — from here it's about refining recommendation quality and polishing the frontend, not rebuilding the pipeline.
+1. On the home page, upload a resume (PDF or DOCX, max 5 MB). You can try `sample_resume.pdf`.
+2. Sign up with your email and a display name. Enter the 6-digit code.
+3. Check the parsed profile on **Verify profile**, fix anything, and save.
+4. On the **Dashboard**, pick a practice mode:
+   - **Interview**: choose a focus (Mixed, Behavioral, Skills, or a project/internship).
+   - **Technical**: choose a topic or *Recommended*.
+   - **DSA**: choose a problem, write code, then click *Run* or *Submit*.
+5. Read the feedback. The dashboard updates your topic proficiency and suggestions.
 
-## Coding practice and resume-aware DSA support
+---
 
-The project now includes a deterministic DSA generator and a sandboxed code runner that support:
+## Configuration reference (`.env`)
 
-- difficulty-aware problem generation (easy / medium / hard)
-- topic selection (arrays, strings, hashing, sliding window, trees, etc.)
-- language-aware starter code
-- sample test execution and hidden test submission scoring
-- API endpoints for `/coding/problems/generate`, `/coding/run`, and `/coding/submit`
+| Variable | Default | Purpose |
+|---|---|---|
+| `SECRET_KEY` | **required** | 32+ random characters. The app refuses to start without it. |
+| `DATABASE_URL` | none | PostgreSQL URI. Remote hosts need `sslmode=require`. |
+| `PGHOST`, `PGPORT`, `PGUSER`, `PGPASSWORD`, `PGDATABASE` | none | Alternative to `DATABASE_URL`. |
+| `GROQ_API_KEY` | none | Enables AI questions and grading. |
+| `GROQ_MODEL` | `llama-3.3-70b-versatile` | Groq model name. |
+| `MAIL_USERNAME`, `MAIL_PASSWORD` | none | SMTP login for verification emails. Both must be set. |
+| `MAIL_SERVER`, `MAIL_PORT`, `EMAIL_FROM` | Gmail SMTP | Other SMTP providers. |
+| `FLASK_DEBUG` | off | `1` enables the debugger. **Development only.** |
+| `PREPWISE_PRINT_OTP` | off | `1` prints codes in the console. Development only. |
+| `PREPWISE_SANDBOX` | `docker` | `local` runs code without Docker. Private dev machines only. |
+| `PREPWISE_SANDBOX_IMAGE` | `python:3.13-slim` | Docker image for code runs. `start.ps1` pins it by digest. |
+| `PREPWISE_MAX_CODE_JOBS` | `4` | Concurrent code runs across all users. |
+| `PREPWISE_HTTPS` | off | `1` sets Secure cookies and HSTS. Use behind HTTPS. |
+| `PREPWISE_TRUST_PROXY` | off | `1` reads the real client IP from the reverse proxy. |
+| `PREPWISE_HIBP` | `on` | Breached-password check. `off` disables it. |
+| `PREPWISE_ALLOW_SQLITE_FALLBACK` | off | `1` allows the SQLite fallback even for a remote DB. |
+| `PREPWISE_RATELIMIT`, `PREPWISE_CSRF` | `on` | Keep on. Tests may switch them off. |
+| `PREPWISE_METRICS` | `on` | Writes metrics to `logs/app_metrics.jsonl`. |
+| `HOST`, `PORT`, `THREADS` | `127.0.0.1`, `8000`, `8` | Settings for `serve.py`. |
 
-Submitted code runs **only inside a locked-down Docker container** (no network, read-only
-filesystem, non-root, CPU/memory/process limits, killed on timeout). If Docker isn't running,
-the Run/Submit buttons report that the code runner is unavailable instead of executing
-anything. On a private dev machine you can opt in to running code as a plain local process
-with `PREPWISE_SANDBOX=local` in `.env` — never do this on a shared or public server, because
-submitted code then has the same access to the computer as the app itself.
+---
 
-## Known limitations (be upfront about these in your review)
-
-- PostgreSQL authentication must be configured through `DATABASE_URL` or `PG*` environment variables
-- Keyword-rubric grading will mark a correct answer wrong if it uses different wording than the rubric's keyword list — this is the single most visible limitation to explain in a demo, not hide
-- Education parsing still only pulls CGPA + raw text, not structured degree/institution (per M1's own README)
-
-## M3 trained scorer and feedback pipeline
-
-The portable ASAG training pipeline lives in `m3_upgrade/`. It trains a
-score model from `question + [SEP] + answer`, then trains a seq2seq feedback
-model from the question, answer, score, and band. JSONL rows use this shape:
-
-```json
-{"question":"...","answer":"...","score":7,"max_score":10,"band":"good","feedback":"..."}
-```
-
-Install the training dependencies separately from the Flask app dependencies:
+## Testing and validation
 
 ```bash
-pip install -r m3_upgrade/requirements.txt
+pip install pytest
+python -m pytest                    # 184 automated tests: unit, security regression, end-to-end
+python -m pytest tests/test_practice_modes.py -v   # a single file
 ```
 
-Run the offline baseline from the repository root:
+Numeric validation reports go to the console, `logs/` and `reports/`:
 
 ```bash
-python m3_upgrade/scorer/train_scorer.py --data m3_upgrade/data/seed_dataset.jsonl --backend tfidf --out m3_upgrade/scorer/scorer_model.joblib
-```
-
-This prints validation and test Pearson correlation and Quadratic Weighted
-Kappa, and saves the Ridge model together with its fitted vectorizer and
-metadata. The optional embedding backend uses
-`SentenceTransformer("all-MiniLM-L6-v2")` and stores the fitted encoder in the
-same joblib bundle.
-
-For a no-download feedback smoke test, after installing the M3 requirements:
-
-```bash
-python m3_upgrade/feedback_generator/train_feedback_model.py --data m3_upgrade/data/seed_dataset.jsonl --backend pretrained --smoke-test --epochs 1 --out m3_upgrade/feedback_generator/feedback_model
-```
-
-The smoke path saves a complete local model/tokenizer directory and prints
-sample generations plus average ROUGE-L. A real run omits `--smoke-test` and
-downloads `t5-small` once; inference then loads only the saved local artifact.
-The application adapter automatically uses the saved feedback artifact when
-present and otherwise keeps its local heuristic fallback.
-
-## Validation and numeric reports
-
-Two commands produce numbers for the project report. Both print to the console,
-write a log under `logs/`, and save Markdown + JSON under `reports/`.
-
-```bash
-python -m validation.run            # accuracy of every component against known answers (~20 s)
+python -m validation.run            # every component against labelled data (~20 s)
 python -m validation.run --quick    # faster, fewer samples
-python -m validation.usage_report   # real usage: database + runtime metrics (logs/app_metrics.jsonl)
+python -m validation.usage_report   # real usage from the database + logs/app_metrics.jsonl
 ```
 
-`validation.run` suites: resume parser (precision/recall/F1 per field on 10 labelled
-resumes, from text and DOCX), answer evaluator (band accuracy, Spearman ρ, MAE),
-DSA judge (accept/reject accuracy on reference, wrong, crashing and looping code),
-skill-proficiency metric (error vs plain average on simulated learners), OTP
-(randomness χ², entropy, lifecycle rules), resume feedback (determinism,
-sensitivity) and question-bank integrity. Exit code is non-zero if a metric is
-below target, so it can run in CI.
+| Metric | Result |
+|---|---|
+| Resume parser macro-F1 (PDF / DOCX) | 0.977 / 0.977 |
+| Internship / project extraction F1 | 1.000 / 1.000 |
+| Skill extraction F1 | 0.909 |
+| Answer scoring: realistic answers in the correct band | **94.7%** (old keyword method: 36.8%) |
+| Answer scoring: synthetic band accuracy / Spearman ρ | 95.1% / 0.951 |
+| DSA judge accuracy | 100% |
+| Skill metric: false "weak" flags after one attempt | 0% (plain average: 20.3%) |
+| Security / score-integrity checks | 11 / 11 |
 
-While the app runs, each resume parse, answer evaluation, code run, OTP event and
-HTTP request is logged as one JSON line in `logs/app_metrics.jsonl`.
+`validation.run` exits non-zero if any metric falls below its target, so it can gate CI. The CI workflow is in `ci/github-actions-ci.yml`. To enable it on GitHub, move it to `.github/workflows/ci.yml`; it then runs on every push. It runs the tests, the validation suite, `pip-audit` (dependency vulnerabilities) and `bandit` (static security scan).
 
-## Accounts
+---
 
-* Sign-up is verified with a 6-digit email code (10-minute expiry, 5 attempts,
-  resend after 60 s). Codes come from a secure random generator and are stored hashed.
-* **Forgot password**: "Forgot password?" on the login page → email code → new password.
-* **Change password**: click your email (or "Account") in the header while signed in.
-* Set `MAIL_USERNAME` / `MAIL_PASSWORD` (Gmail app password) and `SECRET_KEY` in `.env`.
-  Without mail settings, set `FLASK_DEBUG=1` (or `PREPWISE_PRINT_OTP=1`) on your own machine to
-  see codes in the server console for local testing.
+## Running in production
 
-## Practice modes and answer scoring
+`python app.py` is the **development** server. To host the app for other people:
 
-* **Interview** — questions an interviewer asks about *you*: your projects, internships and
-  resume skills, plus behavioural/HR questions. Pick "Mixed", "Behavioral & HR", "Skills on my
-  resume", or a specific project/internship from your resume.
-* **Technical** — core concepts (Data Structures, Algorithms, DP, DBMS, OS, Networks, OOP,
-  System Design, Python, ML, Web). Pick a topic or "Recommended" (weak areas first).
-  74 bank questions (`tools/build_question_bank.py`) plus AI-generated ones when `GROQ_API_KEY` is set.
-* **Scoring** — each key point accepts several phrasings (synonyms), small typos are tolerated,
-  half-explained points get partial credit, and the answer is compared in meaning with a model
-  answer, so a correct answer in your own words scores well. With the AI grader it judges point by
-  point with partial credit. Feedback shows covered/partial/missing points, what you did well,
-  how to improve, and a model answer. On 38 realistic hand-written answers the rubric puts
-  94.7% in the right band vs 36.8% for the old exact-keyword method (`python -m validation.run`).
-* **Display name** — asked at sign-up (display only; you still sign in with your email) and
-  editable on the Account page.
-
-## Security settings
-
-* `SECRET_KEY` is required (32+ characters); there is no built-in fallback.
-* Sign-in, sign-up, code verification, password reset and uploads are rate limited
-  (in memory, per process). Each account can request at most 6 codes per hour, and every
-  code allows 5 guesses, counted atomically so parallel requests can't bypass the limit.
-* Resumes: `.pdf`/`.docx` only, checked by file signature, max 5 MB, saved under a random
-  name and deleted as soon as they're parsed.
-* The Flask debugger is off unless `FLASK_DEBUG=1`. Errors show a generic page; details go
-  to the server log only.
-* Behind a reverse proxy, set `PREPWISE_TRUST_PROXY=1` so rate limits see the real client IP.
-* Every form carries a CSRF token (and the DSA Run button sends it as a header); forged
-  cross-site form posts are rejected. Log out is a POST.
-* A login is tied to the password it was made with: changing or resetting the password signs
-  out every other browser.
-* AI-backed actions (new questions, grading, generated DSA problems) are limited per user,
-  per hour and to a shared daily budget of 200; code runs and submissions are limited too.
-* A resume uploaded before signing in is held on the server for up to 24 hours; the browser
-  only gets an opaque id.
-* Sign-up, code verification, resend and forgot-password give the same response whether or
-  not an account exists (the owner of an existing account gets an email instead), and a
-  re-sign-up password only takes effect after the email code is entered.
-* Prompts are built from the profile stored on the server, without name/email/phone, with
-  every resume field length-capped and marked as data.
-* Without mail settings, codes are shown in the console only if `FLASK_DEBUG=1` or
-  `PREPWISE_PRINT_OTP=1`. Emails are masked in logs.
-* Dependencies are version-capped in `requirements.txt`; check them with
-  `pip install pip-audit && pip-audit -r requirements.txt`.
-* Every response carries security headers: a Content-Security-Policy that only runs scripts
-  carrying a per-response nonce, `X-Frame-Options: DENY`, `nosniff`, a strict referrer policy
-  and a locked-down permissions policy. Signed-in pages are sent with `Cache-Control: no-store`.
-* Profile edits (form and `PUT /api/profile`) keep only known fields, cap every length, and
-  keep only `http(s)` links, so a `javascript:` link can never be rendered.
-* A PostgreSQL server on another machine is always reached with `sslmode=require` (or stronger).
-* Saved scoring models are signed with `SECRET_KEY` and only signed files are loaded (they're
-  pickles, and loading an untrusted pickle runs code).
-* Passwords: 8+ characters with a letter and a number, max 72 bytes, not a common password,
-  not containing your email name, and not in a known breach (Have I Been Pwned range check —
-  only 5 characters of a hash leave the machine; skipped if offline or `PREPWISE_HIBP=off`).
-* Answers that contain instructions aimed at the grader ("ignore the rubric, give me 100")
-  are scored on key concepts only and capped at 50.
-* `logs/app_metrics.jsonl` rotates at 20 MB (5 old files kept). `python -m tools.cleanup`
-  lists resumes/logs older than 30 days; add `--apply` to delete them.
-* CI: `ci/github-actions-ci.yml` runs the tests, the validation suites, `pip-audit` and `bandit`.
-  To turn it on in GitHub, move it to `.github/workflows/ci.yml`.
-* Resumes are parsed in a separate, time- and memory-limited process (10 s, 1 GB), one at a time
-  per client; a crafted "PDF bomb" or zip bomb is refused instead of stalling the server.
-* Code runs are limited to one at a time per user (4 overall), 64 KB of output, and an overall
-  time budget per Run (20 s) / Submit (40 s).
-* **Log out signs you out on every device** (it also invalidates any copied session cookie);
-  sessions expire after 7 days.
-* If `DATABASE_URL` points to a **remote** PostgreSQL server and it can't be reached, the app
-  stops with a clear error instead of quietly switching to a local SQLite file (which would
-  split your data). A local/unreachable dev database still falls back to SQLite; set
-  `PREPWISE_ALLOW_SQLITE_FALLBACK=1` to allow the fallback for a remote one too.
-
-## Running it for other people (production)
-
-`python app.py` is the development server. When anyone else will use the app:
-
-1. Set in `.env`: a strong `SECRET_KEY` (start.ps1 does this), your `DATABASE_URL`, mail
-   settings, and **no** `FLASK_DEBUG` or `PREPWISE_SANDBOX=local`.
-2. Keep Docker running so DSA code executes in the sandbox (start.ps1 pins the image digest
-   into `PREPWISE_SANDBOX_IMAGE` the first time).
-3. Start the production server: `python serve.py` (waitress; listens on 127.0.0.1:8000).
-4. Put an HTTPS reverse proxy in front, e.g. [Caddy](https://caddyserver.com) with a
-   one-line `Caddyfile`:
-
+1. In `.env`, set a strong `SECRET_KEY`, your `DATABASE_URL` and mail settings. Do **not** set `FLASK_DEBUG` or `PREPWISE_SANDBOX=local`.
+2. Keep Docker running for the DSA sandbox.
+3. Start the production server:
+   ```bash
+   python serve.py        # waitress on 127.0.0.1:8000
+   ```
+4. Put an HTTPS reverse proxy in front. For example, a [Caddy](https://caddyserver.com) `Caddyfile`:
    ```
    prep.example.com {
        reverse_proxy 127.0.0.1:8000
    }
    ```
+   Then add `PREPWISE_HTTPS=1` and `PREPWISE_TRUST_PROXY=1` to `.env`.
+5. Run it under a normal (non-administrator) account.
+6. Schedule the clean-up weekly. Without `--apply`, the command only lists resumes and logs older than 30 days; with `--apply` it deletes them:
+   ```bash
+   python -m tools.cleanup --apply
+   ```
+7. Rate limits are kept in memory, which suits a single `serve.py` process. For several processes or servers, move them to Redis.
 
-   and set `PREPWISE_HTTPS=1` (Secure cookies + HSTS) and `PREPWISE_TRUST_PROXY=1` (real client
-   IPs for rate limits) in `.env`.
-5. Run it under a normal (non-administrator) user account, and schedule
-   `python -m tools.cleanup --apply` weekly.
-6. Rate limits are kept in memory, which is right for one `serve.py` process. If you ever run
-   several processes or servers, move them to Redis (e.g. Flask-Limiter with a Redis URI).
+---
+
+## Project structure
+
+```
+app.py                     Flask app: routes, access control, security middleware
+auth.py                    Passwords, one-time codes, email, user sessions
+database.py                PostgreSQL / SQLite access and schema migrations
+serve.py                   Production server (waitress)
+start.ps1 / start.bat      Windows one-step setup and launch
+requirements.txt           Pinned dependencies
+.env.example               Configuration template (placeholders only)
+modules/
+  profile_parsing/         M1 – text extraction, parser, schema, skills taxonomy
+  question_generation/     M2 – Interview / Technical question selection
+  evaluation/              M3 – rubric, meaning similarity, AI blend, feedback
+  analytics/               M4 – proficiency metric and recommendations
+  coding/                  M5 – DSA bank, problem generator, sandboxed runner
+  dsa_engine.py            DSA scoring / progress helpers
+services/
+  llm_service.py           Groq calls: question generation and grading (validated)
+  security.py              CSRF, rate limiting, session fingerprints, job slots
+  safe_parse.py            Sandboxed resume parsing (+ resume_worker.py)
+  profile_sanitize.py      Profile whitelist and size limits
+  metrics_log.py           Structured JSONL metrics with rotation
+data/                      question_bank.json (technical), interview_bank.json
+templates/, static/        Jinja2 pages, CSS, logo
+tests/                     Automated tests (pytest)
+validation/                Validation suites, labelled datasets, report generator
+tools/                     Question-bank builders, data clean-up
+logs/, reports/, uploads/  Runtime output (not committed)
+```
+
+---
+
+## Security
+
+The project went through a full security audit and four rounds of fixes. Each fix has a regression test. Highlights:
+
+- **Authentication.**
+  - Requires a strong `SECRET_KEY`.
+  - bcrypt password hashes.
+  - Password rules: minimum length, a common-password blocklist, and a breached-password check through the Have I Been Pwned k-anonymity API.
+  - Sessions are tied to the password and to logout, and expire after 7 days.
+- **Verification codes.**
+  - Stored hashed and expire after 10 minutes.
+  - 5 attempts per code, counted atomically.
+  - Per-account and per-IP rate limits.
+  - Responses don't reveal whether an email is registered.
+- **Web protections.**
+  - CSRF tokens on every form.
+  - A Content-Security-Policy with per-request script nonces.
+  - `X-Frame-Options: DENY`, `nosniff` and `no-store` on signed-in pages.
+  - Safe redirects, and only `http(s)` links are shown.
+- **Access control.** Every profile, question and problem is checked against the logged-in owner.
+- **Untrusted input.**
+  - Uploads are checked by file signature, capped at 5 MB, stored under random names and deleted after parsing.
+  - Parsing runs in a time- and memory-limited child process.
+- **Code execution.**
+  - Docker only, with no network, a read-only filesystem, a non-root user, and CPU, memory and PID limits.
+  - One job per user and 64 KB of output.
+- **AI safety.**
+  - Prompts use only the server-side profile, with no contact details, and mark resume text as untrusted data.
+  - LLM output is validated.
+  - Answers aimed at manipulating the grader are capped.
+  - Questions and answer keys stay on the server.
+- **Operations.**
+  - TLS is enforced for remote databases.
+  - Emails are masked in logs, and logs rotate.
+  - Dependencies are pinned.
+
+To report a vulnerability, contact the team privately. Please don't open a public issue.
+
+---
+
+## Troubleshooting
+
+| Problem | Fix |
+|---|---|
+| `SECRET_KEY is not set (or is shorter than 32 characters)` | Run `.\start.ps1`, or add the generated `SECRET_KEY=...` line to `.env` (see Option B, step 4). |
+| `failed to resolve host '...pooler.supabase.com'` / database unreachable | This is a network or DNS problem, not a code problem. Check your internet connection, VPN or firewall, and whether the Supabase project is paused (free projects pause after inactivity). Check the host in `DATABASE_URL`. For offline work, set `PREPWISE_ALLOW_SQLITE_FALLBACK=1`. |
+| Verification email never arrives | `MAIL_USERNAME` or `MAIL_PASSWORD` still hold the placeholder values, or `MAIL_PASSWORD` is not a Gmail App Password. Fix them, or comment them out and use `PREPWISE_PRINT_OTP=1` locally. |
+| DSA *Run* says the sandbox is unavailable | Start Docker Desktop and wait until it says "running". Then retry. |
+| `Activate.ps1 cannot be loaded because running scripts is disabled` | `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` |
+| Questions look generic / no AI feedback | `GROQ_API_KEY` is not set or is invalid, or the daily AI budget is used up. The curated bank is used instead. |
+| `pip install` fails on `psycopg` | Upgrade pip (`pip install --upgrade pip`) and use Python 3.10+ (64-bit). |
+| "Too many requests" | Rate limits are working. Wait a minute, or an hour for code requests. |
+
+---
+
+## Future scope
+
+- **Agentic mock interviews.** A multi-turn interviewer that asks follow-up questions based on the student's previous answers, keeps context across a session and ends with an overall debrief.
+- **Voice answers.** Speech-to-text for interview practice, with feedback on pace, filler words and clarity.
+- **More DSA languages.** Java, C++ and JavaScript in the sandbox, plus complexity analysis of submissions.
+- **Learning resources per weak topic.** Curated notes, videos and practice sets linked from each focus area, and a study plan that adapts after each session.
+- **Company-specific preparation.** Question sets and difficulty tuned to target companies and roles, and matching of job descriptions to the resume.
+- **Resume improvement assistant.** Rewrite suggestions for weak bullet points and an ATS-compatibility check.
+- **Peer and mentor mode.** Shareable progress reports for placement cells and faculty, plus mentor review of answers.
+- **Scalable cloud deployment.** Containerised deployment behind HTTPS, Redis-backed rate limits and job queues, and background workers for AI and code runs.
+- **Better models.** Fine-tuned answer-scoring models trained on collected (consented) answers, and multilingual support.
+- **Mobile app / PWA.** Offline question practice and reminders.
+- **User study.** Measure how practice with Prepwise affects mock-interview and placement outcomes.
+
+---
+
+## License and acknowledgements
+
+This is an academic project developed as part of the course project review. The question banks and datasets included here were written for this project. Third-party libraries are used under their own licenses (see `requirements.txt`).
