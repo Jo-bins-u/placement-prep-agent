@@ -87,19 +87,6 @@ The project is split into five modules. All five are **implemented, integrated a
 | **M4: Analytics & Recommendation** | Pulikanti Gowtham Roy | `modules/analytics/analytics.py` | Computes Bayesian-smoothed, recency-weighted proficiency. Finds weak and strong topics, combines interview and DSA scores, and gives recommendations. | ✅ Complete |
 | **M5: Dashboard, DSA & Integration** | Pulikanti Gowtham Roy | `app.py`, `templates/`, `static/`, `modules/coding/`, `modules/dsa_engine.py` | Covers the Flask app, dashboard and UI, and the DSA bank, generator and Docker judge. Also covers accounts and security hardening. | ✅ Complete (judge accuracy 100%) |
 
-### Remaining work checklist
-
-- [x] M1 through M5 implemented
-- [x] Integration and end-to-end testing (184 automated tests)
-- [x] Numeric validation suite (`python -m validation.run`)
-- [x] Security audit and hardening (4 phases)
-- [ ] **Final documentation**: project report and this README (in progress)
-- [ ] **Demo preparation**: demo script, sample accounts and sample resumes (`sample_resume.pdf` / `.docx`)
-- [ ] Deploy a demo instance behind HTTPS (see [Running in production](#running-in-production))
-- [ ] Enable CI on GitHub: CI config is included (see [Testing and validation](#testing-and-validation))
-- [ ] Short user trial with classmates to collect feedback
-
----
 
 ## Tech stack
 
